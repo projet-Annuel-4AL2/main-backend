@@ -13,6 +13,7 @@
 
 </head>
 <body>
+    <label for="language">Select Language:</label>
     <select name="language" id="language">
         <option value="php">PHP</option>
         <option value="python">Python</option>
@@ -24,16 +25,6 @@
     <div id="output"></div>
 
     <script>
-        function changeMode() {
-            var language = document.getElementById("language").value;
-            var mode;
-            if (language === 'javascript') {
-                mode = 'javascript';
-            } else if (language === 'php') {
-                mode = 'php';
-            }
-            editor.setOption('mode', mode);
-        }
 
         function submitCode() {
             var language = document.getElementById("language").value;
@@ -50,7 +41,8 @@
 
                 }
             };
-            var data = "language=" + encodeURIComponent(language) + "&code=" + encodeURIComponent(code);
+            console.log(xhr.responseText);
+            var data = JSON.stringify({ language: language, code: code }); // Convertir les données en JSON
             xhr.send(data);
 
         }
