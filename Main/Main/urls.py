@@ -24,7 +24,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.home, name='home'),
     path('execute-code/', views.execute_code, name='execute_code'),
-
-
     
 ]
