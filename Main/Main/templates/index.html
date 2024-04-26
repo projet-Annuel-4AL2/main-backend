@@ -14,7 +14,7 @@
 </head>
 <body>
     <label for="language">Select Language:</label>
-    <select name="language" id="language">
+    <select name="language" id="language" onchange="updateCode()">
         <option value="php">PHP</option>
         <option value="python">Python</option>
         <option value="javascript">JavaScript/node</option>
@@ -49,10 +49,15 @@
 
         }
 
+        function updateCode() {
+            var language = document.getElementById("language").value;
+            editor.setOption("mode", language);
+        }
+
         // Initialize CodeMirror
         var editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
             lineNumbers: true,
-            mode: "php", // Default mode
+            mode: document.getElementById("language").value,
             theme: "dracula" // Dark mode theme
         });
     </script>
