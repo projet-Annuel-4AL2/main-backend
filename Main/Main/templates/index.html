@@ -17,6 +17,7 @@
     <select name="language" id="language">
         <option value="php">PHP</option>
         <option value="python">Python</option>
+        <option value="javascript">JavaScript/node</option>
     </select>
 
     <h1>Online Code Editor</h1>
@@ -29,6 +30,8 @@
         function submitCode() {
             var language = document.getElementById("language").value;
             var code = editor.getValue();
+            var output = document.getElementById("output");
+            output.innerHTML = "Running...";
 
             // Send code to backend for execution
             var xhr = new XMLHttpRequest();
@@ -41,7 +44,6 @@
 
                 }
             };
-            console.log(xhr.responseText);
             var data = JSON.stringify({ language: language, code: code }); // Convertir les données en JSON
             xhr.send(data);
 

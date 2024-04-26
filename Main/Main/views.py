@@ -27,9 +27,14 @@ def execute_code(request):
                     output = e.output
             elif language == 'python':
                 try:
-                    output = str(eval(code))
-                except Exception as e:
-                    output = str(e)
+                    output = subprocess.check_output(['python', '-c', code], universal_newlines=True)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
+            elif language == 'javascript':
+                try:
+                    output = subprocess.check_output(['node', '-e', code], universal_newlines=True)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
             else:
                 output = "Langage non pris en charge"
 
