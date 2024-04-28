@@ -4,3 +4,4 @@ env/
 /env.textClipping
 .DS_Store
 .idea/
+__pycache__/
