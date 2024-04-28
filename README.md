@@ -1,4 +1,4 @@
-# Main-project
+# ByteBelt
 Install django 
 pyenv install 3.12.1
 
