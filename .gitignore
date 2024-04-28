@@ -2,6 +2,14 @@ env
 env/
 /env/
 /env.textClipping
+
+# IDE related
 .DS_Store
 .idea/
+
+# Python related
 __pycache__/
+
+# Environemnt File
+.env
+.env.test
