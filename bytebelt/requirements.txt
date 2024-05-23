@@ -1,5 +1,9 @@
 django==3.2.1
 autopep8
 beautifulsoup4
-firebase-admin
-django-admin-soft-dashboard
+djangorestframework==3.15.1
+sqlparse==0.5.0
+asgiref==3.8.1
+Django==5.0.6
+django-filter==24.2
+Markdown==3.6
