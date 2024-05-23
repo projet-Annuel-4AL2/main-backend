@@ -17,10 +17,10 @@ services:
       POSTGRES_USER: bytebelt
       POSTGRES_PASSWORD: bytebelt
       POSTGRES_DB: bytebelt
-  pgamdin:
-    image: dpage/pgadmin4
-    ports:
-      - "5050:5050"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: audesandrine6@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: aude123
+  #pgamdin:
+  #  image: dpage/pgadmin4
+  #  ports:
+  #    - "5050:5050"
+  #  environment:
+  #    PGADMIN_DEFAULT_EMAIL: audesandrine6@gmail.com
+  #    PGADMIN_DEFAULT_PASSWORD: aude123
