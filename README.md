@@ -15,3 +15,12 @@ https://realpython.com/django-setup/
 Exulter dans une sandbox 
 Un docker avec un worker avec un redis 
 Sur un kube 
+
+
+//utilisation de mongoDB
+pip install django-admin-soft-dashboard
+python manage.py collectstatic
+
+$ # Set up the database
+python manage.py makemigrations
+python manage.py migrate

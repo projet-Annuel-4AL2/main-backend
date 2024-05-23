@@ -1,0 +1,5 @@
+django==3.2.1
+autopep8
+beautifulsoup4
+firebase-admin
+django-admin-soft-dashboard
