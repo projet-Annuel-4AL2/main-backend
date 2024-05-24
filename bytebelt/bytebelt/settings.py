@@ -62,7 +62,9 @@ ROOT_URLCONF = 'bytebelt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates'),
+                 os.path.join(BASE_DIR, 'API/userApi/templates'),
+                 os.path.join(BASE_DIR, 'dashboard/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

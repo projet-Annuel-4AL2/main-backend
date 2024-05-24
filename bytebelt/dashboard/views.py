@@ -11,4 +11,4 @@ import json
 # Create your views here.
 
 def dashboard(request):
-    return render(request, "dashboard/index.html")
+    return render(request, "index.html")
