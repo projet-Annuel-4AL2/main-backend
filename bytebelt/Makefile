@@ -14,6 +14,7 @@ python-shell:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
 	docker exec -it $$CONTAINER_ID /bin/bash
 
+
 postgres-shell:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt
@@ -38,6 +39,11 @@ postgres-show-users:
 python-superuser:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
 	docker exec -it $$CONTAINER_ID python3 manage.py createsuperuser
+
+python-collectstatic:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
+	docker exec -it $$CONTAINER_ID python3 manage.py collectstatic  
+
 
 help:
 	@echo "\033[0;32m clean \033[0m : Nettoie les fichiers Python et HTML."
