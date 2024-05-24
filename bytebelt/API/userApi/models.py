@@ -13,3 +13,4 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False)
+    profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)

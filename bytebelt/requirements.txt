@@ -8,4 +8,4 @@ django-filter==24.2
 Markdown==3.6
 psycopg2==2.9.1
 psycopg2-binary==2.9.1
-
+pillow==10.3.0

@@ -7,8 +7,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'username', 'password', 'is_active' ,'created_at', 'updated_at' , 'role' , 'followers']
-        read_only_fields = ['is_active']
+        fields = ['id', 'username', 'email', 'username', 'password', 'is_active' ,'created_at', 'updated_at' , 'role' ,'profile_pic', 'followers']
+        read_only_fields = [ 'is_active','followers']
     
     def validate_password(self , value):
         if len(value) < 8:
