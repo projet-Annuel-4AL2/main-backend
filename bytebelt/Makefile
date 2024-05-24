@@ -1,7 +1,6 @@
 PYTHON_FILES := $(wildcard *.py)
 HTML_FILES := $(wildcard *.html)
 
-
 .PHONY: clean
 
 clean:
@@ -34,4 +33,20 @@ postgres-tables:
 
 postgres-show-users:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
-    docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser\""
+    docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser_groups\""
+
+python-superuser:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
+	docker exec -it $$CONTAINER_ID python3 manage.py createsuperuser
+
+help:
+	@echo "\033[0;32m clean \033[0m : Nettoie les fichiers Python et HTML."
+	@echo "\033[0;32m python-shell \033[0m : Ouvre un shell Python dans le conteneur Docker."
+	@echo "\033[0;32m postgres-shell \033[0m : Ouvre un shell PostgreSQL dans le conteneur Docker."
+	@echo "\033[0;32m postgres-user-test \033[0m : Ajoute un utilisateur de test dans la base de données PostgreSQL."
+	@echo "\033[0;32m migration-user-api \033[0m : Crée les migrations pour l'application userApi et les executes."
+	@echo "\033[0;32m postgres-tables \033[0m : Affiche les tables de la base de données PostgreSQL."
+	@echo "\033[0;32m postgres-show-users \033[0m : Affiche les utilisateurs de la base de données PostgreSQL."
+	@echo "\033[0;32m python-superuser \033[0m : Crée un superutilisateur pour l'application Django."
+	@echo "\033[0;32m help \033[0m : Affiche ce message d'aide."
+
