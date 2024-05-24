@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-pwy9d8i(ai1s_dxpb413d%0s&j+$wz!f+kk0#jth-z2j1v5haf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+     '0.0.0.0',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -76,10 +80,15 @@ WSGI_APPLICATION = 'bytebelt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bytebelt',
+        'USER': 'bytebelt',
+        'PASSWORD': 'bytebelt',
+        'HOST': 'db',  #c'est le nom du service dans le docker-compose
+        'PORT': '5432',        
     }
 }
 

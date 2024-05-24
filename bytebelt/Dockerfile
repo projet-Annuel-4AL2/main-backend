@@ -18,4 +18,4 @@ COPY . /bytebelt/
 
 
 # Command to run your Django application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:800"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
