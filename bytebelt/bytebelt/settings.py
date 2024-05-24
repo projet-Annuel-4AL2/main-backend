@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-pwy9d8i(ai1s_dxpb413d%0s&j+$wz!f+kk0#jth-z2j1v5haf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+     '0.0.0.0',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -38,7 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
+    'API.userApi',
+    'dashboard',
+    'rest_framework',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,7 +62,9 @@ ROOT_URLCONF = 'bytebelt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates'),
+                 os.path.join(BASE_DIR, 'API/userApi/templates'),
+                 os.path.join(BASE_DIR, 'dashboard/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,13 +83,29 @@ WSGI_APPLICATION = 'bytebelt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bytebelt',
+        'USER': 'bytebelt',
+        'PASSWORD': 'bytebelt',
+        'HOST': 'db',  #c'est le nom du service dans le docker-compose
+        'PORT': '5432',        
     }
 }
 
+AUTH_USER_MODEL = 'userApi.CustomUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -101,6 +126,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -116,9 +143,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+##ajouter les config media
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
