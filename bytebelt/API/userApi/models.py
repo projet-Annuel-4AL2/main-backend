@@ -12,3 +12,4 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=100 , default="user")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    followers = models.ManyToManyField('self', related_name='following', symmetrical=False)
