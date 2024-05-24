@@ -9,6 +9,6 @@ class CustomUser(AbstractUser):
     email = models.EmailField(max_length=100 , unique=True)
     password = models.CharField(max_length=100)
     is_active = models.BooleanField(default=False)
-    role = models.CharField(max_length=100)
+    role = models.CharField(max_length=100 , default="user")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
