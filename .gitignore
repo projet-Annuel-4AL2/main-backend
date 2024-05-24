@@ -5,3 +5,7 @@ env/
 .DS_Store
 .idea/
 __pycache__/
+myvenv/
+/myenv/
+myenv/
+database/
