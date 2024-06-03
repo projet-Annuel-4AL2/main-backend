@@ -8,9 +8,6 @@ import json
 
 
 
-def home(request):
-    return render(request, "index.html")
-
 @csrf_exempt
 def execute_code(request):
     if request.method == 'POST':
