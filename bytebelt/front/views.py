@@ -41,6 +41,23 @@ def login(request):
                         
     return render(request, 'login.html')
 
+def register (request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        if not username or not email or not password or not password2:
+            return render(request, 'register.html', {'error': 'All fields are required'})
+        if password != password2:
+            return render(request, 'register.html', {'error': 'Passwords do not match'})
+        response = requests.post(API_BASE_URL + 'users/', data={'username': username, 'email': email, 'password': password})
+        if response.status_code == 201:
+            return redirect('login')
+        else:
+            return render(request, 'register.html', {'error': 'error api'})
+    return render(request, 'register.html')
+
 def logout(request):
     logout(request)
     return redirect('login')
