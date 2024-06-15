@@ -20,4 +20,9 @@ class UserSerializer(serializers.ModelSerializer):
         user = CustomUser.objects.create_user(**validated_data)
         return user
 
+    def validate(self, data):
+        user = CustomUser.objects.get(email=data['email'])
+        if user.check_password(data['password']):
+            return data
+        raise serializers.ValidationError("Email or password is incorrect")
     

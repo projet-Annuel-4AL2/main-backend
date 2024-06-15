@@ -9,6 +9,10 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+
+
 
 
 
@@ -28,3 +32,9 @@ class AddFollower(APIView):
         follower = get_object_or_404(CustomUser, pk=request.data['follower_id'])
         user.followers.add(follower)
         return Response({'status': 'follower added'}, status=status.HTTP_200_OK)
+    
+class UserAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'id': token.user_id})
