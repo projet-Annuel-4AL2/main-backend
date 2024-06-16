@@ -28,15 +28,28 @@ migration-user-api:
 	docker exec -it $$CONTAINER_ID python3 manage.py makemigrations userApi && \
 	docker exec -it $$CONTAINER_ID python3 manage.py migrate userApi
 
+migration:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
+	docker exec -it $$CONTAINER_ID python3 manage.py makemigrations && \
+	docker exec -it $$CONTAINER_ID python3 manage.py migrate
+
+migrate:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
+	docker exec -it $$CONTAINER_ID python3 manage.py migrate
+
 postgres-tables:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "\dt"
 
 postgres-show-users:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
-    docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser_groups\""
+    docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser\""
 
-python-superuser:
+postgres-users-colonnes:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "\d \"userApi_customuser\""
+
+superuser:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor=bytebelt-web") && \
 	docker exec -it $$CONTAINER_ID python3 manage.py createsuperuser
 

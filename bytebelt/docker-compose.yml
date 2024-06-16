@@ -21,6 +21,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/bytebelt  
+    restart: always
     depends_on:
       - db      
 

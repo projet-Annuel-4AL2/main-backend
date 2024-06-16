@@ -36,6 +36,8 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'django_filters',
+    'django_dump_die',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,9 +47,11 @@ INSTALLED_APPS = [
     'API.userApi',
     'dashboard',
     'rest_framework',
+    'rest_framework.authtoken',
     ]
 
 MIDDLEWARE = [
+    'django_dump_die.middleware.DumpAndDieMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,7 +68,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates'),
                  os.path.join(BASE_DIR, 'API/userApi/templates'),
-                 os.path.join(BASE_DIR, 'dashboard/templates')],
+                 os.path.join(BASE_DIR, 'dashboard/templates'),
+                 os.path.join(BASE_DIR, 'front/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -158,3 +163,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ##ajouter les config media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# param for login
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
