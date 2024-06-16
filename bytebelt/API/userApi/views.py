@@ -56,3 +56,26 @@ class RegisterUser(APIView):
             token = Token.objects.create(user=user)
             return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class PasswordReset(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        email = request.data.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            return Response({'status': 'email valid'}, status=status.HTTP_200_OK)
+        
+class ChangePassword(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        email= request.data.get('email')
+        password = request.data.get('password')
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            user.set_password(password)
+            user.save()
+            return Response({'status': 'password changed'}, status=status.HTTP_200_OK)
+        return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+       

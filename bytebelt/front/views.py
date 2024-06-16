@@ -67,6 +67,9 @@ def register(request):
     
     return render(request, 'register.html')
 
+def resetPassword(request):
+    return render(request, 'resetPassword.html')
+
 
 def logout(request):
     del request.session['token']
