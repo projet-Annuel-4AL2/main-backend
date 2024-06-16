@@ -65,6 +65,8 @@ class PasswordReset(APIView):
         user = CustomUser.objects.filter(email=email).first()
         if user:
             return Response({'status': 'email valid'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'email invalid'}, status=status.HTTP_404_NOT_FOUND)
         
 class ChangePassword(APIView):
     permission_classes = [AllowAny] 
