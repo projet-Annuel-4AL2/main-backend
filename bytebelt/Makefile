@@ -45,6 +45,14 @@ postgres-show-users:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
     docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser\""
 
+postgres-show-token:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"authtoken_token\""
+
+postgres-show-posts:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"posts_posts\""
+
 postgres-users-colonnes:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "\d \"userApi_customuser\""

@@ -14,6 +14,11 @@ services:
     volumes:
       - ./database:/var/lib/postgresql/data
 
+  runner:
+     build: ./config/runner
+     volumes:
+       - .:/bytebelt-runner
+     restart: always   
       
   web:
     build: .
@@ -23,7 +28,10 @@ services:
       - .:/bytebelt  
     restart: always
     depends_on:
-      - db      
+      - db 
+      - runner  
+
+
 
   
     

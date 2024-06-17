@@ -27,5 +27,6 @@ urlpatterns = [
     path('',include('front.urls')),
     path('execute-code/', views.execute_code, name='execute_code'),
     path('api/', include('API.userApi.urls')),
+    path('api/', include('API.posts.urls')),
     path('dashboard/', include('dashboard.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

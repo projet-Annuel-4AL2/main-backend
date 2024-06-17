@@ -80,4 +80,10 @@ class ChangePassword(APIView):
             return Response({'status': 'password changed'}, status=status.HTTP_200_OK)
         return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
         
-       
+class GetUserByToken(APIView):
+    def post(self, request):
+        token = request.data.get('token')
+        user = Token.objects.get(key=token).user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

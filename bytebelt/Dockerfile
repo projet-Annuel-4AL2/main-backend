@@ -5,6 +5,10 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /bytebelt
 
+#installer redis , redis-server , redis-cli
+RUN apt-get update && apt-get install -y redis-server redis-tools
+
+
 # Install dependencies
 COPY requirements.txt /bytebelt/
 #installer psycopg2

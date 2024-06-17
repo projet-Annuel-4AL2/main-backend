@@ -11,12 +11,18 @@ from django.contrib.auth import authenticate , get_user_model , login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
 
 API_BASE_URL = config('API_BASE_URL')
 
-@login_required
 def home(request):
-    return render(request, 'home.html')
+    token = request.session.get('token')
+    if token:
+        return render(request, 'home.html', {'token': token})
+
+    else:
+        return redirect('login')
 
 def login(request):
     if request.method == 'POST':
@@ -33,7 +39,7 @@ def login(request):
                 token = response.json().get('token')
                 if token:
                     request.session['token'] = token
-                    return render(request, 'home.html')
+                    return render(request, 'home.html' , {'token': token})
                     
                 else:
                     return render(request, 'login.html', {'error': 'Invalid credentials'})
@@ -71,6 +77,52 @@ def resetPassword(request):
     return render(request, 'resetPassword.html')
 
 
+
+
 def logout(request):
-    del request.session['token']
+    token_key = request.session.get('token')
+    if token_key:
+        try:
+            token = Token.objects.get(key=token_key)
+            user = token.user
+            token.delete()
+            del request.session['token']
+
+            logout(request)
+        except Token.DoesNotExist:
+            pass
+
     return redirect('login')
+
+@csrf_exempt
+def execute_code(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            language = data.get('language')
+            code = data.get('code')
+
+            if language == 'php':
+                # Exécutez le code PHP avec subprocess
+                try:
+                    output = subprocess.check_output(['php', '-r', code], universal_newlines=True)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
+            elif language == 'python':
+                try:
+                    output = subprocess.check_output(['python', '-c', code], universal_newlines=True)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
+            elif language == 'javascript':
+                try:
+                    output = subprocess.check_output(['node', '-e', code], universal_newlines=True)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
+            else:
+                output = "Langage non pris en charge"
+
+            return JsonResponse({'output': output})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Format JSON invalide'}, status=400)
+
+    return JsonResponse({'error': 'Méthode de requête non autorisée'}, status=405)
