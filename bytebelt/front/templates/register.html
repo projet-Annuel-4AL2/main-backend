@@ -1,24 +1,67 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h1>Register</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">username:</label>
-        <input type="text" id="username" name="username"><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email"><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password"><br><br>
-        <label for="password2">Confirm Password:</label>
-        <input type="password" id="password2" name="password2"><br><br>
-        <button type="submit">Register</button>
-    </form>
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-5 py-xl-8">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-5">
+            <h2 class="display-5 fw-bold text-center">Register</h2>
+            <p class="text-center m-0">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+          <div class="row gy-5 justify-content-center">
+            <div class="col-12 col-lg-5">
+              <form method="post">
+                {% csrf_token %}
+                <div class="row gy-3 overflow-hidden">
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control border-0 border-bottom rounded-0" name="username" id="username" placeholder="Username" required>
+                      <label for="username" class="form-label">Username</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email" placeholder="Email" required>
+                      <label for="email" class="form-label">Email</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" placeholder="Password" required>
+                      <label for="password" class="form-label">Password</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control border-0 border-bottom rounded-0" name="password2" id="password2" placeholder="Confirm Password" required>
+                      <label for="password2" class="form-label">Confirm Password</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="d-grid">
+                      <button class="btn btn-lg btn-dark rounded-0 fs-6" type="submit">Register</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

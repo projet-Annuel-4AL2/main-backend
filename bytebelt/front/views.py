@@ -14,11 +14,22 @@ from django.contrib.auth.models import User
 
 API_BASE_URL = config('API_BASE_URL')
 
-@login_required
+
+def token_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        token = request.session.get('token')
+        if not token:
+            return redirect('login')
+        return view_func(request, *args, **kwargs)
+    return wrapper  
+
+@token_required
 def home(request):
     return render(request, 'home.html')
 
 def login(request):
+    if request.session.get('token'):
+        return redirect('home')
     if request.method == 'POST':
         username = request.POST.get('username')        
         password = request.POST.get('password')
@@ -42,7 +53,9 @@ def login(request):
                         
     return render(request, 'login.html')
 
-def register(request):
+def subscribe(request):
+    if request.session.get('token'):
+            return redirect('home')
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -74,3 +87,15 @@ def resetPassword(request):
 def logout(request):
     del request.session['token']
     return redirect('login')
+
+@token_required
+def profile(request):
+    #get user info by token in session
+    token = request.session.get('token')
+    response = requests.get(API_BASE_URL + 'user/', headers={'Authorization': 'Token ' + token})
+    if response.status_code == 200:
+        user = response.json()
+        return render(request, 'profile.html', {'user': user})
+    else:
+        return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
+    
