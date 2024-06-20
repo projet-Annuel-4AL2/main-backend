@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-5 py-xl-8">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-5">
+            <h2 class="display-5 fw-bold text-center">{{ user.username }}'s Profile</h2>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+          <div class="row gy-5 justify-content-center">
+            <div class="col-12 col-lg-5">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Email</h5>
+                  <p class="card-text">{{ user.email }}</p>
+                </div>
+              </div>
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Joined on</h5>
+                  <p class="card-text">{{ user.date_joined }}</p>
+                </div>
+              </div>
+              <!-- You can add more information about the user here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

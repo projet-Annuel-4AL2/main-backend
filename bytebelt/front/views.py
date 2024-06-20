@@ -87,3 +87,15 @@ def resetPassword(request):
 def logout(request):
     del request.session['token']
     return redirect('login')
+
+@token_required
+def profile(request):
+    #get user info by token in session
+    token = request.session.get('token')
+    response = requests.get(API_BASE_URL + 'user/', headers={'Authorization': 'Token ' + token})
+    if response.status_code == 200:
+        user = response.json()
+        return render(request, 'profile.html', {'user': user})
+    else:
+        return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
+    

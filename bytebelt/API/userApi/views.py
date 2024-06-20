@@ -12,6 +12,8 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
+
 
 
 
@@ -24,6 +26,22 @@ class UserListCreate(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
     
+class UserInfo(APIView):
+    permission_classes = [AllowAny] 
+    def get(self, request):
+        token_header = request.headers.get('Authorization')
+        if token_header is not None:
+            try:
+                token_key = token_header.split(' ')[1]
+                token = Token.objects.get(key=token_key)
+                user = token.user
+                user_info = get_object_or_404(CustomUser, id=user.id)
+                return Response({'username': user_info.username, 'email': user_info.email , 'followers': user_info.followers.count() })
+            except (Token.DoesNotExist, IndexError):
+                raise AuthenticationFailed('Invalid token')
+        else:
+            raise AuthenticationFailed('Authentication credentials were not provided.')
+             
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -80,4 +98,3 @@ class ChangePassword(APIView):
             return Response({'status': 'password changed'}, status=status.HTTP_200_OK)
         return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
         
-       
