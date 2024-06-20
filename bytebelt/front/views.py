@@ -99,3 +99,32 @@ def profile(request):
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
     
+    
+
+def updateP(request):
+    username = request.user.username
+    email = request.user.email
+    profile_pic = request.user.profile_pic
+
+    data = {'username': username, 'email': email, 'profile_pic': profile_pic}
+
+    return render(request, 'updateProfile.html', data)
+    
+    
+    
+    
+def updateProfile(request):
+    if request.method == 'POST':
+        token = request.session.get('token')
+        username = data.get('username')
+        email = data.get('email')
+        profile_pic = data.get('profile_pic')
+        data = {'username': username, 'email': email}
+        if profile_pic:
+            data['profile_pic'] = profile_pic
+        response = requests.post(API_BASE_URL + 'updateuser/', headers={'Authorization': 'Token ' + token}, data=data)
+        if response.status_code == 200:
+            return render(request, 'profile.html', {'success': 'Profile updated successfully'})
+        else:
+            return render(request, 'profile.html', {'error': 'Error updating profile'})
+    return render(request, 'profile.html', {'error': 'Invalid request'})

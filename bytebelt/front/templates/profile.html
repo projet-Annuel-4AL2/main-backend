@@ -14,42 +14,49 @@ Profile
           </div>
         </div>
       </div>
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-8">
-          <div class="row gy-5 justify-content-center">
-            <div class="col-12 col-lg-5">
-              <div class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">Email</h5>
-                  <p class="card-text">{{ user.email }}</p>
-                </div>
-              </div>
-              <div class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">Joined on</h5>
-                  <p class="card-text">{{ user.date_joined }}</p>
-                </div>
-              </div>
-              <div class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">Followers</h5>
-                  <p class="card-text">{{ user.followers }}</p>
-                </div>
-              </div>
-                <div class="card mb-3">
-                    <div class="card-body">
-                    <h5 class="card-title">Following</h5>
-                    <p class="card-text">{{ user.following }}</p>
-                    </div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-body">
-                    <h5 class="card-title
-                    ">Profile Picture</h5>
-                    <img src="{{ user.profile_pic }}" alt="Profile Picture" class="img-fluid">
-                    </div>
-                </div>
-              <!-- You can add more information about the user here -->
+      <div class="row">
+        <!-- Profile picture and details -->
+        <div class="col-3">
+          <div class="card mb-3 text-center">
+            <img src="{{ user.profile_pic }}" alt="Profile Picture" class="img-fluid rounded-circle">
+            <div class="card-body">
+              <h5 class="card-title">Email</h5>
+              <p class="card-text">{{ user.email }}</p>
+              <h5 class="card-title">Joined on</h5>
+              <p class="card-text">{{ user.date_joined }}</p>
+              <h5 class="card-title">Followers</h5>
+              <p class="card-text">{{ user.followers }}</p>
+              <h5 class="card-title">Following</h5>
+              <p class="card-text">{{ user.following }}</p>
+            </div>
+          </div>
+        </div>
+        <!-- User posts -->
+        <div class="col-6">
+          <!-- Loop through user posts -->
+          {% for post in user.posts %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{ post.title }}</h5>
+              <p class="card-text">{{ post.content }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <!-- User settings -->
+        <div class="col-3">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Settings</h5>
+              <!-- Add user settings here -->
+                 <!--update the profile-->
+                <form action="{% url 'updateP' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="username" value="{{ user.username }}">
+                    <input type="hidden" name="profile_pic" value="{{ user.profile_pic }}">
+                    <input type="hidden" name="email" value="{{ user.email }}">
+                    <button type="submit" class="btn btn-dark rounded-0 fs-6">Update Profile</button>
+                </form>
             </div>
           </div>
         </div>
