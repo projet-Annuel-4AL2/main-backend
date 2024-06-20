@@ -36,7 +36,7 @@ class UserInfo(APIView):
                 token = Token.objects.get(key=token_key)
                 user = token.user
                 user_info = get_object_or_404(CustomUser, id=user.id)
-                return Response({'username': user_info.username, 'email': user_info.email , 'followers': user_info.followers.count() })
+                return Response({'username': user_info.username, 'email': user_info.email , 'followers': user_info.followers.count() , 'following': user_info.following.count() , 'profile_pic': user_info.profile_pic.url})
             except (Token.DoesNotExist, IndexError):
                 raise AuthenticationFailed('Invalid token')
         else:

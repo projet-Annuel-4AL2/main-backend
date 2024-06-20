@@ -30,6 +30,25 @@ Profile
                   <p class="card-text">{{ user.date_joined }}</p>
                 </div>
               </div>
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Followers</h5>
+                  <p class="card-text">{{ user.followers }}</p>
+                </div>
+              </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                    <h5 class="card-title">Following</h5>
+                    <p class="card-text">{{ user.following }}</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                    <h5 class="card-title
+                    ">Profile Picture</h5>
+                    <img src="{{ user.profile_pic }}" alt="Profile Picture" class="img-fluid">
+                    </div>
+                </div>
               <!-- You can add more information about the user here -->
             </div>
           </div>
