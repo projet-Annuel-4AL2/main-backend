@@ -94,35 +94,17 @@ def logout(request):
 
     return redirect('login')
 
+
 @csrf_exempt
 def execute_code(request):
     if request.method == 'POST':
-        try:
-            data = json.loads(request.body.decode('utf-8'))
-            language = data.get('language')
-            code = data.get('code')
-
-            if language == 'php':
-                # Exécutez le code PHP avec subprocess
-                try:
-                    output = subprocess.check_output(['php', '-r', code], universal_newlines=True)
-                except subprocess.CalledProcessError as e:
-                    output = e.output
-            elif language == 'python':
-                try:
-                    output = subprocess.check_output(['python', '-c', code], universal_newlines=True)
-                except subprocess.CalledProcessError as e:
-                    output = e.output
-            elif language == 'javascript':
-                try:
-                    output = subprocess.check_output(['node', '-e', code], universal_newlines=True)
-                except subprocess.CalledProcessError as e:
-                    output = e.output
-            else:
-                output = "Langage non pris en charge"
-
-            return JsonResponse({'output': output})
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Format JSON invalide'}, status=400)
-
-    return JsonResponse({'error': 'Méthode de requête non autorisée'}, status=405)
+        token_key = request.session.get('token')
+        token = Token.objects.get(key=token_key)
+        user_id = token.user_id
+        
+        if token_key:
+           response = requests.post(API_BASE_URL + 'posts/create/', data={'user_id': user_id})
+        else:
+            return JsonResponse({'error': 'Token manquant'}, status=400)
+            
+       

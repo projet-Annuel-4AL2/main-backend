@@ -12,9 +12,18 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .serializers import PostSerializer
 
-class  PostListCreate(generics.ListCreateAPIView):
-    queryset = Posts.objects.all()
-    serializer_class = PostSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['user']
+class PostListCreate(generics.ListCreateAPIView):
+    queryset = Posts.objects.all()  # Définir queryset au niveau de la classe
+    serializer_class = PostSerializer  # Définir le serializer_class
+
+    def post(self, request):
+        queryset = Posts.objects.all()  # Define the queryset at the class level
+        serializer_class = PostSerializer  # Define the serializer class
+
+        def perform_create(self, serializer):
+            serializer.save(user=self.request.user)  # Automatically associate the post with the logged-in user
+
+        def post(self, request, *args, **kwargs):
+            return super().post(request, *args, **kwargs)  
+    
     

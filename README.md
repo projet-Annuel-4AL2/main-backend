@@ -26,3 +26,20 @@ python manage.py migrate
 pip install djangorestframework
 
 
+#superuser already created ou utiliser la make file
+Username: aude
+email: audesandrine6@gmail.com
+Password: aude
+
+#pour les fichiers static on a besoin de les collecter  avec la commande suivante
+
+make python-collectstatic
+
+#afficher tous les modules installés
+pip freeze
+asgiref==3.8.1
+beautifulsoup4==4.12.3
+Django==4.2.13
+django-bootstrap-v5==1.0.11
+soupsieve==2.5
+sqlparse==0.5.0
