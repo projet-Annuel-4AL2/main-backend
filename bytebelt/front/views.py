@@ -24,7 +24,14 @@ def token_required(view_func):
     return wrapper  
 
 def home(request):
-    return render(request, 'home.html')
+    #envoyer tous users
+    response = requests.get(API_BASE_URL + 'users/')
+    if response.status_code == 200:
+        users = response.json()
+        return render(request, 'home.html', {'users': users})
+    else:
+        return render(request, 'home.html', {'error': 'Unable to fetch users'})
+    
 
 def login(request):
     if request.session.get('token'):

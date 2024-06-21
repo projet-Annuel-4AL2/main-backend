@@ -1,45 +1,54 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Home
-{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
 <section class="py-3 py-md-5 py-xl-8">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <div class="mb-5">
-            <h2 class="display-5 fw-bold text-center">Welcome, {{ user.username }}!</h2>
+  <div class="container">
+    <div class="row">
+      <!-- Left column: Options -->
+      <div class="col-md-2 d-none d-md-block">
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-decoration-none text-dark">Rechercher</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Envoyer des messages</a></li>
+          <li><a href="#" class="text-decoration-none text-dark">Notifications</a></li>
+        </ul>
+      </div>
+
+      <!-- Middle column: User posts -->
+      <div class="col-md-6">
+        <h5>Home</h5>
+
+        <!-- Loop through user posts -->
+        {% for post in user.posts %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
           </div>
         </div>
+        {% endfor %}
       </div>
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-8">
-          <div class="row gy-5 justify-content-center">
-            <div class="col-12 col-lg-5">
-              <!-- Here you can add the content of your social network, like the posts, the friends, etc. -->
-              <!-- For example, a list of posts could look like this: -->
-              {% for post in posts %}
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ post.title }}</h5>
-                    <p class="card-text">{{ post.content }}</p>
-                    <p class="card-text"><small class="text-muted">Posted by {{ post.author }} on {{ post.date }}</small></p>
-                  </div>
-                </div>
-              {% endfor %}
+
+      <!-- Right column: Follows -->
+      <div class="col-md-3 d-none d-md-block">
+        <h5>users</h5>
+
+        <!-- Loop through user follows -->
+        {% for follow in user.follows %}
+        <div class="card mb-3">
+          <div class="card-body p-2">
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <img src="{{ follow.profile_pic.url }}" class="rounded-circle" alt="Profile Picture" width="40" height="40">
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-0">{{ follow.username }}</h6>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-8">
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a href="{% url 'logout' %}" class="btn btn-dark rounded-0 fs-6">Logout</a>
-          </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
-  </section>{% endblock %}
-
+  </div>
+</section>
+{% endblock %}
