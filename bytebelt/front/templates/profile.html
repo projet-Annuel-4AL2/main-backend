@@ -25,9 +25,9 @@ Profile
               <h5 class="card-title">Joined on</h5>
               <p class="card-text">{{ user.date_joined }}</p>
               <h5 class="card-title">Followers</h5>
-              <p class="card-text">{{ user.followers }}</p>
+              <p class="card-text">{{ user.followers|length }}</p>
               <h5 class="card-title">Following</h5>
-              <p class="card-text">{{ user.following }}</p>
+              <p class="card-text">{{ user.following|length }}</p>
             </div>
           </div>
         </div>
