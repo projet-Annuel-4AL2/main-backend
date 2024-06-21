@@ -1,42 +1,56 @@
-<!DOCTYPE html>
+<!-- templates/base.html -->
 <html>
 <head>
-    <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-12/assets/css/login-12.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+        rel="stylesheet"
+        as="style"
+        onload="this.rel='stylesheet'"
+        href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
+    <title>{% block title %}Galileo Design{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        {% comment %} <a class="navbar-brand" href="{% url 'home' %}">By</a> {% endcomment %}
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="d-flex justify-content-between w-100">
-                <div class="navbar-nav">
-                    {% if request.session.token %}
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
-                    {% endif %}
-                    {% if not request.session.token %}
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    <a class="nav-link" href="{% url 'subscribe' %}">Register</a>
-                    {% endif %}
-                    
+    <div class="relative flex size-full min-h-screen flex-col bg-black dark group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            {% block header %}
+            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#333333] px-10 py-3">
+                <div class="flex items-center gap-4 text-[#FFFFFF]">
+                    <div class="size-4">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">ByteBelt</h2>
                 </div>
-                <div class="navbar-nav">
-                    <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user"></i></a>
+                <div class="flex flex-1 justify-end gap-8">
+                    <div class="flex items-center gap-9">
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">About</a>
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Accessibility</a>
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Help Center</a>
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a>
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Advertising</a>
+                        {% if request.session.token %}
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'profile' %}">Profile </a>
+                        {% else %}
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
+                        <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'subscribe' %}">Register</a>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+            </header>
+            {% endblock %}
+            {% block content %}
+                    <!-- Votre contenu va ici -->
+                    {% endblock %}
         </div>
-    </nav>
-    {% block content %}{% endblock %}
-    {% block extra_js %}{% endblock %}
+    </div>
 </body>
-
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </html>

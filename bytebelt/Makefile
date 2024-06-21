@@ -69,3 +69,8 @@ help:
 	@echo "\033[0;32m python-superuser \033[0m : Crée un superutilisateur pour l'application Django."
 	@echo "\033[0;32m help \033[0m : Affiche ce message d'aide."
 
+
+
+ UPDATE "userApi_customuser"
+SET profile_pic = 'profile_pics/Capture_decran_2024-06-20_a_12.05.43.png'
+WHERE id = '55e96354-3ddc-430e-92b4-119f7b1f5ca4';

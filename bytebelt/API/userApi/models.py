@@ -14,3 +14,4 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True)
     followers = models.ManyToManyField('self', related_name='following', symmetrical=False)
     profile_pic = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    bio = models.TextField(max_length=500, blank=True , null=True)
