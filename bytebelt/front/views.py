@@ -23,7 +23,6 @@ def token_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper  
 
-@token_required
 def home(request):
     return render(request, 'home.html')
 
@@ -92,7 +91,7 @@ def logout(request):
 def profile(request):
     #get user info by token in session
     token = request.session.get('token')
-    response = requests.get(API_BASE_URL + 'user/', headers={'Authorization': 'Token ' + token})
+    response = requests.post(API_BASE_URL + 'user/', data={'token': token})
     if response.status_code == 200:
         user = response.json()
         return render(request, 'profile.html', {'user': user})

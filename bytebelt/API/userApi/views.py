@@ -4,6 +4,7 @@ from django.shortcuts import render
 from .models import CustomUser
 from rest_framework import generics
 from .serializers import UserSerializer
+from .AuthTokenSerializer import AuthTokenSerializer
 from .filters import UserFilter
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
@@ -21,6 +22,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 
 class UserListCreate(generics.ListCreateAPIView):
+    permission_classes = [AllowAny] 
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
@@ -28,19 +30,18 @@ class UserListCreate(generics.ListCreateAPIView):
     
 class UserInfo(APIView):
     permission_classes = [AllowAny] 
-    def get(self, request):
-        token_header = request.headers.get('Authorization')
+    def post(self, request):
+        token_header = request.data.get('token')
         if token_header is not None:
             try:
-                token_key = token_header.split(' ')[1]
-                token = Token.objects.get(key=token_key)
+                token = Token.objects.get(key=token_header)
                 user = token.user
                 user_info = get_object_or_404(CustomUser, id=user.id)
-                return Response({'username': user_info.username, 'email': user_info.email , 'followers': user_info.followers.count() , 'following': user_info.following.count() , 'profile_pic': user_info.profile_pic.url})
-            except (Token.DoesNotExist, IndexError):
+                return Response(UserSerializer(user_info).data, status=status.HTTP_200_OK)
+            except Token.DoesNotExist:
                 raise AuthenticationFailed('Invalid token')
         else:
-            raise AuthenticationFailed('Authentication credentials were not provided.')
+            raise AuthenticationFailed('Authentication token were not provided.')
         
 class UpdateUser(APIView):
     permission_classes = [AllowAny] 
@@ -63,10 +64,12 @@ class UpdateUser(APIView):
             raise AuthenticationFailed('Authentication credentials were not provided.')
              
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny] 
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     
 class AddFollower(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
         follower = get_object_or_404(CustomUser, pk=request.data['follower_id'])
@@ -74,10 +77,18 @@ class AddFollower(APIView):
         return Response({'status': 'follower added'}, status=status.HTTP_200_OK)
     
 class UserAuthToken(ObtainAuthToken):
+    permission_classes = [AllowAny]
+    serializer_class = AuthTokenSerializer
+
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        token = Token.objects.get(key=response.data['token'])
-        return Response({'token': token.key, 'id': token.user_id})
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'id': user.id
+        })
     
 class RegisterUser(APIView):
     permission_classes = [AllowAny] 
