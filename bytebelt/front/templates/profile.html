@@ -49,6 +49,10 @@ Profile
             <div class="card-body">
               <h5 class="card-title">Settings</h5>
               <!-- Add user settings here -->
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-dark rounded-0 fs-6">Logout</button>
+                </form>
                  <!--update the profile-->
                 <form action="{% url 'updateP' %}" method="post">
                     {% csrf_token %}
