@@ -23,7 +23,6 @@ def token_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper  
 
-@token_required
 def home(request):
     return render(request, 'home.html')
 
@@ -92,10 +91,39 @@ def logout(request):
 def profile(request):
     #get user info by token in session
     token = request.session.get('token')
-    response = requests.get(API_BASE_URL + 'user/', headers={'Authorization': 'Token ' + token})
+    response = requests.post(API_BASE_URL + 'user/', data={'token': token})
     if response.status_code == 200:
         user = response.json()
         return render(request, 'profile.html', {'user': user})
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
     
+    
+
+def updateP(request):
+    username = request.user.username
+    email = request.user.email
+    profile_pic = request.user.profile_pic
+
+    data = {'username': username, 'email': email, 'profile_pic': profile_pic}
+
+    return render(request, 'updateProfile.html', data)
+    
+    
+    
+    
+def updateProfile(request):
+    if request.method == 'POST':
+        token = request.session.get('token')
+        username = data.get('username')
+        email = data.get('email')
+        profile_pic = data.get('profile_pic')
+        data = {'username': username, 'email': email}
+        if profile_pic:
+            data['profile_pic'] = profile_pic
+        response = requests.post(API_BASE_URL + 'updateuser/', headers={'Authorization': 'Token ' + token}, data=data)
+        if response.status_code == 200:
+            return render(request, 'profile.html', {'success': 'Profile updated successfully'})
+        else:
+            return render(request, 'profile.html', {'error': 'Error updating profile'})
+    return render(request, 'profile.html', {'error': 'Invalid request'})
