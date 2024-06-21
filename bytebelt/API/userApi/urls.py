@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser
+from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing
 
 urlpatterns = [
     path('users/', UserListCreate.as_view(), name='user-list-create'),
@@ -11,5 +11,7 @@ urlpatterns = [
     path('ChangePassword/', ChangePassword.as_view(), name='change-password'),
     path('user/', UserInfo.as_view(), name='user-info'),
     path('updateuser/', UpdateUser.as_view(), name='update-user'),
+    path('users/<uuid:pk>/followers/', GetAllFollowers.as_view(), name='get-all-followers'),
+    path('users/<uuid:pk>/followings/', GetAllFollowing.as_view(), name='get-all-following'),
 
 ]

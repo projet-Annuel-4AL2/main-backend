@@ -32,7 +32,11 @@ def home(request):
     if response.status_code == 200 and user.status_code == 200:
         users = response.json()
         user = user.json()
-        return render(request, 'home.html', {'users': users , 'user': user})
+        followers = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
+        followers_info = followers.json()
+        followings = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
+        followings_info = followings.json()
+        return render(request, 'home.html', {'users': users , 'user': user , 'followers': followers_info , 'followings': followings_info})
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch users'})
     

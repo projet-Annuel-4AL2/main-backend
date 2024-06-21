@@ -75,6 +75,20 @@ class AddFollower(APIView):
         follower = get_object_or_404(CustomUser, pk=request.data['follower_id'])
         user.followers.add(follower)
         return Response({'status': 'follower added'}, status=status.HTTP_200_OK)
+
+class GetAllFollowers(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        followers = user.followers.all()
+        return Response({'followers': UserSerializer(followers, many=True).data}, status=status.HTTP_200_OK)
+
+class GetAllFollowing(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        following = user.following.all()
+        return Response({'followings': UserSerializer(following, many=True).data}, status=status.HTTP_200_OK)
     
 class UserAuthToken(ObtainAuthToken):
     permission_classes = [AllowAny]
