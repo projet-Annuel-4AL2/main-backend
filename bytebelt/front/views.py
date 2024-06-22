@@ -34,7 +34,8 @@ def home(request):
             'users': user_data.get('users'),
             'user': user_data.get('user'),
             'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
+            'followings': user_data.get('followings'),
+            'groupes': user_data.get('groupes')
         })
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch user data'})
@@ -89,12 +90,14 @@ def get_user_data(request):
         user = user_response.json()
         followers_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
         followings_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
+        groupes = requests.get(API_BASE_URL + 'groupe/')
         if followers_response.status_code == 200 and followings_response.status_code == 200:
             return {
                 'users': users,
                 'user': user,
                 'followers': followers_response.json(),
-                'followings': followings_response.json()
+                'followings': followings_response.json(),
+                'groupes': groupes.json()
             }
     return None
 
@@ -118,10 +121,11 @@ def login(request):
                     request.session['token'] = token
                     user_data = get_user_data(request)
                     return render(request, 'home.html' ,{
-                                 'users': user_data.get('users') ,
+                                  'users': user_data.get('users') ,
                                   'user': user_data.get('user') , 
                                   'followers': user_data.get('followers') ,
-                                  'followings': user_data.get('followings')}
+                                  'followings': user_data.get('followings'),
+                                  'groupes': user_data.get('groupes')},
                                   )
                     
                 else:
@@ -154,7 +158,9 @@ def subscribe(request):
                                     'users': user_data.get('users') ,
                                     'user': user_data.get('user') , 
                                     'followers': user_data.get('followers') ,
-                                    'followings': user_data.get('followings')   
+                                    'followings': user_data.get('followings'),
+                                    'groupes': user_data.get('groupes')
+  
                 })
             else:
                 error = response.json().get('error', 'Error registering user via API')
@@ -169,13 +175,17 @@ def get_user_data(request):
     user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
     if user_response.status_code == 200:
         user = user_response.json()
+        users = requests.get(API_BASE_URL + 'users/')
         followers_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
         followings_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
-        if followers_response.status_code == 200 and followings_response.status_code == 200:
+        groupes = requests.get(API_BASE_URL + 'groupe/')
+        if followers_response.status_code == 200 and followings_response.status_code == 200 and users.status_code == 200 and groupes.status_code == 200:
             return {
+                'users': users.json(),
                 'user': user,
                 'followers': followers_response.json(),
-                'followings': followings_response.json()
+                'followings': followings_response.json(),
+                'groupes': groupes.json()
             }
     return None
 
@@ -228,3 +238,16 @@ def updateProfile(request):
         else:
             return render(request, 'profile.html', {'error': 'Error updating profile'})
     return render(request, 'profile.html', {'error': 'Invalid request'})
+
+
+def groupInfo(request , name):
+    response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
+    groupe_id = response.json().get('id')
+    posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
+    if response.status_code == 200 and posts.status_code == 200:
+        groupe = response.json()
+        posts = posts.json()
+        return render(request, 'groupInfo.html', {'groupe': groupe , 'posts': posts})
+    else:
+        return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
+    

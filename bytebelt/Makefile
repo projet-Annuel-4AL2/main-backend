@@ -44,6 +44,9 @@ postgres-tables:
 postgres-show-users:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
     docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser\""
+postgres-show-groupe:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupe\""
 
 postgres-users-colonnes:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
@@ -71,6 +74,3 @@ help:
 
 
 
- UPDATE "userApi_customuser"
-SET profile_pic = 'profile_pics/Capture_decran_2024-06-20_a_12.05.43.png'
-WHERE id = '55e96354-3ddc-430e-92b4-119f7b1f5ca4';

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="gap-1 px-6 flex flex-1 justify-center py-5">
+  <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+    <!-- Section pour les informations des personnes du groupe -->
+    <div class="flex flex-col items-center py-4">
+      <img src="{{ groupe.groupe_pic }}" alt="Photo de groupe" class="rounded-full w-32 h-32 object-cover">
+      <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ groupe.name }}</h2>
+      <p class="text-[#CBCBCB]">{{ groupe.description }}</p>
+    </div>
+    <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="p-4 @container">
+            <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
+              <div
+                class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                style='background-image: url("https://cdn.usegalileo.ai/sdxl10/e741ad76-084a-456f-bd42-047b9c7c8b6b.png");'
+              ></div>
+              <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+                <p class="text-[#CBCBCB] text-sm font-normal leading-normal">Mar 04 at 2:14 PM</p>
+                <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">Brandon Morton</p>
+                <div class="flex items-end gap-3 justify-between">
+                  <div class="flex flex-col gap-1">
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                      Design Shot is an invitation to ponder on design as a living entity, capable of embodying and influencing the flow of thoughts and sensations in an
+                      ever-changing reality...
+                    </p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">10k likes 2.2k shares 351 comments</p>
+                  </div>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
+                  >
+                    <span class="truncate">...</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 @container">
+              <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/e741ad76-084a-456f-bd42-047b9c7c8b6b.png");'
+                ></div>
+                <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">Mar 04 at 2:14 PM</p>
+                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">Brandon Morton</p>
+                  <div class="flex items-end gap-3 justify-between">
+                    <div class="flex flex-col gap-1">
+                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                        Design Shot is an invitation to ponder on design as a living entity, capable of embodying and influencing the flow of thoughts and sensations in an
+                        ever-changing reality...
+                      </p>
+                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">10k likes 2.2k shares 351 comments</p>
+                    </div>
+                    <button
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
+                    >
+                      <span class="truncate">...</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 @container">
+              <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
+                <div
+                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/e741ad76-084a-456f-bd42-047b9c7c8b6b.png");'
+                ></div>
+                <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">Mar 04 at 2:14 PM</p>
+                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">Brandon Morton</p>
+                  <div class="flex items-end gap-3 justify-between">
+                    <div class="flex flex-col gap-1">
+                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                        Design Shot is an invitation to ponder on design as a living entity, capable of embodying and influencing the flow of thoughts and sensations in an
+                        ever-changing reality...
+                      </p>
+                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">10k likes 2.2k shares 351 comments</p>
+                    </div>
+                    <button
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
+                    >
+                      <span class="truncate">...</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div
+  </div>
+</div>
+{% endblock %}

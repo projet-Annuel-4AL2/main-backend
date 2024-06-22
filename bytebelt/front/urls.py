@@ -16,4 +16,5 @@ urlpatterns = [
     path('follow/<uuid:pk>/', views.userDetail, name='follow'),
     path('feed/', views.feed, name='feed'),
     path('explorer/', views.explorer, name='explorer'),
+    path('group/<name>/', views.groupInfo, name='group'),
 ]
