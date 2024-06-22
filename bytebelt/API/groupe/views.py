@@ -57,7 +57,7 @@ class GetAllPostForGroupeView(APIView):
             groupe = Groupe.objects.get(id=groupe_id)
         except Groupe.DoesNotExist:
             raise Http404
-        publications = groupe.groupepublication_set.all()
+        publications = groupe.groupepublication_set.all().order_by('-created_at')
         serializer = GroupePublicationSerializer(publications, many=True)
         return Response(serializer.data)
 

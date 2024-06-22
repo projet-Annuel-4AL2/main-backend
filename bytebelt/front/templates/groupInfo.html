@@ -78,8 +78,15 @@
 
             },
             success: function(response) {
-                //recharger la page sans que l'utilisateur ne le sache
-                location.reload();
+                //recharger juste la div qui contient les posts
+                var scrollTop = $(window).scrollTop();
+
+                $('.layout-content-container').load(location.href + ' .layout-content-container', function() {
+                    // Restaurer la position de défilement après le rechargement
+                    $(window).scrollTop(scrollTop);
+                });
+
+                
                 
             },
             error: function(xhr, status, error) {
