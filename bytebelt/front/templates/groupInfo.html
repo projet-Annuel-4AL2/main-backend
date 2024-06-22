@@ -62,6 +62,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 
+    
+
     function likePost(postId, userId) {
         var url = 'http://localhost:8000/api/groupe/publications/' + postId + '/like/';
         
@@ -95,6 +97,7 @@
                 console.log(xhr.responseText);
             }
         });
+
     }
 
 

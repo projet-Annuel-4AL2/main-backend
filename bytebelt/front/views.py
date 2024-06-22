@@ -247,10 +247,18 @@ def groupInfo(request , name):
     posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
     token = request.session.get('token')
     user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
+    users_response = requests.get(API_BASE_URL + 'users/')
     if response.status_code == 200 and posts.status_code == 200:
         groupe = response.json()
         posts = posts.json()
-        return render(request, 'groupInfo.html', {'groupe': groupe , 'posts': posts , 'user_id': user_id})
+        users = users_response.json()
+        user_id_to_username = {user['id']: user['username'] for user in users}
+        for post in posts:
+            if post['author'] in user_id_to_username:
+                post['author'] = user_id_to_username[post['author']]
+
+        user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
+        return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id})
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
 

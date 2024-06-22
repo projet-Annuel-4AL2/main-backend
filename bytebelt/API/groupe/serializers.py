@@ -13,6 +13,7 @@ class GroupeSerializer(serializers.ModelSerializer):
 class GroupePublicationSerializer(serializers.ModelSerializer):
     likes = UserSerializer(read_only=True, many=True)
     comments = UserSerializer(read_only=True, many=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
 
     class Meta:
         model = GroupePublication
