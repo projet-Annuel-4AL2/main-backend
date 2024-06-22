@@ -25,21 +25,50 @@ def token_required(view_func):
 
 @token_required
 def home(request):
-    #envoyer tous users
-    token = request.session.get('token')
-    response = requests.get(API_BASE_URL + 'users/')
-    user = requests.post(API_BASE_URL + 'user/', data={'token': token})
-    if response.status_code == 200 and user.status_code == 200:
-        users = response.json()
-        user = user.json()
-        followers = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
-        followers_info = followers.json()
-        followings = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
-        followings_info = followings.json()
-        return render(request, 'home.html', {'users': users , 'user': user , 'followers': followers_info , 'followings': followings_info})
-    else:
-        return render(request, 'home.html', {'error': 'Unable to fetch users'})
+    if not request.session.get('token'):
+        return redirect('login')
     
+    user_data = get_user_data(request)
+    if user_data:
+        return render(request, 'home.html', {
+            'users': user_data.get('users'),
+            'user': user_data.get('user'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'home.html', {'error': 'Unable to fetch user data'})
+    
+def feed(request):
+    if not request.session.get('token'):
+        return redirect('login')
+    
+    user_data = get_user_data(request)
+    if(user_data):
+        return render(request, 'feed.html', {
+            'users': user_data.get('users'),
+            'user': user_data.get('user'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'feed.html', {'error': 'Unable to fetch user data'})
+    
+def explorer(request):
+    if not request.session.get('token'):
+        return redirect('login')
+    
+    user_data = get_user_data(request)
+    if user_data:
+        return render(request, 'explorer.html', {
+            'users': user_data.get('users'),
+            'user': user_data.get('user'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'explorer.html', {'error': 'Unable to fetch user data'})
+
 @token_required
 def userDetail (request , pk):
     response = requests.get(API_BASE_URL + 'users/' + str(pk) + '/')
@@ -50,6 +79,25 @@ def userDetail (request , pk):
         return render(request, 'userDetail.html', {'user': user , 'user_info': user_info})
     else:
         redirect('home')
+        
+def get_user_data(request):
+    token = request.session.get('token')
+    user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+    response = requests.get(API_BASE_URL + 'users/')
+    if user_response.status_code == 200 and response.status_code == 200:
+        users = response.json()
+        user = user_response.json()
+        followers_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
+        followings_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
+        if followers_response.status_code == 200 and followings_response.status_code == 200:
+            return {
+                'users': users,
+                'user': user,
+                'followers': followers_response.json(),
+                'followings': followings_response.json()
+            }
+    return None
+
         
 def login(request):
     if request.session.get('token'):
@@ -68,7 +116,13 @@ def login(request):
                 token = response.json().get('token')
                 if token:
                     request.session['token'] = token
-                    return render(request, 'home.html')
+                    user_data = get_user_data(request)
+                    return render(request, 'home.html' ,{
+                                 'users': user_data.get('users') ,
+                                  'user': user_data.get('user') , 
+                                  'followers': user_data.get('followers') ,
+                                  'followings': user_data.get('followings')}
+                                  )
                     
                 else:
                     return render(request, 'login.html', {'error': 'Invalid credentials'})
@@ -95,7 +149,13 @@ def subscribe(request):
             response = requests.post(API_BASE_URL + 'register/', data={'username': username, 'email': email, 'password': password})
             if response.status_code == 201:
                 request.session['token'] = response.json().get('token')
-                return render(request, 'home.html')
+                user_data = get_user_data(request)
+                return render(request, 'home.html' ,{
+                                    'users': user_data.get('users') ,
+                                    'user': user_data.get('user') , 
+                                    'followers': user_data.get('followers') ,
+                                    'followings': user_data.get('followings')   
+                })
             else:
                 error = response.json().get('error', 'Error registering user via API')
                 return render(request, 'register.html', {'error': error})
@@ -103,6 +163,22 @@ def subscribe(request):
             return render(request, 'register.html', {'error': 'Error connecting to API'})
     
     return render(request, 'register.html')
+
+def get_user_data(request):
+    token = request.session.get('token')
+    user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+    if user_response.status_code == 200:
+        user = user_response.json()
+        followers_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followers/')
+        followings_response = requests.get(API_BASE_URL + 'users/' + str(user['id']) + '/followings/')
+        if followers_response.status_code == 200 and followings_response.status_code == 200:
+            return {
+                'user': user,
+                'followers': followers_response.json(),
+                'followings': followings_response.json()
+            }
+    return None
+
 
 def resetPassword(request):
     return render(request, 'resetPassword.html')

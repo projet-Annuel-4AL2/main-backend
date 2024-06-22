@@ -14,4 +14,6 @@ urlpatterns = [
     path('updateProfile/', views.updateProfile, name='updateProfile'),
     path('updateP/', views.updateP, name='updateP'),
     path('follow/<uuid:pk>/', views.userDetail, name='follow'),
+    path('feed/', views.feed, name='feed'),
+    path('explorer/', views.explorer, name='explorer'),
 ]

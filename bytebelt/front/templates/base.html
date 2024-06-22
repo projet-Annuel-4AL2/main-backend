@@ -34,11 +34,12 @@
                   <div class="flex items-center gap-9">
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">About</a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Accessibility</a>
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Help Center</a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a>
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Advertising</a>
                     {% if request.session.token %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'home' %}">Home </a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'feed' %}">Feed </a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'explorer' %}">Explorer </a>
+
                     {% else %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
