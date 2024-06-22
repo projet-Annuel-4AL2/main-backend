@@ -23,7 +23,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class UserListCreate(generics.ListCreateAPIView):
     permission_classes = [AllowAny] 
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().order_by('-created_at')
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter

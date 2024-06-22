@@ -81,14 +81,9 @@
             },
             success: function(response) {
                 //recharger juste la div qui contient les posts
-                var scrollTop = $(window).scrollTop();
 
-                $('.layout-content-container').load(location.href + ' .layout-content-container', function() {
-                    // Restaurer la position de défilement après le rechargement
-                    $(window).scrollTop(scrollTop);
-                });
+                $('.layout-content-container').load(location.href + ' .layout-content-container');
 
-                
                 
             },
             error: function(xhr, status, error) {
