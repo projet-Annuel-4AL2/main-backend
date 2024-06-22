@@ -24,11 +24,15 @@ class DockerImplementation(Implementation):
             return None
 
     @staticmethod
-    def _create_temp_dir(container: Container, source_path: str, dest_path: str) -> None:
+    def _create_temp_dir(container: Container, source_path: str, dest_path: str) -> str:
         # Create a temp directory for source code in container
-        if os.path.isfile(source_path):
-            dest_path += '/src/'
         container.exec_run(['mkdir', dest_path])
+
+        if os.path.isfile(source_path):
+            dest_path = f'{dest_path}/src/'
+            container.exec_run(['mkdir', dest_path])
+
+        return dest_path
 
     def copy(self, container_name: str, source_path: str, dest_path='/tmp_code') -> None:
         if not os.path.exists(source_path):
@@ -38,7 +42,7 @@ class DockerImplementation(Implementation):
         if container is None:
             raise ValueError(f'Container {container_name} does not exist')
 
-        self._create_temp_dir(container, source_path, dest_path)
+        dest_path = self._create_temp_dir(container, source_path, dest_path)
 
         # Creating a buffer to read tar binary data into memory
         with io.BytesIO() as buffer:
