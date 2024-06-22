@@ -48,6 +48,10 @@ postgres-show-groupe:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupe\""
 
+postgres-show-groupe-publication:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupepublication\""
+
 postgres-users-colonnes:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "\d \"userApi_customuser\""

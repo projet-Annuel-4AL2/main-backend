@@ -11,7 +11,6 @@ class GroupeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class GroupePublicationSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
     likes = UserSerializer(read_only=True, many=True)
     comments = UserSerializer(read_only=True, many=True)
 
