@@ -13,5 +13,5 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('updateProfile/', views.updateProfile, name='updateProfile'),
     path('updateP/', views.updateP, name='updateP'),
-
+    path('follow/<uuid:pk>/', views.userDetail, name='follow'),
 ]

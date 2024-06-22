@@ -40,7 +40,17 @@ def home(request):
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch users'})
     
-
+@token_required
+def userDetail (request , pk):
+    response = requests.get(API_BASE_URL + 'users/' + str(pk) + '/')
+    user_info = requests.post(API_BASE_URL + 'user/', data={'token': request.session.get('token')})
+    if response.status_code == 200 and user_info.status_code == 200:
+        user = response.json()
+        user_info = user_info.json()        
+        return render(request, 'userDetail.html', {'user': user , 'user_info': user_info})
+    else:
+        redirect('home')
+        
 def login(request):
     if request.session.get('token'):
         return redirect('home')

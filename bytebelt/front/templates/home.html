@@ -83,7 +83,7 @@
                           ></path>
                         </svg>
                       </div>
-                      <p class="text-[#FFFFFF] text-sm font-medium leading-normal">{{ follower.username|default:'test' }}</p>
+                      <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'follow' follower.id %}">{{ follower.username}}</a>
                     </div>
                   {% endfor %}
                 </div>
