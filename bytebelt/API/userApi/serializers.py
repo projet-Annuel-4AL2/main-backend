@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'username', 'password', 'is_active' ,'created_at', 'updated_at' , 'role' ,'profile_pic', 'followers']
+        fields = ['id', 'username', 'email', 'username', 'password', 'is_active' ,'created_at', 'updated_at' , 'role' ,'profile_pic', 'followers' , 'bio']
         read_only_fields = [ 'is_active','followers']
     
     def validate_password(self , value):

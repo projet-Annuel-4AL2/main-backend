@@ -13,5 +13,9 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('updateProfile/', views.updateProfile, name='updateProfile'),
     path('updateP/', views.updateP, name='updateP'),
-
+    path('follow/<uuid:pk>/', views.userDetail, name='follow'),
+    path('feed/', views.feed, name='feed'),
+    path('explorer/', views.explorer, name='explorer'),
+    path('group/<name>/', views.groupInfo, name='group'),
+    path('group/<name>/post/', views.groupPost, name='groupPost')
 ]
