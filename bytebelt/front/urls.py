@@ -17,4 +17,5 @@ urlpatterns = [
     path('feed/', views.feed, name='feed'),
     path('explorer/', views.explorer, name='explorer'),
     path('group/<name>/', views.groupInfo, name='group'),
+    path('group/<name>/post/', views.groupPost, name='groupPost')
 ]

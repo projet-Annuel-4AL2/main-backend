@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate , get_user_model , login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 API_BASE_URL = config('API_BASE_URL')
 
@@ -244,10 +245,36 @@ def groupInfo(request , name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
     posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
+    token = request.session.get('token')
+    user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
     if response.status_code == 200 and posts.status_code == 200:
         groupe = response.json()
         posts = posts.json()
-        return render(request, 'groupInfo.html', {'groupe': groupe , 'posts': posts})
+        return render(request, 'groupInfo.html', {'groupe': groupe , 'posts': posts , 'user_id': user_id})
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
+
+def groupPost (request , name):
+    response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
+    groupe_id = response.json().get('id')
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if request.POST.get('image'):
+            image = request.POST.get('image')
+        else:
+            image = None          
+        
+        if content:
+            token = request.session.get('token')
+            user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
+            response = requests.post(API_BASE_URL + 'groupe/publications/create/' + str(groupe_id) + '/', data={'content': content , 'author': str(user_id) , 'groupe': str(groupe_id)})
+            if response.status_code == 201:
+                return redirect('group', name=name)
+            else:
+                messages.error(request, 'Error creating post')
+                return redirect('../', name=name )
+        else:
+            messages.error(request, 'Content is required')
+            return redirect('../', name=name )
     
+    return render(request, 'groupPost.html', {'groupe': response.json()})

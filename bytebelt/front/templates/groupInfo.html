@@ -11,44 +11,88 @@
       <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ groupe.name }}</h2>
       <p class="text-[#CBCBCB]">{{ groupe.description }}</p>
     </div>
+    <div class="text-center mb-4">
+        <a href="{% url 'groupPost' name=groupe.name %}" class="inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Create post</a>
+      </div>
+      {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <div class="gap-1 px-6 flex flex-1 justify-center py-5">
         <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
           <div class="p-4 @container">
-            <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
-                {% for post in posts%}
-              <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+              {% for post in posts %}
+              <div class="flex flex-col items-stretch justify-center gap-1 py-4">
                 <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
-                <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{post.author}}</p>
+                <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
                 <div class="flex items-end gap-3 justify-between">
                   <div class="flex flex-col gap-1">
                     <p class="text-[#CBCBCB] text-base font-normal leading-normal">
                       {{ post.content }}
                     </p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                        {% if post.likes.all %}
-                          {{ post.likes.count }} likes
-                        {% else %}
-                          0 likes
-                        {% endif %}
-                        {% if post.comments.all %}
-                          {{ post.comments.count }} comments
-                        {% else %}
-                          0 comments
-                        {% endif %}
-                      </p>                  </div>
-                  <button
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
-                  >
+                    <div class="flex items-center gap-2">
+                        <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}' )" class="flex items-center justify-center gap-1">
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
+                          {{ post.likes|length  }} likes
+                        </button>
+                        <button onclick="commentPost({{ post.id }})" class="flex items-center justify-center gap-1">
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
+                          {{ post.comments.count|length }} comments
+                    </div>
+                  </div>
+                  <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
                     <span class="truncate">...</span>
                   </button>
                 </div>
               </div>
-                {% endfor %}
+              {% endfor %}
             </div>
           </div>
-          
+        </div>
       </div>
-    </div>
   </div>
 </div>
 {% endblock %}
+{% block extra_js %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+    function likePost(postId, userId) {
+        var url = 'http://localhost:8000/api/groupe/publications/' + postId + '/like/';
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                'author': userId,
+                'groupe': '{{ groupe.id }}'
+
+
+            },
+            success: function(response) {
+                //recharger la page sans que l'utilisateur ne le sache
+                location.reload();
+                
+            },
+            error: function(xhr, status, error) {
+                //alert('An error occurred: ' + xhr.responseText);
+                //envoyer erreur dans la console
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+
+
+</script>
+
+
+{% endblock%}

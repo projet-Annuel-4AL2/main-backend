@@ -48,6 +48,9 @@ postgres-show-groupe:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupe\""
 
+postgres-show-like:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupepublication_likes\""
 postgres-show-groupe-publication:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
 	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupepublication\""
