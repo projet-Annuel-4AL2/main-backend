@@ -203,6 +203,11 @@ def get_user_data(request):
             }
     return None
 
+#affficher tous les utilisateurs
+def get_all_users_view(request):
+    user_get_data = get_user_data(request)
+    if user_get_data:
+        return render(request, 'users_.html', {'users': user_get_data.get('users') , 'user': user_get_data.get('user') , 'followers': user_get_data.get('followers') , 'followings': user_get_data.get('followings')})
 
 def resetPassword(request):
     return render(request, 'resetPassword.html')
