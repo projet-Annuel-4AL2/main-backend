@@ -8,12 +8,12 @@
                 <div class="flex gap-4 flex-col items-start">
                   <div
                     class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-                    style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+                    style='background-image: url("{{ user_.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                   ></div>
                   <div class="flex flex-col justify-center">
-                    <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user.name }}</p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ user.following|length }} Following</p>
+                    <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user_.name }}</p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user_.bio|default:"don't have any bio" }}</p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user_.followers|length }} Followers {{ user_.following|length }} Following</p>
                   </div>
                 </div>
               </div>

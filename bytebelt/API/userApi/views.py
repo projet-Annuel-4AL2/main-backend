@@ -68,6 +68,20 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     
+
+class GetUserByName(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter = {}
+        username = self.kwargs.get('username', None)
+        if username is not None:
+            filter['username'] = username
+        return get_object_or_404(queryset, **filter)
+    
 class AddFollower(APIView):
     permission_classes = [AllowAny]
     def post(self, request, pk):

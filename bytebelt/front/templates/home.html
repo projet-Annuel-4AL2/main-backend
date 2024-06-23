@@ -83,7 +83,7 @@
                           ></path>
                         </svg>
                       </div>
-                      <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'follow' follower.id %}">{{ follower.username}}</a>
+                      <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'profil' follower.username %}">{{ follower.username}}</a>
                     </div>
                   {% endfor %}
                 </div>
@@ -94,12 +94,14 @@
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex w-full overflow-hidden px-4 py-3">
               <div class="flex min-h-min flex-row items-start justify-start gap-3">
-                {% for user in users%}
+                {% for user in users|slice:":8"%}
                 <div class="flex flex-1 flex-col justify-center gap-2 w-24 text-left">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-[3/5] bg-cover rounded-xl"
-                    style='background-image: url("{{ user.profile_pic }}");'
-                  ></div>
+                  <a href="{% url 'profil' user.username %}">
+                    <div
+                        class="w-full bg-center bg-no-repeat aspect-[3/5] bg-cover rounded-xl"
+                        style='background-image: url("{{ user.profile_pic }}");'
+                    ></div>
+                </a>
                   <p class="text-[#FFFFFF] text-[13px] font-normal leading-normal">{{ user.username }}</p>
                 </div>
                 {% endfor %}

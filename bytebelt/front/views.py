@@ -82,6 +82,17 @@ def userDetail (request , pk):
     else:
         redirect('home')
         
+@token_required
+def userInfos (request , username):
+    response = requests.get(API_BASE_URL + 'users/' + username + '/')
+    user_info = requests.post(API_BASE_URL + 'user/', data={'token': request.session.get('token')})
+    if response.status_code == 200 and user_info.status_code == 200:
+        user = response.json()
+        user_info = user_info.json()
+        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info})
+    else:
+        redirect('home')
+        
 def get_user_data(request):
     token = request.session.get('token')
     user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
