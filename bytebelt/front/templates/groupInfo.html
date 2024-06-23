@@ -4,68 +4,67 @@
 
 {% block content %}
 <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-  <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-    <!-- Section pour les informations des personnes du groupe -->
-    <div class="flex flex-col items-center py-4">
-      <img src="{{ groupe.groupe_pic }}" alt="Photo de groupe" class="rounded-full w-32 h-32 object-cover">
-      <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ groupe.name }}</h2>
-      <p class="text-[#CBCBCB]">{{ groupe.description }}</p>
-    </div>
-    <div class="text-center mb-4">
-        <a href="{% url 'groupPost' name=groupe.name %}" class="inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Create post</a>
-      </div>
-      {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <div class="gap-1 px-6 flex flex-1 justify-center py-5">
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-          <div class="p-4 @container">
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-              {% for post in posts %}
-              <div class="flex flex-col items-stretch justify-center gap-1 py-4">
-                <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
-                <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
-                <div class="flex items-end gap-3 justify-between">
-                  <div class="flex flex-col gap-1">
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                        {{ post.content|truncatechars:600 }}
-                    </p>
-                    <div class="flex items-center gap-2">
-                        <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}' )" class="flex items-center justify-center gap-1">
-                          <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
-                          <span style="color: #808080;">{{ post.likes|length }} likes</span>
-
-                        </button>
-                        <button onclick="commentPost({{ post.id }})" class="flex items-center justify-center gap-1">
-                          <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
-                          <span style="color: #808080;">{{ post.comments.count|length }} comments</span>
-
-                    </div>
-                  </div>
-                  <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
-                    <a href="{% url 'groupPostInfo' name=groupe.name id=post.id %}">more</a>
+  <div class="layout-content-container flex flex-row max-w-[1200px] flex-1">
+    <!-- Main content (posts) -->
+    <div class="flex flex-col flex-[3] p-4 @container">
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+        {% for post in posts %}
+        <div class="flex flex-col items-stretch justify-center gap-1 py-4 bg-zinc-800 rounded p-4">
+          <div class="flex flex-col items-stretch justify-center gap-1 py-4">
+            <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+            <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
+            <div class="flex items-end gap-3 justify-between">
+              <div class="flex flex-col gap-1">
+                <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                  {{ post.content|truncatechars:600 }}
+                </p>
+                <div class="flex items-center gap-2">
+                  <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}')" class="flex items-center justify-center gap-1">
+                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path>
+                    </svg>
+                    <span style="color: #808080;">{{ post.likes|length }} likes</span>
+                  </button>
+                  <button onclick="commentPost({{ post.id }})" class="flex items-center justify-center gap-1">
+                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path>
+                    </svg>
+                    <span style="color: #808080;">{{ post.comments.count|length }} comments</span>
                   </button>
                 </div>
               </div>
-              {% endfor %}
+              <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
+                <a href="{% url 'groupPostInfo' name=groupe.name id=post.id %}">more</a>
+              </button>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
+    </div>
+    
+    <!-- Sidebar (group info and create post) -->
+    <div class="flex flex-col items-center p-4 w-72 ml-4 bg-zinc-800 rounded-lg" style="max-height: 500px; overflow-y: auto;">      <img src="{{ groupe.groupe_pic }}" alt="Photo de groupe" class="rounded-full w-32 h-32 object-cover">
+      <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ groupe.name }}</h2>
+      <p class="text-[#CBCBCB]">{{ groupe.description }}</p>
+      <div class="text-center my-4">
+        <a href="{% url 'groupPost' name=groupe.name %}" class="inline-block bg-gray-900 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Create post</a>
+      </div>
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}
-{% block extra_js %}
 
+{% block extra_js %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-
-    
-
     function likePost(postId, userId) {
         var url = 'http://localhost:8000/api/groupe/publications/' + postId + '/like/';
         
@@ -78,28 +77,14 @@
             data: {
                 'author': userId,
                 'groupe': '{{ groupe.id }}'
-
-
             },
             success: function(response) {
-                //recharger juste la div qui contient les posts
-
                 $('.layout-content-container').load(location.href + ' .layout-content-container');
-
-                
             },
             error: function(xhr, status, error) {
-                //alert('An error occurred: ' + xhr.responseText);
-                //envoyer erreur dans la console
                 console.log(xhr.responseText);
             }
         });
-
     }
-
-
-
 </script>
-
-
-{% endblock%}
+{% endblock %}

@@ -326,6 +326,8 @@ def groupPostInfo(request, name, id):
         for comment in comments:
             if comment['author'] in user_id_to_username:
                 comment['author'] = user_id_to_username[comment['author']]
+        if post['author'] in user_id_to_username:
+            post['author'] = user_id_to_username[post['author']]
                 
         return render(request, 'postGroupInfo.html', {'groupe': response.json(), 'post': post, 'user': user , 'comments': comments})
     else:
