@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Groupe , GroupePublication , CommentPublication
-from .serializers import GroupeSerializer , GroupePublicationSerializer
+from .serializers import GroupeSerializer , GroupePublicationSerializer , CommentPublicationSerializer
 from django.http import Http404
 from rest_framework.permissions import AllowAny
 from API.userApi.models import CustomUser
@@ -92,6 +92,15 @@ class CommentPublicationView(APIView):
         )
         
         return Response({'status': 'comment added'}, status=status.HTTP_200_OK)
+    
+class GetCommentGroupeById(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, publication_id, format=None):
+        publication = get_object_or_404(GroupePublication, id=publication_id)
+        comments = publication.publication.all().order_by('-created_at') 
+        serializer = CommentPublicationSerializer(comments, many=True)
+        return Response(serializer.data)
+  
     
 class GetPublicationGroupeById(APIView):
     permission_classes = [AllowAny]

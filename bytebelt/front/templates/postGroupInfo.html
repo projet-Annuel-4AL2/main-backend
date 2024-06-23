@@ -11,22 +11,22 @@
       <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ post.author }}</h2>
       <p class="text-[#CBCBCB]">{{ post.content }}</p>
     </div>
-    <div class="text-center mb-4">
+    {% comment %} <div class="text-center mb-4">
       <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}' )" class="inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Like</button>
-    </div>
+    </div> {% endcomment %}
     <div class="flex flex-col items-center py-4">
       <h3 class="text-[#FFFFFF] text-lg font-bold mt-2">Comments</h3>
-      <ul>
-        {% for comment in post.comments.all %}
-        <li class="text-[#CBCBCB]">{{ comment.author }}: {{ comment.content }}</li>
+      <ul class="w-full">
+        {% for comment in comments %}
+        <li class="text-[#CBCBCB] bg-gray-800 p-4 rounded mb-2">{{ comment.author }}: {{ comment.content }}</li>
         {% endfor %}
       </ul>
     </div>
     <div class="flex flex-col items-center py-4">
       <h3 class="text-[#FFFFFF] text-lg font-bold mt-2">Add a Comment</h3>
-      <form method="POST" action="">
+      <form method="POST" action="" class="w-full">
         {% csrf_token %}
-        <textarea name="content" class="w-full h-32 p-2 bg-gray-800 text-[#CBCBCB]" placeholder="Write your comment..." required></textarea>
+        <textarea name="content" class="w-full h-32 p-2 bg-gray-800 text-[#CBCBCB] rounded mb-2" placeholder="Write your comment..." required></textarea>
         <button type="submit" class="mt-2 inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Submit</button>
       </form>
     </div>
@@ -51,11 +51,11 @@
                 'groupe': '{{ groupe.id }}'
             },
             success: function(response) {
-                //recharger juste la div qui contient les posts
+                // Recharger juste la div qui contient les posts
                 $('.layout-content-container').load(location.href + ' .layout-content-container');
             },
             error: function(xhr, status, error) {
-                //envoyer erreur dans la console
+                // Envoyer erreur dans la console
                 console.log(xhr.responseText);
             }
         });

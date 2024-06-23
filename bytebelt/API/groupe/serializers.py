@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Groupe, GroupePublication
+from .models import Groupe, GroupePublication , CommentPublication
 from API.userApi.serializers import UserSerializer  
 
 class GroupeSerializer(serializers.ModelSerializer):
@@ -17,4 +17,12 @@ class GroupePublicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupePublication
+        fields = '__all__'
+
+
+class CommentPublicationSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = CommentPublication
         fields = '__all__'

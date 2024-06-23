@@ -320,7 +320,14 @@ def groupPostInfo(request, name, id):
 
     if post.status_code == 200:
         post = post.json()
-        return render(request, 'postGroupInfo.html', {'groupe': response.json(), 'post': post, 'user': user})
+        comments = requests.get(API_BASE_URL + 'groupe/publication/' + str(id) + '/comment/').json()
+        users = requests.get(API_BASE_URL + 'users/')
+        user_id_to_username = {user['id']: user['username'] for user in users.json()}
+        for comment in comments:
+            if comment['author'] in user_id_to_username:
+                comment['author'] = user_id_to_username[comment['author']]
+                
+        return render(request, 'postGroupInfo.html', {'groupe': response.json(), 'post': post, 'user': user , 'comments': comments})
     else:
         return render(request, 'postGroupInfo.html', {'error': 'Unable to fetch post info'})   
     
