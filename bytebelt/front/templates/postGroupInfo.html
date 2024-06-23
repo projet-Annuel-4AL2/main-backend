@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Post Detail{% endblock %}
+
+{% block content %}
+<div class="gap-1 px-6 flex flex-1 justify-center py-5">
+  <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+    <!-- Section pour les informations du post -->
+    <div class="flex flex-col items-center py-4">
+      <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+      <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ post.author }}</h2>
+      <p class="text-[#CBCBCB]">{{ post.content }}</p>
+    </div>
+    <div class="text-center mb-4">
+      <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}' )" class="inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Like</button>
+    </div>
+    <div class="flex flex-col items-center py-4">
+      <h3 class="text-[#FFFFFF] text-lg font-bold mt-2">Comments</h3>
+      <ul>
+        {% for comment in post.comments.all %}
+        <li class="text-[#CBCBCB]">{{ comment.author }}: {{ comment.content }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="flex flex-col items-center py-4">
+      <h3 class="text-[#FFFFFF] text-lg font-bold mt-2">Add a Comment</h3>
+      <form method="POST" action="">
+        {% csrf_token %}
+        <textarea name="content" class="w-full h-32 p-2 bg-gray-800 text-[#CBCBCB]" placeholder="Write your comment..." required></textarea>
+        <button type="submit" class="mt-2 inline-block bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-950 transition-colors">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function likePost(postId, userId) {
+        var url = 'http://localhost:8000/api/groupe/publications/' + postId + '/like/';
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                'author': userId,
+                'groupe': '{{ groupe.id }}'
+            },
+            success: function(response) {
+                //recharger juste la div qui contient les posts
+                $('.layout-content-container').load(location.href + ' .layout-content-container');
+            },
+            error: function(xhr, status, error) {
+                //envoyer erreur dans la console
+                console.log(xhr.responseText);
+            }
+        });
+    }
+</script>
+{% endblock %}

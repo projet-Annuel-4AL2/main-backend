@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Groupe , GroupePublication
+from .models import Groupe , GroupePublication , CommentPublication
 from .serializers import GroupeSerializer , GroupePublicationSerializer
 from django.http import Http404
 from rest_framework.permissions import AllowAny
@@ -77,3 +77,35 @@ class LikePublicationView(APIView):
 
         publication.save()
         return Response({'status': message}, status=status.HTTP_200_OK)
+    
+class CommentPublicationView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, publication_id):
+        publication = get_object_or_404(GroupePublication, id=publication_id)
+        user_id = request.data.get('author')
+        user = get_object_or_404(CustomUser, id=user_id)
+        
+        comment = CommentPublication.objects.create(
+            publication=publication,
+            author=user,
+            content=request.data.get('content')
+        )
+        
+        return Response({'status': 'comment added'}, status=status.HTTP_200_OK)
+    
+class GetPublicationGroupeById(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, publication_id , groupe_name , format=None):
+        try:
+            groupe = Groupe.objects.get(name=groupe_name)
+        except Groupe.DoesNotExist:
+            raise Http404
+        try:
+            publication = groupe.groupepublication_set.get(id=publication_id)
+        except GroupePublication.DoesNotExist:
+            raise Http404
+        serializer = GroupePublicationSerializer(publication)
+        return Response(serializer.data)
+    
+    
+        

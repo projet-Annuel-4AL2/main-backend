@@ -32,20 +32,22 @@
                 <div class="flex items-end gap-3 justify-between">
                   <div class="flex flex-col gap-1">
                     <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                      {{ post.content }}
+                        {{ post.content|truncatechars:600 }}
                     </p>
                     <div class="flex items-center gap-2">
                         <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}' )" class="flex items-center justify-center gap-1">
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
-                          {{ post.likes|length  }} likes
+                          <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
+                          <span style="color: #808080;">{{ post.likes|length }} likes</span>
+
                         </button>
                         <button onclick="commentPost({{ post.id }})" class="flex items-center justify-center gap-1">
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
-                          {{ post.comments.count|length }} comments
+                          <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path></svg>
+                          <span style="color: #808080;">{{ post.comments.count|length }} comments</span>
+
                     </div>
                   </div>
                   <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
-                    <span class="truncate">...</span>
+                    <a href="{% url 'groupPostInfo' name=groupe.name id=post.id %}">more</a>
                   </button>
                 </div>
               </div>

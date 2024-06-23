@@ -12,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+
 
 API_BASE_URL = config('API_BASE_URL')
 
@@ -297,3 +299,28 @@ def groupPost (request , name):
             return redirect('../', name=name )
     
     return render(request, 'groupPost.html', {'groupe': response.json()})
+
+  
+def groupPostInfo(request, name, id):
+    token = request.session.get('token')
+    user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
+    response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
+    post = requests.get(API_BASE_URL + 'groupe/publications/' + name + '/' + str(id) + '/')
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            user_id = user.get('id')
+            publication_id = post.json().get('id')
+            response_comment = requests.post(API_BASE_URL + 'groupe/publications/' + str(publication_id) + '/comment/', data={'content': content, 'author': str(user_id), 'groupe': str(id)})
+            if response_comment.status_code != 201:
+                messages.error(request, 'Error adding comment')
+        else:
+            messages.error(request, 'Content is required')
+
+    if post.status_code == 200:
+        post = post.json()
+        return render(request, 'postGroupInfo.html', {'groupe': response.json(), 'post': post, 'user': user})
+    else:
+        return render(request, 'postGroupInfo.html', {'error': 'Unable to fetch post info'})   
+    
