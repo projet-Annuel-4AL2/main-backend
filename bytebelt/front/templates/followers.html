@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}All users{% endblock %}
+
+{% block content %}
+<div class="px-40 flex flex-1 justify-center py-5">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        {% for follow in followers %}
+      <a href ="{% url 'profil' follow.username%}">
+      <div class="flex items-center gap-4 bg-black px-4 min-h-[72px] py-2 justify-between">
+        <div class="flex items-center gap-4">
+          <div
+            class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-14 w-fit"
+            style='background-image: url("{{ follow.profile_pic }}");'
+          ></div>
+          <div class="flex flex-col justify-center">
+            <p class="text-[#FFFFFF] text-base font-medium leading-normal line-clamp-1">{{ follow.username }}</p>
+            <p class="text-[#CBCBCB] text-sm font-normal leading-normal line-clamp-2">{{ follow.bio }}</p>
+          </div>
+        </div>
+        <div class="shrink-0">
+          <div class="text-[#FFFFFF] flex size-7 items-center justify-center" data-icon="DotsThreeOutline" data-size="24px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path
+                d="M128,96a32,32,0,1,0,32,32A32,32,0,0,0,128,96Zm0,48a16,16,0,1,1,16-16A16,16,0,0,1,128,144ZM48,96a32,32,0,1,0,32,32A32,32,0,0,0,48,96Zm0,48a16,16,0,1,1,16-16A16,16,0,0,1,48,144ZM208,96a32,32,0,1,0,32,32A32,32,0,0,0,208,96Zm0,48a16,16,0,1,1,16-16A16,16,0,0,1,208,144Z"
+              ></path>
+            </svg>
+          </div>
+        </a>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}

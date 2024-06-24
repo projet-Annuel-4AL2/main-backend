@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateGroupeView ,GetAllGroupeView , GetGroupeByName , GetAllPostForGroupeView ,CreatePostForGroupeViewByGroupeId ,LikePublicationView
+from .views import CreateGroupeView ,GetAllGroupeView , GetGroupeByName , GetAllPostForGroupeView ,CreatePostForGroupeViewByGroupeId ,LikePublicationView , CommentPublicationView , GetPublicationGroupeById , GetCommentGroupeById
 
 urlpatterns = [
     path('', GetAllGroupeView.as_view(), name='get-all-groupe'),
@@ -8,4 +8,7 @@ urlpatterns = [
     path('publications/<groupe_id>/', GetAllPostForGroupeView.as_view(), name='get-all-publications-for-groupe'),
     path('publications/create/<groupe_id>/', CreatePostForGroupeViewByGroupeId.as_view(), name='create-publication-for-groupe'),
     path('publications/<int:publication_id>/like/', LikePublicationView.as_view(), name='like-publication'),
+    path('publications/<int:publication_id>/comment/', CommentPublicationView.as_view(), name='comment-publication'),
+    path('publications/<str:groupe_name>/<int:publication_id>/', GetPublicationGroupeById.as_view(), name='get-publication-by-id'),
+    path('publication/<int:publication_id>/comment/', GetCommentGroupeById.as_view(), name='get-comment-by-id')
 ]

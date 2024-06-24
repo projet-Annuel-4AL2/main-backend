@@ -17,7 +17,7 @@ Profile
           <div class="flex flex-col justify-center">
             <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user.name }}</p>
             <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
-            <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ user.following|length }} Following</p>
+            <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ followings.followings|length }} Followings</p>
           </div>
         </div>
       </div>

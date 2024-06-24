@@ -9,7 +9,7 @@
             <h1 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Create post in group 
             
             </h1>
-            <form method="POST" action="{% url 'groupPost' name=groupe.name %}">
+            <form method="POST" action="{% url 'groupPost' name=groupe.name %}"  enctype="multipart/form-data">
                 {% csrf_token %}
                 <div>
                     <label for="content" class="text-[#CBCBCB] text-sm font-normal leading-normal">Content:</label>
