@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CustomUser
+import re
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -13,6 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self , value):
         if len(value) < 8:
             raise serializers.ValidationError("Password must be at least 8 characters long")
+        return value
+    
+    def validate_username(self , value):
+        value =re.sub(r"[ -_!@#$%^&*(){}[\]:;\"'<>?,./]", "", value)
         return value
         
         

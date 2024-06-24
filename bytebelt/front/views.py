@@ -301,30 +301,41 @@ def groupInfo(request , name):
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
 
-def groupPost (request , name):
+def groupPost(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
     if request.method == 'POST':
-
         content = request.POST.get('content')
-        if request.POST.get('image'):
-            image = request.POST.get('image')
-        else:
-            image = None 
-        if content:
+        image = request.FILES.get('image')  # Use FILES to get the uploaded image
 
+        if content:
             token = request.session.get('token')
-            user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
-            response = requests.post(API_BASE_URL + 'groupe/publications/create/' + str(groupe_id) + '/', data={'content': content , 'author': str(user_id) , 'groupe': str(groupe_id) , 'image': image})
-            if response.status_code == 201:
-                return redirect('group', name=name)
+            user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+            if user_response.status_code == 200:
+                user_id = user_response.json().get('id')
+                if user_id:
+                    data = {
+                        'content': content,
+                        'author': str(user_id),
+                        'groupe': str(groupe_id)
+                    }
+                    files = {'image': image} if image else None
+                    response = requests.post(API_BASE_URL + f'groupe/publications/create/{groupe_id}/', data=data, files=files)
+                    if response.status_code == 201:
+                        return redirect('group', name=name)
+                    else:
+                        messages.error(request, f'Error creating post: {response.text}')
+                        return redirect('group', name=name)
+                else:
+                    messages.error(request, 'User ID not found')
+                    return redirect('group', name=name)
             else:
-                messages.error(request, 'Error creating post')
-                return redirect('../', name=name )
+                messages.error(request, 'Invalid token')
+                return redirect('group', name=name)
         else:
             messages.error(request, 'Content is required')
-            return redirect('../', name=name )
-    
+            return redirect('group', name=name)
+
     return render(request, 'groupPost.html', {'groupe': response.json()})
 
   
@@ -371,3 +382,40 @@ def followers(request ):
         return render(request, 'followers.html', {'followers': followers.get('followers')})
     else:
         return render(request, 'followers.html', {'error': 'Unable to fetch followers'})
+    
+    
+def createGroupe(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        token = request.session.get('token')
+        image = request.FILES.get('image')
+
+        if name and description and token and image:
+            user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+            if user_response.status_code == 200:
+                user_id = user_response.json().get('id')
+                if user_id:
+                    files = {'group_pic': image}
+                    data = {
+                        'name': name,
+                        'description': description,
+                        'author': user_id
+                    }
+                    response = requests.post(API_BASE_URL + 'groupe/create/', data=data, files=files)
+                    if response.status_code == 201:
+                        return redirect('home')
+                    else:
+                        messages.error(request, 'Error creating group: {}'.format(response.text))
+                        return render(request, 'createGroupe.html')
+                else:
+                    messages.error(request, 'User ID not found')
+                    return render(request, 'createGroupe.html')
+            else:
+                messages.error(request, 'Invalid token')
+                return render(request, 'createGroupe.html')
+        else:
+            messages.error(request, 'All fields are required')
+            return render(request, 'createGroupe.html')
+
+    return render(request, 'createGroupe.html')

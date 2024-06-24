@@ -126,7 +126,11 @@
     </div>
     
     <!-- Sidebar (group info and create post) -->
-    <div class="flex flex-col items-center p-4 w-72 ml-4 bg-zinc-800 rounded-lg w-10 absolute right-2" style="max-height: 500px; overflow-y: auto;">      <img src="{{ groupe.groupe_pic }}" alt="Photo de groupe" class="rounded-full w-32 h-32 object-cover">
+    <div class="flex flex-col items-center p-4 w-72 ml-4 bg-zinc-800 rounded-lg w-10 absolute right-2" style="max-height: 500px; overflow-y: auto;"> 
+        <div
+        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+        style='background-image: url("{{ groupe.group_pic}}");'
+        ></div>
       <h2 class="text-[#FFFFFF] text-xl font-bold mt-2">{{ groupe.name }}</h2>
       <p class="text-[#CBCBCB]">{{ groupe.description }}</p>
       <div class="text-center my-4">
