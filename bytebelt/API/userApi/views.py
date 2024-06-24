@@ -87,9 +87,26 @@ class AddFollower(APIView):
     def post(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
         follower = get_object_or_404(CustomUser, pk=request.data['follower_id'])
-        user.followers.add(follower)
-        return Response({'status': 'follower added'}, status=status.HTTP_200_OK)
+        
+        if follower in user.followers.all():
+            user.followers.remove(follower)
+            follower.following.remove(user)
+            message = 'Unfollowed'  
+        else:
+            user.followers.add(follower)
+            follower.following.add(user)
+            message = 'Followed'
+            
+        return Response({'status': message}, status=status.HTTP_200_OK)
 
+class GetFollowingById(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        following = user.following.all()
+        return Response({'following': UserSerializer(following, many=True).data}, status=status.HTTP_200_OK)
+    
+    
 class GetAllFollowers(APIView):
     permission_classes = [AllowAny]
     def get(self, request, pk):
