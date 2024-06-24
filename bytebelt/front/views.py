@@ -359,3 +359,15 @@ def groupPostInfo(request, name, id):
     else:
         return render(request, 'postGroupInfo.html', {'error': 'Unable to fetch post info'})   
     
+
+
+def followers(request ):
+    token = request.session.get('token')
+    user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
+    user_id = user.get('id')
+    response = requests.get(API_BASE_URL + 'users/' + user_id + '/followers/')
+    if response.status_code == 200:
+        followers = response.json()
+        return render(request, 'followers.html', {'followers': followers.get('followers')})
+    else:
+        return render(request, 'followers.html', {'error': 'Unable to fetch followers'})
