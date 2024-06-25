@@ -15,13 +15,20 @@ Profile
             style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
           ></div>
           <div class="flex flex-col justify-center">
-            <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user.name }}</p>
+            <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user.username }}</p>
             <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
             <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ followings.followings|length }} Followings</p>
           </div>
         </div>
       </div>
     </div>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
     <div class="pb-3">
       <div class="flex border-b border-[#434343] px-4 gap-8">
         <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={% url 'feed'%}>

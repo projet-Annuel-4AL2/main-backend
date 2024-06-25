@@ -53,9 +53,21 @@ class UpdateUser(APIView):
                 token = Token.objects.get(key=token_key)
                 user = token.user
                 user_info = get_object_or_404(CustomUser, id=user.id)
-                user_info.username = request.data.get('username')
-                user_info.email = request.data.get('email')
-                user_info.profile_pic = request.data.get('profile_pic')
+                username = request.data.get('username')
+                if username is not None:
+                    user_info.username = username
+                email = request.data.get('email')
+                if email is not None:         
+                    user_info.email = request.data.get('email')
+                bio = request.data.get('bio')
+                if bio is not None:
+                    user_info.bio = bio
+                profile_pic = request.data.get('profile_pic')
+                if profile_pic is not None:
+                    user_info.profile_pic = profile_pic
+                password = request.data.get('password')
+                if password is not None:
+                    user_info.set_password(password)
                 user_info.save()
                 return Response({'status': 'user updated'}, status=status.HTTP_200_OK)
             except (Token.DoesNotExist, IndexError):

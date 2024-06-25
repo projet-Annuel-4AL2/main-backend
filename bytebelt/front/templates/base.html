@@ -73,10 +73,17 @@
                     <div
                       class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
                     {% if user.profile_pic %}
-                      style='background-image: url("{{ user.profile_pic }}");'
+                      style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                     {% else %}
-                      style='background-image: url("{{ user_info.profile_pic }}");'
-                    {% endif %}                    ></div>
+                      style='background-image: url("{{ user_info.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+                    {% endif %}                    
+                    ></div>
+                </a>
+                <a href={% url 'logout'%}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M216,40H168a8,8,0,0,0,0,16h40V200H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path>
+                        <path d="M114.34,170.34a8,8,0,0,0,11.32,0l56-56a8,8,0,0,0,0-11.32l-56-56a8,8,0,0,0-11.32,11.32L157.66,104H40a8,8,0,0,0,0,16H157.66l-43.32,43.32A8,8,0,0,0,114.34,170.34Z"></path>
+                      </svg>
                 </a>
                 {% endif %}
                 </div>

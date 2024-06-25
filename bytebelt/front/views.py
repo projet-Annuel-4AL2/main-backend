@@ -141,6 +141,7 @@ def login(request):
         if username and password:
             
             response = requests.post(API_BASE_URL + 'auth/', data={'username': username, 'password': password})
+            
             if response.status_code == 200:
                 token = response.json().get('token')
                 if token:
@@ -261,37 +262,84 @@ def profile(request):
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
     
-    
-
-def updateP(request):
-    username = request.user.username
-    email = request.user.email
-    profile_pic = request.user.profile_pic
-
-    data = {'username': username, 'email': email, 'profile_pic': profile_pic}
-
-    return render(request, 'updateProfile.html', data)
-    
-    
-    
+        
     
 def updateProfile(request):
+    user_data = get_user_data(request)
+
     if request.method == 'POST':
         token = request.session.get('token')
-        username = data.get('username')
-        email = data.get('email')
-        profile_pic = data.get('profile_pic')
-        data = {'username': username, 'email': email}
-        if profile_pic:
-            data['profile_pic'] = profile_pic
-        response = requests.post(API_BASE_URL + 'updateuser/', headers={'Authorization': 'Token ' + token}, data=data)
-        if response.status_code == 200:
-            return render(request, 'profile.html', {'success': 'Profile updated successfully'})
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        profile_pic = request.FILES.get('profile_pic') if 'profile_pic' in request.FILES else None
+
+        data = {
+            'username': username,
+            'email': email,
+        }
+        files = {'profile_pic': profile_pic} if profile_pic else None
+
+        headers = {'Authorization': 'Token ' + token}
+        if files:
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data, files=files)
         else:
-            return render(request, 'profile.html', {'error': 'Error updating profile'})
-    return render(request, 'profile.html', {'error': 'Invalid request'})
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data)
+
+        if response.status_code == 200:
+            return redirect('profile')
+        else:
+            messages.error(request, 'Error updating user')
+            return render(request, 'profile.html', {
+                'users': user_data.get('users'),
+                'user': user_data.get('user'),
+                'followers': user_data.get('followers'),
+                'followings': user_data.get('followings')
+            })
+
+    return render(request, 'updatProfile.html', {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings')
+    })
 
 
+def updatePassword(request):
+    user_data = get_user_data(request)
+    
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        if password and len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long')
+            return render(request, 'updatePassword.html', {
+                'user': user_data.get('user'),
+            })     
+        if password:
+            token = request.session.get('token')
+            headers = {'Authorization': 'Token ' + token}
+            data = {'password': password}
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data)
+
+            if response.status_code == 200:
+                messages.success(request, 'Password updated successfully')
+                return redirect('profile')
+            else:
+                messages.error(request, 'Error updating password')
+                return render(request, 'updatePassword.html', {
+                    'user': user_data.get('user'),
+                })
+        else:
+            messages.error(request, 'Password is required')
+            return render(request, 'updatePassword.html', {
+                'user': user_data.get('user'),
+            })
+      
+    return render(request, 'updatePassword.html', {
+        'user': user_data.get('user'),
+    })
+    
+
+    
 def groupInfo(request , name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
@@ -449,8 +497,8 @@ def userSettings(request , name):
 
 def deleteUser(request , name):
     response = requests.delete(API_BASE_URL + 'users/' + name + '/')
-    del request.session['token']
     if response.status_code == 204:
-        return redirect('login')
+        del request.session['token']
+        return redirect('login')  
     else:
         return render(request, 'userSettings.html', {'error': 'Unable to delete account'})
