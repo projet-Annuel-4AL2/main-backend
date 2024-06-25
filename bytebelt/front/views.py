@@ -431,3 +431,26 @@ def createGroupe(request):
             return render(request, 'createGroupe.html')
 
     return render(request, 'createGroupe.html')
+
+
+
+def userSettings(request , name):
+    user_data = get_user_data(request)
+    if user_data:
+        return render(request, 'userSettings.html', {
+            'users': user_data.get('users'),
+            'user': user_data.get('user'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'userSettings.html', {'error': 'Unable to fetch user data'})
+    
+
+def deleteUser(request , name):
+    response = requests.delete(API_BASE_URL + 'users/' + name + '/')
+    del request.session['token']
+    if response.status_code == 204:
+        return redirect('login')
+    else:
+        return render(request, 'userSettings.html', {'error': 'Unable to delete account'})

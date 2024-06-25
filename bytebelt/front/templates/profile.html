@@ -24,7 +24,7 @@ Profile
     </div>
     <div class="pb-3">
       <div class="flex border-b border-[#434343] px-4 gap-8">
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href="#">
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={% url 'feed'%}>
           <div class="text-[#CBCBCB]" data-icon="ShieldChevron" data-size="24px" data-weight="regular">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
               <path
@@ -34,27 +34,7 @@ Profile
           </div>
           <p class="text-[#CBCBCB] text-sm font-bold leading-normal tracking-[0.015em]">Feed</p>
         </a>
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#FFFFFF] text-[#FFFFFF] gap-1 pb-[7px] pt-2.5" href="#">
-          <div class="text-[#FFFFFF]" data-icon="DiscordLogo" data-size="24px" data-weight="fill">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-              <path
-                d="M247.51,174.39,218,58a16.08,16.08,0,0,0-13-11.88l-36.06-5.92a16.22,16.22,0,0,0-18.26,11.88l-.21.85a4,4,0,0,0,3.27,4.93,155.62,155.62,0,0,1,24.41,5.62,8.2,8.2,0,0,1,5.62,9.7,8,8,0,0,1-10.19,5.64,155.4,155.4,0,0,0-90.8-.1,8.22,8.22,0,0,1-10.28-4.81,8,8,0,0,1,5.08-10.33,156.85,156.85,0,0,1,24.72-5.72,4,4,0,0,0,3.27-4.93l-.21-.85A16.21,16.21,0,0,0,87.08,40.21L51,46.13A16.08,16.08,0,0,0,38,58L8.49,174.39a15.94,15.94,0,0,0,9.06,18.51l67,29.71a16.17,16.17,0,0,0,21.71-9.1l3.49-9.45a4,4,0,0,0-3.27-5.35,158.13,158.13,0,0,1-28.63-6.2,8.2,8.2,0,0,1-5.61-9.67,8,8,0,0,1,10.2-5.66,155.59,155.59,0,0,0,91.12,0,8,8,0,0,1,10.19,5.65,8.19,8.19,0,0,1-5.61,9.68,157.84,157.84,0,0,1-28.62,6.2,4,4,0,0,0-3.27,5.35l3.49,9.45a16.18,16.18,0,0,0,21.71,9.1l67-29.71A15.94,15.94,0,0,0,247.51,174.39ZM92,152a12,12,0,1,1,12-12A12,12,0,0,1,92,152Zm72,0a12,12,0,1,1,12-12A12,12,0,0,1,164,152Z"
-              ></path>
-            </svg>
-          </div>
-          <p class="text-[#FFFFFF] text-sm font-bold leading-normal tracking-[0.015em]">Messages</p>
-        </a>
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href="#">
-          <div class="text-[#CBCBCB]" data-icon="Bell" data-size="24px" data-weight="regular">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-              <path
-                d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"
-              ></path>
-            </svg>
-          </div>
-          <p class="text-[#CBCBCB] text-sm font-bold leading-normal tracking-[0.015em]">Notifications</p>
-        </a>
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href="#">
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={%url 'userSettings' user.username%}>
           <div class="text-[#CBCBCB]" data-icon="ToggleRight" data-size="24px" data-weight="regular">
             <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
               <path
