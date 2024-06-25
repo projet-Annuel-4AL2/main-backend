@@ -288,7 +288,7 @@ def updateProfile(request):
         if response.status_code == 200:
             return redirect('profile')
         else:
-            messages.error(request, 'Error updating user')
+            messages.error(request, 'username or email already exists')
             return render(request, 'profile.html', {
                 'users': user_data.get('users'),
                 'user': user_data.get('user'),
@@ -340,15 +340,19 @@ def updatePassword(request):
     
 
     
-def groupInfo(request , name):
+def groupInfo(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
     posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
     token = request.session.get('token')
-    user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
+    user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
+    user_id = user.get('id')
     users_response = requests.get(API_BASE_URL + 'users/')
+    groupe = response.json()
+    groupe_author_id = groupe.get('author')
+    
+
     if response.status_code == 200 and posts.status_code == 200:
-        groupe = response.json()
         posts = posts.json()
         users = users_response.json()
         user_id_to_username = {user['id']: user['username'] for user in users}
@@ -356,8 +360,7 @@ def groupInfo(request , name):
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
 
-        user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
-        return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id})
+        return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
 
@@ -398,7 +401,50 @@ def groupPost(request, name):
 
     return render(request, 'groupPost.html', {'groupe': response.json()})
 
-  
+
+
+def deleteGroupPost(request, id): 
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    publication = requests.get(API_BASE_URL + 'groupe/publications/info/' + str(id) + '/').json()
+    author_id = publication.get('author')
+    groupe_id = publication.get('groupe')
+    groupe = requests.get(API_BASE_URL + 'groupe/inf/' + str(groupe_id) + '/').json()
+    groupe_name = groupe.get('name')
+    groupe_author = groupe.get('author_id')
+
+    if request.method == 'POST':
+        if author_id == user_id or groupe_author == author_id:
+            response = requests.delete(API_BASE_URL + 'groupe/publications/delete/' + str(id) + '/')
+            if response.status_code == 200:
+                return redirect('group' , name=groupe_name)
+            else:
+                messages.error(request, 'Error deleting post')
+                return redirect('group' , name=groupe_name)
+        else:
+            messages.error(request, 'Unauthorized to delete post')
+            return redirect('group' , name=groupe_name)
+    else:
+        messages.error(request, 'Invalid request')
+        return redirect('group' , name=groupe_name)
+ 
+''' def editGroupPost(request, id):  
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    publication = requests.get(API_BASE_URL + 'groupe/publications/info/' + str(id) + '/').json()
+    author_id = publication.get('author')
+    groupe_id = publication.get('groupe')
+    groupe = requests.get(API_BASE_URL + 'groupe/inf/' + str(groupe_id) + '/').json()
+    groupe_name = groupe.get('name')
+    groupe_author = groupe.get('author_id')
+    
+    if request.method == 'PUT':
+        content = request.POST.get('content')
+        image = request.FILES.get('image')
+        
+        if author_id == user_id or groupe_author == author_id:
+             '''
+    
 def groupPostInfo(request, name, id):
     token = request.session.get('token')
     user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()

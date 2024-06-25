@@ -22,13 +22,13 @@ Profile
         </div>
       </div>
     </div>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
+      {% if messages %}
+            <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
     <div class="pb-3">
       <div class="flex border-b border-[#434343] px-4 gap-8">
         <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={% url 'feed'%}>

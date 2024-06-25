@@ -20,6 +20,7 @@ urlpatterns = [
     path('group/<name>/', views.groupInfo, name='group'),
     path('group/<name>/post/', views.groupPost, name='groupPost'),
     path('group/<name>/post/<id>', views.groupPostInfo, name='groupPostInfo'),
+    path('deleteGroupPost/<id>/', views.deleteGroupPost, name='deleteGroupPost'),
     #path('addComment/<groupe_name>/<id>/', views.addComment, name='addComment'),
     path('users_/', views.get_all_users_view, name='users_'),
     path('followers/', views.followers, name='followers'),
