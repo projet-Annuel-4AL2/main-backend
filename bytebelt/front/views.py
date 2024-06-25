@@ -146,9 +146,15 @@ def login(request):
                 if token:
                     request.session['token'] = token
                     user_data = get_user_data(request)
+                    user = user_data.get('user')
+                    users = user_data.get('users')
+                    for user in users:
+                        if user['id'] == user_data.get('user').get('id'):
+                            users.remove(user)
+                            break
                     return render(request, 'home.html' ,{
-                                  'users': user_data.get('users') ,
-                                  'user': user_data.get('user') , 
+                                  'users': users,
+                                  'user': user,
                                   'followers': user_data.get('followers') ,
                                   'followings': user_data.get('followings'),
                                   'groupes': user_data.get('groupes')},
@@ -180,9 +186,15 @@ def subscribe(request):
             if response.status_code == 201:
                 request.session['token'] = response.json().get('token')
                 user_data = get_user_data(request)
+                user = user_data.get('user')
+                users  = user_data.get('users')
+                for user in users:
+                    if user['id'] == user_data.get('user').get('id'):
+                        users.remove(user)
+                        break
                 return render(request, 'home.html' ,{
-                                    'users': user_data.get('users') ,
-                                    'user': user_data.get('user') , 
+                                    'users': users,
+                                    'user': user,
                                     'followers': user_data.get('followers') ,
                                     'followings': user_data.get('followings'),
                                     'groupes': user_data.get('groupes')
