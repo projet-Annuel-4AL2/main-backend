@@ -99,14 +99,12 @@
                         <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'profil' follower.username %}">{{ follower.username}}</a>
                       </div>
                     {% endfor %}
-                    <div class="flex items-center gap-3 px-3 py-2">
-                      <a  href="{% url 'followers'  %}">
-                      <button
-                        class="flex min-w-[280px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
-                      >
-                        <span class="truncate">View All</span>
-                      </button>
-                    </a>
+                    <div class="flex justify-center items-center gap-3 px-3 py-2">
+                      <a href="{% url 'followers' %}">
+                        <button class="flex min-w-[280px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]">
+                          <span class="truncate">View All</span>
+                        </button>
+                      </a>
                     </div>
                   </div>
                 </div>

@@ -33,6 +33,25 @@ class CreatePostForGroupeViewByGroupeId(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class DeletePostForGroupeView(APIView):
+    permission_classes = [AllowAny]
+    def delete(self, request, publication_id):
+        publication = get_object_or_404(GroupePublication, id=publication_id)
+        publication.delete()
+        return Response({'status': 'publication deleted'}, status=status.HTTP_200_OK)
+
+class EditPostForGroupeView(APIView):
+    permission_classes = [AllowAny]
+    def put(self, request, publication_id):
+        publication = get_object_or_404(GroupePublication, id=publication_id)
+        publication.content = request.data.get('content')
+        image = request.data.get('image')
+        if(image is not None):
+            publication.image = image
+        
+        publication.save()
+        return Response({'status': 'publication edited'}, status=status.HTTP_200_OK)
+
 class GetAllGroupeView(APIView):
     permission_classes = [AllowAny]
     def get(self, request, format=None):
@@ -49,6 +68,15 @@ class GetGroupeByName(APIView):
             raise Http404
         serializer = GroupeSerializer(groupe)
         return Response(serializer.data)
+class GetGroupeById(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, groupe_id, format=None):
+        try:
+            groupe = Groupe.objects.get(id=groupe_id)
+        except Groupe.DoesNotExist:
+            raise Http404
+        serializer = GroupeSerializer(groupe)
+        return Response(serializer.data)
     
 class GetAllPostForGroupeView(APIView):
     permission_classes = [AllowAny]
@@ -60,7 +88,13 @@ class GetAllPostForGroupeView(APIView):
         publications = groupe.groupepublication_set.all().order_by('-created_at')
         serializer = GroupePublicationSerializer(publications, many=True)
         return Response(serializer.data)
-
+class GetPostInfoView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, publication_id, format=None):
+        publication = get_object_or_404(GroupePublication, id=publication_id)
+        serializer = GroupePublicationSerializer(publication)
+        return Response(serializer.data)
+    
 class LikePublicationView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, publication_id):

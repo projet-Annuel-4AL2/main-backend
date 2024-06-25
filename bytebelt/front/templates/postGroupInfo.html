@@ -14,11 +14,11 @@
     {% comment %} si il y'a une image l'affiche {% endcomment %}
     {% if post.image %}
     <div class="flex flex-col items-center py-4">
-      <img src="{{ post.image }}" alt="Post image" class="w-full rounded">
+      <img src="{{ post.image }}" alt="Post image" class="w-full rounded" style="height: 400px; width: 400px;">
     </div>
     <div
-      class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
-      style='background-image: url("{{ post.image|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+      class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-10 w-10"
+      style='background-image: url("{{ post.image|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");' 
      ></div>
     {% endif %}
 

@@ -141,14 +141,21 @@ def login(request):
         if username and password:
             
             response = requests.post(API_BASE_URL + 'auth/', data={'username': username, 'password': password})
+            
             if response.status_code == 200:
                 token = response.json().get('token')
                 if token:
                     request.session['token'] = token
                     user_data = get_user_data(request)
+                    user = user_data.get('user')
+                    users = user_data.get('users')
+                    for user in users:
+                        if user['id'] == user_data.get('user').get('id'):
+                            users.remove(user)
+                            break
                     return render(request, 'home.html' ,{
-                                  'users': user_data.get('users') ,
-                                  'user': user_data.get('user') , 
+                                  'users': users,
+                                  'user': user,
                                   'followers': user_data.get('followers') ,
                                   'followings': user_data.get('followings'),
                                   'groupes': user_data.get('groupes')},
@@ -180,9 +187,15 @@ def subscribe(request):
             if response.status_code == 201:
                 request.session['token'] = response.json().get('token')
                 user_data = get_user_data(request)
+                user = user_data.get('user')
+                users  = user_data.get('users')
+                for user in users:
+                    if user['id'] == user_data.get('user').get('id'):
+                        users.remove(user)
+                        break
                 return render(request, 'home.html' ,{
-                                    'users': user_data.get('users') ,
-                                    'user': user_data.get('user') , 
+                                    'users': users,
+                                    'user': user,
                                     'followers': user_data.get('followers') ,
                                     'followings': user_data.get('followings'),
                                     'groupes': user_data.get('groupes')
@@ -249,46 +262,97 @@ def profile(request):
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
     
-    
-
-def updateP(request):
-    username = request.user.username
-    email = request.user.email
-    profile_pic = request.user.profile_pic
-
-    data = {'username': username, 'email': email, 'profile_pic': profile_pic}
-
-    return render(request, 'updateProfile.html', data)
-    
-    
-    
+        
     
 def updateProfile(request):
+    user_data = get_user_data(request)
+
     if request.method == 'POST':
         token = request.session.get('token')
-        username = data.get('username')
-        email = data.get('email')
-        profile_pic = data.get('profile_pic')
-        data = {'username': username, 'email': email}
-        if profile_pic:
-            data['profile_pic'] = profile_pic
-        response = requests.post(API_BASE_URL + 'updateuser/', headers={'Authorization': 'Token ' + token}, data=data)
-        if response.status_code == 200:
-            return render(request, 'profile.html', {'success': 'Profile updated successfully'})
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        profile_pic = request.FILES.get('profile_pic') if 'profile_pic' in request.FILES else None
+
+        data = {
+            'username': username,
+            'email': email,
+        }
+        files = {'profile_pic': profile_pic} if profile_pic else None
+
+        headers = {'Authorization': 'Token ' + token}
+        if files:
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data, files=files)
         else:
-            return render(request, 'profile.html', {'error': 'Error updating profile'})
-    return render(request, 'profile.html', {'error': 'Invalid request'})
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data)
+
+        if response.status_code == 200:
+            return redirect('profile')
+        else:
+            messages.error(request, 'username or email already exists')
+            return render(request, 'profile.html', {
+                'users': user_data.get('users'),
+                'user': user_data.get('user'),
+                'followers': user_data.get('followers'),
+                'followings': user_data.get('followings')
+            })
+
+    return render(request, 'updatProfile.html', {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings')
+    })
 
 
-def groupInfo(request , name):
+def updatePassword(request):
+    user_data = get_user_data(request)
+    
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        if password and len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long')
+            return render(request, 'updatePassword.html', {
+                'user': user_data.get('user'),
+            })     
+        if password:
+            token = request.session.get('token')
+            headers = {'Authorization': 'Token ' + token}
+            data = {'password': password}
+            response = requests.post(API_BASE_URL + 'updateuser/', headers=headers, data=data)
+
+            if response.status_code == 200:
+                messages.success(request, 'Password updated successfully')
+                return redirect('profile')
+            else:
+                messages.error(request, 'Error updating password')
+                return render(request, 'updatePassword.html', {
+                    'user': user_data.get('user'),
+                })
+        else:
+            messages.error(request, 'Password is required')
+            return render(request, 'updatePassword.html', {
+                'user': user_data.get('user'),
+            })
+      
+    return render(request, 'updatePassword.html', {
+        'user': user_data.get('user'),
+    })
+    
+
+    
+def groupInfo(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
     posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
     token = request.session.get('token')
-    user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
+    user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
+    user_id = user.get('id')
     users_response = requests.get(API_BASE_URL + 'users/')
+    groupe = response.json()
+    groupe_author_id = groupe.get('author')
+    
+
     if response.status_code == 200 and posts.status_code == 200:
-        groupe = response.json()
         posts = posts.json()
         users = users_response.json()
         user_id_to_username = {user['id']: user['username'] for user in users}
@@ -296,8 +360,7 @@ def groupInfo(request , name):
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
 
-        user_id = requests.post(API_BASE_URL + 'user/', data={'token': token}).json().get('id')
-        return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id})
+        return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
 
@@ -338,7 +401,50 @@ def groupPost(request, name):
 
     return render(request, 'groupPost.html', {'groupe': response.json()})
 
-  
+
+
+def deleteGroupPost(request, id): 
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    publication = requests.get(API_BASE_URL + 'groupe/publications/info/' + str(id) + '/').json()
+    author_id = publication.get('author')
+    groupe_id = publication.get('groupe')
+    groupe = requests.get(API_BASE_URL + 'groupe/inf/' + str(groupe_id) + '/').json()
+    groupe_name = groupe.get('name')
+    groupe_author = groupe.get('author_id')
+
+    if request.method == 'POST':
+        if author_id == user_id or groupe_author == author_id:
+            response = requests.delete(API_BASE_URL + 'groupe/publications/delete/' + str(id) + '/')
+            if response.status_code == 200:
+                return redirect('group' , name=groupe_name)
+            else:
+                messages.error(request, 'Error deleting post')
+                return redirect('group' , name=groupe_name)
+        else:
+            messages.error(request, 'Unauthorized to delete post')
+            return redirect('group' , name=groupe_name)
+    else:
+        messages.error(request, 'Invalid request')
+        return redirect('group' , name=groupe_name)
+ 
+''' def editGroupPost(request, id):  
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    publication = requests.get(API_BASE_URL + 'groupe/publications/info/' + str(id) + '/').json()
+    author_id = publication.get('author')
+    groupe_id = publication.get('groupe')
+    groupe = requests.get(API_BASE_URL + 'groupe/inf/' + str(groupe_id) + '/').json()
+    groupe_name = groupe.get('name')
+    groupe_author = groupe.get('author_id')
+    
+    if request.method == 'PUT':
+        content = request.POST.get('content')
+        image = request.FILES.get('image')
+        
+        if author_id == user_id or groupe_author == author_id:
+             '''
+    
 def groupPostInfo(request, name, id):
     token = request.session.get('token')
     user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
@@ -419,3 +525,26 @@ def createGroupe(request):
             return render(request, 'createGroupe.html')
 
     return render(request, 'createGroupe.html')
+
+
+
+def userSettings(request , name):
+    user_data = get_user_data(request)
+    if user_data:
+        return render(request, 'userSettings.html', {
+            'users': user_data.get('users'),
+            'user': user_data.get('user'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'userSettings.html', {'error': 'Unable to fetch user data'})
+    
+
+def deleteUser(request , name):
+    response = requests.delete(API_BASE_URL + 'users/' + name + '/')
+    if response.status_code == 204:
+        del request.session['token']
+        return redirect('login')  
+    else:
+        return render(request, 'userSettings.html', {'error': 'Unable to delete account'})
