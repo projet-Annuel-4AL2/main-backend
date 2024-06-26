@@ -49,8 +49,16 @@ INSTALLED_APPS = [
     'dashboard',
     'rest_framework',
     'rest_framework.authtoken',
+    'channels',
     ]
 
+ASGI_APPLICATION = 'bytebelt.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 MIDDLEWARE = [
     'django_dump_die.middleware.DumpAndDieMiddleware',
     'django.middleware.security.SecurityMiddleware',

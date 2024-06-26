@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Code Session {% endblock %}
+
+
+{% block content %}
+<div class="container mx-auto mt-5">
+    <h1 class="text-center text-2xl font-bold mb-4">{{ post_id}}</h1>
+    <select id="languageSelector" class="mb-4">
+        <option value="javascript">JavaScript</option>
+        <option value="python">Python</option>
+        <option value="java">Java</option>
+        <option value="csharp">C#</option>
+        <option value="cpp">C++</option>
+    </select>
+    <div id="editor" class="w-full h-64" style="height:500px;"></div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% comment %} for monaco  {% endcomment %}
+
+<script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postId = "{{ post_id }}";  // Assuming `post_id` is passed to the template context
+        const socket = new WebSocket(`ws://${window.location.host}/ws/codesession/${postId}/`);
+    
+        let editor;
+        let currentLanguage = 'javascript'; 
+
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+
+                language: currentLanguage,
+                theme: 'vs-dark',
+            });
+    
+            document.getElementById('languageSelector').addEventListener('change', function() {
+                currentLanguage = this.value;
+                monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                socket.send(JSON.stringify({
+                    'type': 'language_change',
+                    'language': currentLanguage
+                }));
+            });
+
+            editor.onDidChangeModelContent(() => {
+                const code = editor.getValue();
+                socket.send(JSON.stringify({
+                    'type': 'code_change',
+                    'code': code
+                }));
+            });
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'code_change') {
+                    const code = data['code'];
+                    if (editor.getValue() !== code) {
+                        editor.setValue(code);
+                    }
+                } else if (data.type === 'language_change') {
+                    const language = data['language'];
+                    if (currentLanguage !== language) {
+                        currentLanguage = language;
+                        monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                        document.getElementById('languageSelector').value = currentLanguage;
+                    }
+                }
+            };
+
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}

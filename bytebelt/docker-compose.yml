@@ -23,7 +23,8 @@ services:
       - .:/bytebelt  
     restart: always
     depends_on:
-      - db      
+      - db
+ 
 
   
     
