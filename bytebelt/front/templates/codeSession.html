@@ -32,6 +32,7 @@
     
         let editor;
         let currentLanguage = null;
+        let debounceTimer;
 
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
@@ -49,11 +50,14 @@
             });
 
             editor.onDidChangeModelContent(() => {
-                const code = editor.getValue();
-                socket.send(JSON.stringify({
-                    'type': 'code_change',
-                    'code': code
-                }));
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const code = editor.getValue();
+                    socket.send(JSON.stringify({
+                        'type': 'code_change',
+                        'code': code
+                    }));
+                }, 300); 
             });
 
             socket.onmessage = function(event) {
