@@ -9,3 +9,6 @@ myvenv/
 /myenv/
 myenv/
 database/
+
+venv
+.env
