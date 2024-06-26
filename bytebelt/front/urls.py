@@ -27,4 +27,11 @@ urlpatterns = [
     path('groupe/create/', views.createGroupe, name='createGroupe'),
     path('<name>/settings/', views.userSettings, name='userSettings'),
     path('delete/<name>/', views.deleteUser, name='deleteUser'),
+    
+    
+    
+    
+    
+    ######code session
+    path('codeSession/<int:post_id>', views.codeSession, name='codeSession'),
 ]
