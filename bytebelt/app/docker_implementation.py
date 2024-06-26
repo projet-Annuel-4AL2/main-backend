@@ -51,7 +51,7 @@ class DockerImplementation(Implementation):
                 if os.path.isdir(source_path):
                     tar.add(source_path, arcname='src')
                 elif os.path.isfile(source_path):
-                    tar.add(source_path)
+                    tar.add(source_path, arcname=os.path.basename(source_path))
                 folder_data = buffer.getvalue()
 
         container.put_archive(dest_path, folder_data)
