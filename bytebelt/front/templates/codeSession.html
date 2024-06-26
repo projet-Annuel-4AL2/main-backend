@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container mx-auto mt-5">
-    <h1 class="text-center text-2xl font-bold mb-4">{{ post_id}}</h1>
+    <h1 class="text-center text-2xl font-bold mb-4">Code Editor for {{ post_id}}</h1>
     <select id="languageSelector" class="mb-4">
         <option value="javascript">JavaScript</option>
         <option value="python">Python</option>
@@ -31,12 +31,11 @@
         const socket = new WebSocket(`ws://${window.location.host}/ws/codesession/${postId}/`);
     
         let editor;
-        let currentLanguage = 'javascript'; 
+        let currentLanguage = null;
 
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
-
-                language: currentLanguage,
+                language: 'javascript',
                 theme: 'vs-dark',
             });
     
@@ -59,7 +58,16 @@
 
             socket.onmessage = function(event) {
                 const data = JSON.parse(event.data);
-                if (data.type === 'code_change') {
+                if (data.type === 'init') {
+                    if (currentLanguage === null) {
+                        currentLanguage = data.language;
+                        monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                        document.getElementById('languageSelector').value = currentLanguage;
+                    }
+                    if (editor.getValue() !== data.code) {
+                        editor.setValue(data.code);
+                    }
+                } else if (data.type === 'code_change') {
                     const code = data['code'];
                     if (editor.getValue() !== code) {
                         editor.setValue(code);
