@@ -27,6 +27,7 @@ urlpatterns = [
     path('groupe/create/', views.createGroupe, name='createGroupe'),
     path('<name>/settings/', views.userSettings, name='userSettings'),
     path('delete/<name>/', views.deleteUser, name='deleteUser'),
+    path('groupes/', views.getAllGroupes, name='groupes'),    
     
     
     

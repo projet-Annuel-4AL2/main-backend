@@ -13,6 +13,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 API_BASE_URL = config('API_BASE_URL')
@@ -526,7 +527,12 @@ def createGroupe(request):
 
     return render(request, 'createGroupe.html')
 
-
+def getAllGroupes(request):
+    response = requests.get(API_BASE_URL + 'groupe/')
+    if response.status_code == 200:
+        return render(request, 'groupes.html', {'groupes': response.json()})
+    else:
+        return render(request, 'groupes.html', {'error': 'Unable to fetch groupes'})
 
 def userSettings(request , name):
     user_data = get_user_data(request)
