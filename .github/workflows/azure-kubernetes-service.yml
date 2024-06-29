@@ -55,9 +55,9 @@ jobs:
       - name: Azure login
         uses: azure/login@v1.4.6
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: 2f2437b9-09e5-46f2-87bb-5bbaad621939
+          tenant-id: 30959897-1d89-41b6-87c2-b6395c3aca1d
+          subscription-id: 3fd3f8ea-0fd8-4261-b442-e249de79f43b
 
       # Builds and pushes an image up to your Azure Container Registry
       - name: Build and push image to ACR
