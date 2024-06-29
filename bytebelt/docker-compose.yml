@@ -20,7 +20,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/bytebelt  
+      - .:/bytebelt
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     depends_on:
       - db      
