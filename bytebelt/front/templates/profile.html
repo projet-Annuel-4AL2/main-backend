@@ -5,62 +5,109 @@ Profile
 {% endblock %}
 
 {% block content %}
-<section class="py-3 py-md-5 py-xl-8">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <div class="mb-5">
-            <h2 class="display-5 fw-bold text-center">{{ user.username }}'s Profile</h2>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <!-- Profile picture and details -->
-        <div class="col-3">
-          <div class="card mb-3 text-center">
-            <img src="{{ user.profile_pic }}" alt="Profile Picture" class="img-fluid rounded-circle">
-            <div class="card-body">
-              <h5 class="card-title">Email</h5>
-              <p class="card-text">{{ user.email }}</p>
-              <h5 class="card-title">Joined on</h5>
-              <p class="card-text">{{ user.date_joined }}</p>
-              <h5 class="card-title">Followers</h5>
-              <p class="card-text">{{ user.followers }}</p>
-              <h5 class="card-title">Following</h5>
-              <p class="card-text">{{ user.following }}</p>
-            </div>
-          </div>
-        </div>
-        <!-- User posts -->
-        <div class="col-6">
-          <!-- Loop through user posts -->
-          {% for post in user.posts %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title">{{ post.title }}</h5>
-              <p class="card-text">{{ post.content }}</p>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        <!-- User settings -->
-        <div class="col-3">
-          <div class="card mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Settings</h5>
-              <!-- Add user settings here -->
-                 <!--update the profile-->
-                <form action="{% url 'updateP' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="username" value="{{ user.username }}">
-                    <input type="hidden" name="profile_pic" value="{{ user.profile_pic }}">
-                    <input type="hidden" name="email" value="{{ user.email }}">
-                    <button type="submit" class="btn btn-dark rounded-0 fs-6">Update Profile</button>
-                </form>
-            </div>
+<div class="gap-1 px-6 flex flex-1 justify-center py-5">
+  <div class="layout-content-container flex flex-col w-80">
+    <div class="flex p-4 @container">
+      <div class="flex w-full flex-col gap-4 items-start">
+        <div class="flex gap-4 flex-col items-start">
+          <div
+            class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
+            style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+          ></div>
+          <div class="flex flex-col justify-center">
+            <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user.username }}</p>
+            <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
+            <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ followings.followings|length }} Followings</p>
           </div>
         </div>
       </div>
     </div>
-  </section>
+      {% if messages %}
+            <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <div class="pb-3">
+      <div class="flex border-b border-[#434343] px-4 gap-8">
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={% url 'feed'%}>
+          <div class="text-[#CBCBCB]" data-icon="ShieldChevron" data-size="24px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path
+                d="M208,40H48A16,16,0,0,0,32,56v58.77c0,89.61,75.82,119.34,91,124.39a15.53,15.53,0,0,0,10,0c15.2-5.05,91-34.78,91-124.39V56A16,16,0,0,0,208,40ZM128,224c-9.26-3.08-43.29-16.32-63.87-49.5L128,129.76l63.87,44.71C171.31,207.61,137.34,220.85,128,224Zm80-109.18c0,17.64-3.36,32.63-8.72,45.34l-66.69-46.68a8,8,0,0,0-9.18,0L56.72,160.13C51.36,147.42,48,132.43,48,114.79V56l160,0Z"
+              ></path>
+            </svg>
+          </div>
+          <p class="text-[#CBCBCB] text-sm font-bold leading-normal tracking-[0.015em]">Feed</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#CBCBCB] gap-1 pb-[7px] pt-2.5" href={%url 'userSettings' user.username%}>
+          <div class="text-[#CBCBCB]" data-icon="ToggleRight" data-size="24px" data-weight="regular">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path
+                d="M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,128H80A56,56,0,0,1,80,72h96a56,56,0,0,1,0,112Zm0-96a40,40,0,1,0,40,40A40,40,0,0,0,176,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,176,152Z"
+              ></path>
+            </svg>
+          </div>
+          <p class="text-[#CBCBCB] text-sm font-bold leading-normal tracking-[0.015em]">Settings</p>
+        </a>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
+      <div class="flex items-center gap-4">
+        <div
+          class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
+          data-icon="UserCirclePlus"
+          data-size="24px"
+          data-weight="regular"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M168,56a8,8,0,0,1,8-8h16V32a8,8,0,0,1,16,0V48h16a8,8,0,0,1,0,16H208V80a8,8,0,0,1-16,0V64H176A8,8,0,0,1,168,56Zm62.56,54.68a103.92,103.92,0,1,1-85.24-85.24,8,8,0,0,1-2.64,15.78A88.07,88.07,0,0,0,40,128a87.62,87.62,0,0,0,22.24,58.41A79.66,79.66,0,0,1,98.3,157.66a48,48,0,1,1,59.4,0,79.66,79.66,0,0,1,36.06,28.75A87.62,87.62,0,0,0,216,128a88.85,88.85,0,0,0-1.22-14.68,8,8,0,1,1,15.78-2.64ZM128,152a32,32,0,1,0-32-32A32,32,0,0,0,128,152Zm0,64a87.57,87.57,0,0,0,53.92-18.5,64,64,0,0,0-107.84,0A87.57,87.57,0,0,0,128,216Z"
+            ></path>
+          </svg>
+        </div>
+        <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">Followers</p>
+      </div>
+      <div class="shrink-0">
+        <button
+          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
+        >
+          <span class="truncate">View All</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+    <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
+     
+    </div>
+    <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
+      <div class="flex items-center gap-4">
+        <div
+          class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
+          data-icon="ArrowCircleUp"
+          data-size="24px"
+          data-weight="regular"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+            <path
+              d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm37.66-101.66a8,8,0,0,1-11.32,11.32L136,107.31V168a8,8,0,0,1-16,0V107.31l-18.34,18.35a8,8,0,0,1-11.32-11.32l32-32a8,8,0,0,1,11.32,0Z"
+            ></path>
+          </svg>
+        </div>
+        <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">All posts </p>
+      </div>
+      <div class="shrink-0">
+        <button
+          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
+        >
+          <span class="truncate">View All</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
 {% endblock %}

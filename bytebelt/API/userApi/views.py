@@ -23,7 +23,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class UserListCreate(generics.ListCreateAPIView):
     permission_classes = [AllowAny] 
-    queryset = CustomUser.objects.all()
+    queryset = CustomUser.objects.all().order_by('-created_at')
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
@@ -53,9 +53,21 @@ class UpdateUser(APIView):
                 token = Token.objects.get(key=token_key)
                 user = token.user
                 user_info = get_object_or_404(CustomUser, id=user.id)
-                user_info.username = request.data.get('username')
-                user_info.email = request.data.get('email')
-                user_info.profile_pic = request.data.get('profile_pic')
+                username = request.data.get('username')
+                if username is not None:
+                    user_info.username = username
+                email = request.data.get('email')
+                if email is not None:         
+                    user_info.email = request.data.get('email')
+                bio = request.data.get('bio')
+                if bio is not None:
+                    user_info.bio = bio
+                profile_pic = request.data.get('profile_pic')
+                if profile_pic is not None:
+                    user_info.profile_pic = profile_pic
+                password = request.data.get('password')
+                if password is not None:
+                    user_info.set_password(password)
                 user_info.save()
                 return Response({'status': 'user updated'}, status=status.HTTP_200_OK)
             except (Token.DoesNotExist, IndexError):
@@ -68,13 +80,58 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     
+
+class GetUserByName(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        filter = {}
+        username = self.kwargs.get('username', None)
+        if username is not None:
+            filter['username'] = username
+        return get_object_or_404(queryset, **filter)
+    
 class AddFollower(APIView):
     permission_classes = [AllowAny]
     def post(self, request, pk):
         user = get_object_or_404(CustomUser, pk=pk)
         follower = get_object_or_404(CustomUser, pk=request.data['follower_id'])
-        user.followers.add(follower)
-        return Response({'status': 'follower added'}, status=status.HTTP_200_OK)
+        
+        if follower in user.followers.all():
+            user.followers.remove(follower)
+            follower.following.remove(user)
+            message = 'Unfollowed'  
+        else:
+            user.followers.add(follower)
+            follower.following.add(user)
+            message = 'Followed'
+            
+        return Response({'status': message}, status=status.HTTP_200_OK)
+
+class GetFollowingById(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        following = user.following.all()
+        return Response({'following': UserSerializer(following, many=True).data}, status=status.HTTP_200_OK)
+    
+    
+class GetAllFollowers(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        followers = user.followers.all()
+        return Response({'followers': UserSerializer(followers, many=True).data}, status=status.HTTP_200_OK)
+
+class GetAllFollowing(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        following = user.following.all()
+        return Response({'followings': UserSerializer(following, many=True).data}, status=status.HTTP_200_OK)
     
 class UserAuthToken(ObtainAuthToken):
     permission_classes = [AllowAny]

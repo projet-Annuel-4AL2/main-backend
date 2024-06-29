@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un post dans le groupe{% endblock %}
+
+{% block content %}
+<div class="p-4 container">
+    <div class="flex flex-col items-stretch justify-start rounded-xl xl:flex-row xl:items-start">
+        <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 xl:px-4">
+            <h1 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Create post in group 
+            
+            </h1>
+            <form method="POST" action="{% url 'groupPost' name=groupe.name %}"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label for="content" class="text-[#CBCBCB] text-sm font-normal leading-normal">Content:</label>
+                    <textarea name="content" id="content" rows="15" class="w-full rounded px-4 py-2 text-black" required></textarea>
+                </div>
+                <div>
+                    <label for="image" class="text-[#CBCBCB] text-sm font-normal leading-normal">Image:</label>
+                    <input type="file" name="image" id="image" class="w-full rounded px-4 py-2 text-black">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="min-w-[84px] max-w-[480px] cursor-pointer rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
+                        Publish
+                    </button>
+                    <a href="{% url  'group' name=groupe.name  %}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        Back
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

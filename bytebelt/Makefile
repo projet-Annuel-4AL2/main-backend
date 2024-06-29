@@ -44,6 +44,16 @@ postgres-tables:
 postgres-show-users:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
     docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"userApi_customuser\""
+postgres-show-groupe:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupe\""
+
+postgres-show-like:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupepublication_likes\""
+postgres-show-groupe-publication:
+	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
+	docker exec -it $$CONTAINER_ID psql -U bytebelt -d bytebelt -c "SELECT * FROM \"groupe_groupepublication\""
 
 postgres-users-colonnes:
 	@CONTAINER_ID=$$(docker ps -qf "ancestor= postgres:latest") && \
@@ -68,4 +78,6 @@ help:
 	@echo "\033[0;32m postgres-show-users \033[0m : Affiche les utilisateurs de la base de données PostgreSQL."
 	@echo "\033[0;32m python-superuser \033[0m : Crée un superutilisateur pour l'application Django."
 	@echo "\033[0;32m help \033[0m : Affiche ce message d'aide."
+
+
 
