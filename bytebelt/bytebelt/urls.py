@@ -18,14 +18,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path , include
-from . import views
-
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('',include('front.urls')),
-    path('execute-code/', views.execute_code, name='execute_code'),
+    path('run/', include('app.urls')),
     path('api/groupe/', include('API.groupe.urls')),
     path('api/', include('API.userApi.urls')),
     path('dashboard/', include('dashboard.urls')),

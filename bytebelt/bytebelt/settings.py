@@ -105,7 +105,7 @@ DATABASES = {
         'USER': 'bytebelt',
         'PASSWORD': 'bytebelt',
         'HOST': 'db',  #c'est le nom du service dans le docker-compose
-        'PORT': '5432',        
+        'PORT': '5432',
     }
 }
 
