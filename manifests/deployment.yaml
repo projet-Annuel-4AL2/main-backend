@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bytebelt
+  labels:
+    app: bytebelt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bytebelt
+  template:
+    metadata:
+      labels:
+        app: bytebelt
+    spec:
+      containers:
+      - name: bytebelt
+        image: aperano/bytebelt:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: POSTGRES_USER
+          value: bytebelt
+        - name: POSTGRES_PASSWORD
+          value: bytebelt
+        - name: POSTGRES_DB
+          value: bytebelt
+        - name: POSTGRES_HOST
+          value: db
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: API_BASE_URL
+          value: "http://localhost:8000/api/"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bytebelt-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: bytebelt
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
