@@ -5,15 +5,17 @@
 
 {% block content %}
 <div class="container mx-auto mt-5">
-    <h1 class="text-center text-2xl font-bold mb-4">Code Editor for {{ post_id}}</h1>
+    <h1 class="text-center text-2xl font-bold mb-4">Code Editor for {{ post_id }}</h1>
     <select id="languageSelector" class="mb-4">
-        <option value="javascript">JavaScript</option>
         <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
         <option value="java">Java</option>
         <option value="csharp">C#</option>
         <option value="cpp">C++</option>
     </select>
     <div id="editor" class="w-full h-64" style="height:500px;"></div>
+    <button type="submit" class="btn btn-light mb-4" id="runCode">Run code</button>
+    <div id="result" class="w-full h-64" style="height:250px;"></div>
 </div>
 
 {% endblock %}
@@ -25,21 +27,37 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script>const EXECUTION_URL = '{% url 'execute_code' %}'</script>
 <script>
+
     document.addEventListener('DOMContentLoaded', function() {
         const postId = "{{ post_id }}";  // Assuming `post_id` is passed to the template context
         const socket = new WebSocket(`ws://${window.location.host}/ws/codesession/${postId}/`);
-    
+
         let editor;
         let currentLanguage = null;
         let debounceTimer;
+        let resultWindow = null;
 
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
-                language: 'javascript',
+                language: 'python',
                 theme: 'vs-dark',
             });
-    
+
+            resultWindow = monaco.editor.create(document.getElementById('result'), {
+                value: null,
+                theme: 'vs-dark',
+                readOnly: true,
+                contextmenu: false,
+                minimap: {
+                    enabled: false
+                },
+                selectOnLineNumbers: false,
+                cursorBlinking: false,
+                cursorWidth: 0,
+            });
+
             document.getElementById('languageSelector').addEventListener('change', function() {
                 currentLanguage = this.value;
                 monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
@@ -57,7 +75,7 @@
                         'type': 'code_change',
                         'code': code
                     }));
-                }, 300); 
+                }, 300);
             });
 
             socket.onmessage = function(event) {
@@ -86,11 +104,38 @@
                 }
             };
 
+            //function handleCodeExecution() {
+            document.getElementById('runCode').addEventListener('click', function() {
+                const currentModel = editor.getModel();
+                const code = currentModel.getValue();
+
+                console.log(typeof code);
+
+                const options = {
+                    method: 'POST',
+                    body: JSON.stringify({"code": code, "language": currentLanguage}),
+                };
+
+                console.log(options['body']);
+                fetch(EXECUTION_URL, options)
+                    .then(response => {
+                        const data = response.json().then(data => {
+                            console.log("Received data:", data);
+                            const output = `Code exited with exit code ${data['exit_code']}
+
+Output:
+${data['output']}`;
+                            resultWindow.setValue(output);
+                        });
+                    })
+                    .catch(error => {
+                      console.error("Error fetching data:", error);
+                      // Handle errors
+                    });
+            });
+
         });
     });
 </script>
-
-
-
 
 {% endblock %}
