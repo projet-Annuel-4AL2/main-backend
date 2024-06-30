@@ -549,5 +549,10 @@ def deleteUser(request , name):
     else:
         return render(request, 'userSettings.html', {'error': 'Unable to delete account'})
 
+
 def codeSession(request, post_id):
     return render(request, 'codeSession.html', {'post_id': post_id})
+
+
+def runCode(request):
+    return render(request, 'codeSession.html')
