@@ -137,6 +137,17 @@ def login(request):
                     user_data = get_user_data(request)
                     user = user_data.get('user')
                     users = user_data.get('users')
+                    followings = user_data.get('followings')
+                    id_followings = [following.get('id') for following in followings.get('followings')]
+                    posts = requests.get(API_BASE_URL + 'post/').json()
+                    posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+                    post_without_following = [post for post in posts_without_user if post['author'] in id_followings]
+                    for post in posts:
+                        for user in users:
+                            if post['author'] == user['id']:
+                                post['author'] = user['username']
+                                break
+                    post =  post_without_following[0]
                     for user in users:
                         if user['id'] == user_data.get('user').get('id'):
                             users.remove(user)
@@ -146,7 +157,8 @@ def login(request):
                                   'user': user,
                                   'followers': user_data.get('followers') ,
                                   'followings': user_data.get('followings'),
-                                  'groupes': user_data.get('groupes')},
+                                  'groupes': user_data.get('groupes'),
+                                  'post': post }
                                   )
                     
                 else:
@@ -177,6 +189,17 @@ def subscribe(request):
                 user_data = get_user_data(request)
                 user = user_data.get('user')
                 users  = user_data.get('users')
+                followings = user_data.get('followings')
+                id_followings = [following.get('id') for following in followings.get('followings')]
+                posts = requests.get(API_BASE_URL + 'post/').json()
+                posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+                post_without_following = [post for post in posts_without_user if post['author'] in id_followings]
+                for post in posts:
+                    for user in users:
+                        if post['author'] == user['id']:
+                            post['author'] = user['username']
+                            break
+                    post =  post_without_following[0]
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
@@ -186,7 +209,8 @@ def subscribe(request):
                                     'user': user,
                                     'followers': user_data.get('followers') ,
                                     'followings': user_data.get('followings'),
-                                    'groupes': user_data.get('groupes')
+                                    'groupes': user_data.get('groupes'),
+                                    'post': post 
   
                 })
             else:
