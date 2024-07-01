@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Create user Post{% endblock %}
+
+{% block content %}
+
+<div class="p-4 container">
+    <div class="flex flex-col items-stretch justify-start rounded-xl xl:flex-row xl:items-start">
+        <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 xl:px-4">
+        <h1 class="text-white text-lg font-bold mb-4">Create user Post</h1>
+        <!-- Afficher l'image de profil actuelle si elle existe -->
+        {% if messages %}
+            <div class="bg-green-100 text-white p-4 rounded-lg mb-4">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form method="POST" action="{% url 'userPostAdd' %}" class="w-full mb-4">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="language" class="text-white text-sm font-normal">language:</label>
+                <select name="language" id="language" class="w-full rounded px-4 py-2 text-gray-700 border border-gray-300" required>
+                    <option value="python">Python</option>
+                    <option value="javascript">Javascript</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="c++">C++</option>
+                    <option value="php">PHP</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="content" class="text-white text-sm font-normal">content:</label>
+                <textarea name="content" id="content" class="w-full h-32 rounded px-4 py-2 text-gray-700 border border-gray-300" required></textarea>
+            </div>
+            <input type="hidden" name="code" id="hiddenCode">
+            <div class="flex items-center justify-between">
+                <button type="submit" class="rounded-full px-4 py-2 bg-gray-800 text-white font-medium hover:bg-blue-600">
+                    Create
+                </button>
+                <a href="{% url 'home' %}" class="text-white hover:text-blue-800 font-bold text-sm">
+                    Back
+                </a>
+            </div>
+        </form>
+        <div class="w-full">
+            <label for="code" class="text-white text-sm font-normal">code:</label>
+            <div id="code" class="w-full rounded px-4 py-2  border-gray-300" style="height: 400px; height: 500px" required></div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        let currentLanguage = 'python';
+
+        require(['vs/editor/editor.main'], function() {
+            var editor = monaco.editor.create(document.getElementById('code'), {
+                language: currentLanguage,
+                theme: 'vs-dark',
+            });
+            document.getElementById('language').addEventListener('change', function() {
+                currentLanguage = this.value;
+                monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+            });
+
+            var form = document.querySelector('form');
+            form.addEventListener('submit', function() {
+                document.getElementById('hiddenCode').value = editor.getValue();
+            });
+
+            
+        });
+    });
+</script>
+{% endblock %}

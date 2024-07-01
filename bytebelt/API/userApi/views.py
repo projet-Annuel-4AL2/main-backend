@@ -191,6 +191,7 @@ class ChangePassword(APIView):
         return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
+###for user post
 
 class UserPostListCreate(generics.ListCreateAPIView):
     permission_classes = [AllowAny] 

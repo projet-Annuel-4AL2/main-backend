@@ -15,7 +15,7 @@
                   <div class="flex flex-col justify-center">
                     <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user_info.name }}</p>
                     <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ followings.followings|length }} Followings</p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} followers {{ followings.followings|length }} following</p>
                   </div>
                 </div>
               </div>
@@ -61,29 +61,18 @@
                       <p class="text-[#FFFFFF] text-sm font-medium leading-normal">users</p>
                     </div>
                   </a>
-                  <a href="{% url 'home' %}">
-                    <div class="flex items-center gap-3 px-3 py-2">
-                      <div class="text-[#FFFFFF]" data-icon="ToggleRight" data-size="24px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                          <path
-                            d="M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,128H80A56,56,0,0,1,80,72h96a56,56,0,0,1,0,112Zm0-96a40,40,0,1,0,40,40A40,40,0,0,0,176,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,176,152Z"
-                          ></path>
-                        </svg>
-                      </div>
-                      <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Settings</p>
-                    </div>
-                  </a>
                 </div>
                 <div class="flex flex-col gap-4">
-                  <button
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
-                  >
-                    <span class="truncate">Add Posts</span>
-                  </button>
-                  <button
-                    onclick="window.location.href = '{% url 'createGroupe' %}'"
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
-                  >
+                    <button
+                      onclick="window.location.href = '{% url 'userPostAdd' %}'"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
+                    >
+                      <span class="truncate">Add Posts</span>
+                    </button>
+                    <button
+                      onclick="window.location.href = '{% url 'createGroupe' %}'"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
+                    >
                     <span class="truncate">Create Groupe</span>
                   </button>
                   <div class="flex flex-col gap-1">
@@ -130,28 +119,29 @@
                 {% endfor %}
               </div>
             </div>
-            <div class="p-4 @container">
+            {% if post is not None %}
+            <div class="p-4 @container" id="post-container">
               <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/e741ad76-084a-456f-bd42-047b9c7c8b6b.png");'
-                ></div>
+                <div class="w-full aspect-video rounded-xl overflow-auto bg-gray-950 text-white p-4" style="max-height: 100000px; width:  120000px;">
+                    <div id="code-editor" style="height: 100%;"></div>
+                </div>
                 <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
-                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">Mar 04 at 2:14 PM</p>
-                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">Brandon Morton</p>
+                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
                   <div class="flex items-end gap-3 justify-between">
                     <div class="flex flex-col gap-1">
                       <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                        Design Shot is an invitation to ponder on design as a living entity, capable of embodying and influencing the flow of thoughts and sensations in an
-                        ever-changing reality...
+                       {{ post.content|truncatechars:600 }}
                       </p>
-                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">10k likes 2.2k shares 351 comments</p>
+                    <div class="flex items-center">
+                        <button id="like" onclick="likePost({{ post.id }}, '{{ user.id }}')" class="flex items-center mr-4">
+                            <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span style="color: #808080;">{{ post.likes|length }} likes</span>
+                        </button>
                     </div>
-                    <button
-                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
-                    >
-                      <span class="truncate">...</span>
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -170,6 +160,7 @@
                 </a>
               </div>
             </div>
+            {% endif %}
             <div class="px-4 py-3">
               <label class="flex flex-col min-w-40 h-12 w-full">
                 <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
@@ -259,8 +250,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+</script>
+<script>
+  var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
 
+  function initializeEditor() {
+    monaco.editor.create(document.getElementById('code-editor'), {
+        value: `{{ post.code|escapejs }}`,
+        language: '{{ post.language }}',
+        theme: 'vs-dark',
+        readOnly: true
+    });
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditor();
+});
+
+  function likePost(postId, userId) {
+      var url = 'http://localhost:8000/api/post/' + postId + '/add-like/';
+
+      $.ajax({
+          url: url,
+          type: 'POST',
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          data: {
+              'user_id': userId,
+          },
+          success: function(response) {
+              $('#post-container').load(location.href + ' #post-container > *', function() {
+                  initializeEditor();
+              });
+          },
+          error: function(xhr, status, error) {
+              console.log(xhr.responseText);
+          }
+      });
+  }
 </script>
 
 {% endblock %}

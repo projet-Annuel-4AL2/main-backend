@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes
+from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes 
 
 urlpatterns = [
     path('users/', UserListCreate.as_view(), name='user-list-create'),

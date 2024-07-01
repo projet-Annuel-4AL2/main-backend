@@ -45,11 +45,7 @@ def home(request):
             if post['author'] == user['id']:
                 post['author'] = user['username']
                 break
-            
-    if post_without_following:
-        post = max(post_without_following, key=lambda x: (x['likes'], x['created_at']))
-    else:
-        post = None
+    post =  post_without_following[0]   
     
     
     if user_data:
@@ -70,22 +66,6 @@ def home(request):
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch user data'})
     
-@token_required
-def explorer(request):
-    if not request.session.get('token'):
-        return redirect('login')
-    
-    user_data = get_user_data(request)
-    if user_data:
-        return render(request, 'explorer.html', {
-            'users': user_data.get('users'),
-            'user': user_data.get('user'),
-            'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
-        })
-    else:
-        return render(request, 'explorer.html', {'error': 'Unable to fetch user data'})
-
 @token_required
 def userDetail (request , pk):
     response = requests.get(API_BASE_URL + 'users/' + str(pk) + '/')
@@ -377,6 +357,7 @@ def groupInfo(request, name):
 def groupPost(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
+    user_get_data = get_user_data(request)
     if request.method == 'POST':
         content = request.POST.get('content')
         image = request.FILES.get('image')  # Use FILES to get the uploaded image
@@ -409,7 +390,7 @@ def groupPost(request, name):
             messages.error(request, 'Content is required')
             return redirect('group', name=name)
 
-    return render(request, 'groupPost.html', {'groupe': response.json()})
+    return render(request, 'groupPost.html', {'groupe': response.json() ,'user': user_get_data.get('user')})
 
 
 
@@ -571,7 +552,6 @@ def codeSession(request, post_id):
 
 
 ###for user post now
-@token_required
 def userPostAdd(request):
     user_data = get_user_data(request)
     if request.method == 'POST':
@@ -619,7 +599,37 @@ def userPostAdd(request):
         'groupes': user_data.get('groupes') 
     } )
     
+
+@token_required
 def usersPost(request):
+    posts = requests.get(API_BASE_URL + 'post/').json()
+    user_data = get_user_data(request)
+    users = user_data.get('users')
+    user = user_data.get('user')
+    followings = user_data.get('followings')
+    id_followings = [following.get('id') for following in followings.get('followings')]
+    
+    posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+    posts_from_following = [post for post in posts_without_user if post['author'] in id_followings]
+    
+    user_id_to_username = {user['id']: user['username'] for user in users}
+    
+    for post in posts_from_following:
+        if post['author'] in user_id_to_username:
+            post['author'] = user_id_to_username[post['author']]
+    
+    if posts_from_following:
+        return render(request, 'feed.html', {
+            'posts': posts_from_following,
+            'user': user_data.get('user'),
+            'users': user_data.get('users'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
+
+def usersPostExplorer(request):
     posts = requests.get(API_BASE_URL + 'post/').json()
     user_data = get_user_data(request)
     if posts:
@@ -629,7 +639,6 @@ def usersPost(request):
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
         
-        return render(request, 'feed.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings')})
+        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings')})
     else:
-        return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
-    
+        return render(request, 'explorer.html', {'error': 'Unable to fetch posts'})
