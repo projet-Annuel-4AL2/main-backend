@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import CustomUser
+from django.contrib.auth.models import User 
+from .models import CustomUser , UserPost
 import re
 
 class UserSerializer(serializers.ModelSerializer):
@@ -24,3 +24,13 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = CustomUser.objects.create_user(**validated_data)
         return user
+
+class UserPostSerializer(serializers.ModelSerializer):
+    #author = UserSerializer(read_only=True)
+    likes = UserSerializer(read_only=True, many=True)
+    comments = UserSerializer(read_only=True, many=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = UserPost
+        fields = '__all__'
