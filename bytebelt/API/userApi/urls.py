@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById
+from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes
 
 urlpatterns = [
     path('users/', UserListCreate.as_view(), name='user-list-create'),
@@ -15,5 +15,13 @@ urlpatterns = [
     path('updateuser/', UpdateUser.as_view(), name='update-user'),
     path('users/<uuid:pk>/followers/', GetAllFollowers.as_view(), name='get-all-followers'),
     path('users/<uuid:pk>/followings/', GetAllFollowing.as_view(), name='get-all-following'),
+    ##for user post
+    path('post/', UserPostListCreate.as_view(), name='user-post-list-create'),
+    path('post/<int:pk>/', UserPostDetail.as_view(), name='user-post-detail'),
+    path('post/<int:pk>/add-like/', AddLike.as_view(), name='add-like'),
+    path('post/<int:pk>/add-comment/', AddComment.as_view(), name='add-comment'),
+    path('post/<int:pk>/get-comment/', GetComments.as_view(), name='get-comments'),
+    path('post/<int:pk>/get-like/', GetLikes.as_view(), name='get-likes'),
+    
 
 ]
