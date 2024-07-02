@@ -37,17 +37,20 @@
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'home' %}">Home </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'feed' %}">Feed </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'explorer' %}">Explorer </a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'groupes' %}">groups </a>
 
                     {% else %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'subscribe' %}">Register</a>
                     {% endif %}
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a>
+                   {% comment %}  <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a> {% endcomment %}
 
                 </div>
                 </div>
                 <div class="flex flex-1 justify-end gap-8">
                   <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                    {% comment %} afficher que si on est pas sur l'url home {% endcomment %}
+                    {% if  request.path != '/home/' %}
                     <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
                       <div
                         class="text-[#CBCBCB] flex border-none bg-[#333333] items-center justify-center pl-4 rounded-l-xl border-r-0"
@@ -68,6 +71,7 @@
                         value=""
                       />
                     </div>
+                    {% endif %}
                   </label>
                   {% if request.session.token %}
                   <a href="{% url 'profile' %}">

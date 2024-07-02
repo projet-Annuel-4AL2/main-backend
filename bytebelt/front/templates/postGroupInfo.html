@@ -5,6 +5,12 @@
 {% block content %}
 <div class="gap-1 px-6 flex flex-1 justify-center py-5">
   <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+    <div class="bg-gray-800" >
+      <a href="{% url 'group' groupe.name %}" class="text-white hover:text-blue-800 font-bold text-sm">
+        Back
+      </a>
+    </div>
+    
     <!-- Section pour les informations du post -->
     <div class="flex flex-col items-center py-4">
       <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>

@@ -89,8 +89,9 @@ def userInfos (request , username):
         followings = [following.get('id') for following in followings.get('following')]
         followings_users = requests.get(API_BASE_URL + 'users/' + user.get('id') + '/get-following/').json()
         followings_users = [following.get('id') for following in followings_users.get('following')]
+        posts = requests.get(API_BASE_URL + 'post/user/' + username + '/').json()
         #user = response.json()
-        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followings': followings , 'followings_users': followings_users})
+        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followings': followings , 'followings_users': followings_users , 'posts': posts})
     else:
         redirect('home')
 
@@ -266,12 +267,14 @@ def logout(request):
 def profile(request):
     #get user info by token in session
     user_data = get_user_data(request)
+    user_post = requests.get(API_BASE_URL + 'post/user/' + user_data.get('user').get('username') + '/')
     if user_data:
         return render(request, 'profile.html', {
             'users': user_data.get('users'),
             'user': user_data.get('user'),
             'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
+            'followings': user_data.get('followings'),
+            'posts': user_post.json()
         })
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
@@ -373,6 +376,9 @@ def groupInfo(request, name):
         for post in posts:
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
+                
+                comments_response = requests.get(API_BASE_URL + 'groupe/publication/' + str(post['id']) + '/comment/').json()
+                post['comment_count'] = len(comments_response)  
 
         return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
@@ -498,9 +504,10 @@ def followers(request ):
     user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
     user_id = user.get('id')
     response = requests.get(API_BASE_URL + 'users/' + user_id + '/followers/')
+    user_get_data = get_user_data(request)
     if response.status_code == 200:
         followers = response.json()
-        return render(request, 'followers.html', {'followers': followers.get('followers')})
+        return render(request, 'followers.html', {'followers': followers.get('followers') , 'user': user_get_data.get('user')})
     else:
         return render(request, 'followers.html', {'error': 'Unable to fetch followers'})
     
@@ -543,8 +550,9 @@ def createGroupe(request):
 
 def getAllGroupes(request):
     response = requests.get(API_BASE_URL + 'groupe/')
+    user_get_data = get_user_data(request)
     if response.status_code == 200:
-        return render(request, 'groupes.html', {'groupes': response.json()})
+        return render(request, 'groupes.html', {'groupes': response.json() , 'user': user_get_data.get('user')})
     else:
         return render(request, 'groupes.html', {'error': 'Unable to fetch groupes'})
 
