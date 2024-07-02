@@ -203,7 +203,20 @@ class UserPostDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [AllowAny] 
     queryset = UserPost.objects.all()
     serializer_class = UserPostSerializer
+  
+  
+class GetUserPostByUsername(generics.ListCreateAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
     
+    def get_queryset(self):
+        queryset = self.queryset
+        username = self.kwargs.get('username', None)
+        if username is not None:
+            queryset = queryset.filter(author__username=username)
+        return queryset
+      
 class AddLike(APIView):
     permission_classes = [AllowAny]
     def post(self, request, pk):
@@ -243,3 +256,4 @@ class GetLikes(APIView):
         post = get_object_or_404(UserPost, pk=pk)
         likes = post.likes.all()
         return Response({'likes': UserSerializer(likes, many=True).data}, status=status.HTTP_200_OK)
+    
