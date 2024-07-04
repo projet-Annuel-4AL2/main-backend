@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_protect
 
 
 API_BASE_URL = config('API_BASE_URL')
@@ -45,7 +46,11 @@ def home(request):
             if post['author'] == user['id']:
                 post['author'] = user['username']
                 break
-    post =  post_without_following[0]   
+    
+    if post_without_following:
+       post =  post_without_following[0]   
+    else:
+        post = []
     
     
     if user_data:
@@ -116,7 +121,7 @@ def get_user_data(request):
             }
     return None
 
-
+@csrf_protect
 def login(request):
     if request.session.get('token'):
         return redirect('home')
@@ -148,7 +153,12 @@ def login(request):
                             if post['author'] == user['id']:
                                 post['author'] = user['username']
                                 break
-                    post =  post_without_following[0]
+                    
+                    if post_without_following:
+                        post =  post_without_following[0]
+                    else:
+                        post = []
+                    
                     for user in users:
                         if user['id'] == user_data.get('user').get('id'):
                             users.remove(user)

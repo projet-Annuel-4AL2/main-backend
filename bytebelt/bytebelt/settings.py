@@ -69,7 +69,14 @@ MIDDLEWARE = [
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
+CSRF_TRUSTED_ORIGINS = ['http://localhost' ,
+                        'http://localhost' ,
+                        'https://gavinaperano.com' ,
+                        'https://www.gavinaperano.com',
+                        'http://gavinaperano.com',
+                        'http://www.gavinaperano.com',
+                        'http://172.171.177.96/'
+                        ]
 
 ROOT_URLCONF = 'bytebelt.urls'
 

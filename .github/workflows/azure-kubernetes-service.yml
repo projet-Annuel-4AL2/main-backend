@@ -97,6 +97,28 @@ jobs:
           cluster-name: gavin
           admin: 'true'
           use-kubelogin: 'true'
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      #- name: Install NGINX Ingress Controller
+      #  run: |
+      #    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+      #    helm repo update
+      #    helm install ingress-nginx ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx
+
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Install cert-manager
+        run: |
+          kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.0/cert-manager.yaml
+      
+
+      - name: Install cert-manager
+        run: |
+           kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.0/cert-manager.yaml
 
       #deploy postgres service 
       - name: Deploy PostgreSQL Service
@@ -105,11 +127,15 @@ jobs:
           action: deploy
           manifests: ./manifests/db-service.yaml
 
-      # Deploys application based on given manifest file
+      # Deploys application based on given manifest file and add certificate ssl
+      #faire le    ./manifests/nginx-ingress-service.yaml en cmd
       - name: Deploys application
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
-          manifests: ./manifests/deployment.yaml
+          manifests: |
+            ./manifests/deployment.yaml
+            ./manifests/ingress.yaml
+            ./manifests/certificate.yaml
           images: |
             gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}

@@ -33,7 +33,7 @@ jobs:
           cd ./bytebelt/
           docker-compose up -d
           sleep 30
-          site_online=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8000)
+          site_online=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:80)
           if [[ "$site_online" =~ ^4 ]] || [[ "$site_online" =~ ^5 ]]; then
             echo "Test Failed $site_online"
             exit 1
