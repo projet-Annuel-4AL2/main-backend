@@ -17,9 +17,9 @@
         <option value="csharp">C#</option>
         <option value="cpp">C++</option>
     </select>
-    <div id="editor" class="w-full h-64" style="height:500px;"></div>
-    <button type="submit" class="btn btn-light mb-4" id="runCode">Run code</button>
-    <div id="result" class="w-full h-64" style="height:250px;"></div>
+    <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
+    <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
+    <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
 </div>
 
 {% endblock %}
@@ -32,6 +32,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
 <script>const EXECUTION_URL = '{% url 'execute_code' %}'</script>
+
+<script>
+    function getOs() {
+        if (navigator.appVersion.indexOf("Win") != -1) return "Windows";
+        if (navigator.appVersion.indexOf("Mac") != -1) return "MacOS";
+        if (navigator.appVersion.indexOf("X11") != -1) return "UNIX";
+        if (navigator.appVersion.indexOf("Linux") != -1) return "Linux";
+
+        return "Unknown OS";
+    }
+
+    const button = document.getElementById('runCode');
+
+    switch(getOs()) {
+        case "MacOS":
+            button.textContent += ' (⌘ + Enter)';
+            break;
+        case "Windows":
+            button.textContent += ' (windows + Enter)';
+            break;
+        case "Linux":
+            button.textContent += ' (Alt + Enter)';
+            break;
+    }
+
+</script>
+
 {% if post_id %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -108,7 +135,7 @@
                 }
             };
 
-            document.getElementById('runCode').addEventListener('click', function() {
+            function runCode() {
                 const currentModel = editor.getModel();
                 const code = currentModel.getValue();
 
@@ -131,6 +158,15 @@ ${data['output']}`;
                       console.error("Error fetching data:", error);
                       // Handle errors
                     });
+            };
+
+            document.getElementById('runCode').addEventListener('click', runCode);
+
+            document.addEventListener("keydown", (keyDownEvent) => {
+                if (keyDownEvent.metaKey && keyDownEvent.key == 'Enter') {
+                    keyDownEvent.preventDefault();
+                    runCode();
+                }
             });
 
         });
@@ -167,7 +203,7 @@ ${data['output']}`;
                 monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
             });
 
-            document.getElementById('runCode').addEventListener('click', function() {
+            function runCode() {
                 const currentModel = editor.getModel();
                 const code = currentModel.getValue();
 
@@ -188,7 +224,17 @@ ${data['output']}`;
                     })
                     .catch(error => {
                       console.error("Error fetching data:", error);
+                      // Handle errors
                     });
+            };
+
+            document.getElementById('runCode').addEventListener('click', runCode);
+
+            document.addEventListener("keydown", (keyDownEvent) => {
+                if (keyDownEvent.metaKey && keyDownEvent.key == 'Enter') {
+                    keyDownEvent.preventDefault();
+                    runCode();
+                }
             });
 
         });
