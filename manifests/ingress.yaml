@@ -5,10 +5,10 @@ metadata:
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"  # cert-manager pour SSL
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"  
     cert-manager.io/acme-challenge-type: http01
 spec:
-  ingressClassName: nginx  # Ajout de ingressClassName pour spécifier la classe d'ingress
+  ingressClassName: nginx  
   rules:
   - host: gavinaperano.com
     http:
@@ -23,4 +23,4 @@ spec:
   tls:
   - hosts:
     - gavinaperano.com
-    secretName: tls-secret  # Le nom du secret TLS généré par cert-manager dans certificat.yaml
+    secretName: tls-secret 
