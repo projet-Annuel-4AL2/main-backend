@@ -13,6 +13,8 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_protect
 
 
 API_BASE_URL = config('API_BASE_URL')
@@ -32,6 +34,25 @@ def home(request):
         return redirect('login')
     
     user_data = get_user_data(request)
+    users = user_data.get('users')
+    user = user_data.get('user')
+    followings = user_data.get('followings')
+    id_followings = [following.get('id') for following in followings.get('followings')]
+    posts = requests.get(API_BASE_URL + 'post/').json()
+    posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+    post_without_following = [post for post in posts_without_user if post['author'] in id_followings]
+    for post in posts:
+        for user in users:
+            if post['author'] == user['id']:
+                post['author'] = user['username']
+                break
+    
+    if post_without_following:
+       post =  post_without_following[0]   
+    else:
+        post = []
+    
+    
     if user_data:
         users = user_data.get('users')
         user = user_data.get('user') 
@@ -44,41 +65,12 @@ def home(request):
             'user': user,
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
-            'groupes': user_data.get('groupes')
+            'groupes': user_data.get('groupes'),
+            'post': post
         })
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch user data'})
     
-def feed(request):
-    if not request.session.get('token'):
-        return redirect('login')
-    
-    user_data = get_user_data(request)
-    if(user_data):
-        return render(request, 'feed.html', {
-            'users': user_data.get('users'),
-            'user': user_data.get('user'),
-            'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
-        })
-    else:
-        return render(request, 'feed.html', {'error': 'Unable to fetch user data'})
-    
-def explorer(request):
-    if not request.session.get('token'):
-        return redirect('login')
-    
-    user_data = get_user_data(request)
-    if user_data:
-        return render(request, 'explorer.html', {
-            'users': user_data.get('users'),
-            'user': user_data.get('user'),
-            'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
-        })
-    else:
-        return render(request, 'explorer.html', {'error': 'Unable to fetch user data'})
-
 @token_required
 def userDetail (request , pk):
     response = requests.get(API_BASE_URL + 'users/' + str(pk) + '/')
@@ -102,11 +94,13 @@ def userInfos (request , username):
         followings = [following.get('id') for following in followings.get('following')]
         followings_users = requests.get(API_BASE_URL + 'users/' + user.get('id') + '/get-following/').json()
         followings_users = [following.get('id') for following in followings_users.get('following')]
+        posts = requests.get(API_BASE_URL + 'post/user/' + username + '/').json()
         #user = response.json()
-        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followings': followings , 'followings_users': followings_users})
+        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followings': followings , 'followings_users': followings_users , 'posts': posts})
     else:
         redirect('home')
-        
+
+@token_required     
 def get_user_data(request):
     token = request.session.get('token')
     user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
@@ -127,7 +121,7 @@ def get_user_data(request):
             }
     return None
 
-        
+@csrf_protect
 def login(request):
     if request.session.get('token'):
         return redirect('home')
@@ -149,6 +143,22 @@ def login(request):
                     user_data = get_user_data(request)
                     user = user_data.get('user')
                     users = user_data.get('users')
+                    followings = user_data.get('followings')
+                    id_followings = [following.get('id') for following in followings.get('followings')]
+                    posts = requests.get(API_BASE_URL + 'post/').json()
+                    posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+                    post_without_following = [post for post in posts_without_user if post['author'] in id_followings]
+                    for post in posts:
+                        for user in users:
+                            if post['author'] == user['id']:
+                                post['author'] = user['username']
+                                break
+                    
+                    if post_without_following:
+                        post =  post_without_following[0]
+                    else:
+                        post = []
+                    
                     for user in users:
                         if user['id'] == user_data.get('user').get('id'):
                             users.remove(user)
@@ -158,7 +168,8 @@ def login(request):
                                   'user': user,
                                   'followers': user_data.get('followers') ,
                                   'followings': user_data.get('followings'),
-                                  'groupes': user_data.get('groupes')},
+                                  'groupes': user_data.get('groupes'),
+                                  'post': post }
                                   )
                     
                 else:
@@ -189,6 +200,17 @@ def subscribe(request):
                 user_data = get_user_data(request)
                 user = user_data.get('user')
                 users  = user_data.get('users')
+                followings = user_data.get('followings')
+                id_followings = [following.get('id') for following in followings.get('followings')]
+                posts = requests.get(API_BASE_URL + 'post/').json()
+                posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+                post_without_following = [post for post in posts_without_user if post['author'] in id_followings]
+                for post in posts:
+                    for user in users:
+                        if post['author'] == user['id']:
+                            post['author'] = user['username']
+                            break
+                    post =  post_without_following[0]
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
@@ -198,7 +220,8 @@ def subscribe(request):
                                     'user': user,
                                     'followers': user_data.get('followers') ,
                                     'followings': user_data.get('followings'),
-                                    'groupes': user_data.get('groupes')
+                                    'groupes': user_data.get('groupes'),
+                                    'post': post 
   
                 })
             else:
@@ -209,6 +232,7 @@ def subscribe(request):
     
     return render(request, 'register.html')
 
+@token_required
 def get_user_data(request):
     token = request.session.get('token')
     user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
@@ -228,6 +252,7 @@ def get_user_data(request):
             }
     return None
 
+@token_required
 def get_all_users_view(request):
     user_get_data = get_user_data(request)
     if user_get_data:
@@ -252,12 +277,14 @@ def logout(request):
 def profile(request):
     #get user info by token in session
     user_data = get_user_data(request)
+    user_post = requests.get(API_BASE_URL + 'post/user/' + user_data.get('user').get('username') + '/')
     if user_data:
         return render(request, 'profile.html', {
             'users': user_data.get('users'),
             'user': user_data.get('user'),
             'followers': user_data.get('followers'),
-            'followings': user_data.get('followings')
+            'followings': user_data.get('followings'),
+            'posts': user_post.json()
         })
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
@@ -339,7 +366,7 @@ def updatePassword(request):
     })
     
 
-    
+@token_required
 def groupInfo(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
@@ -359,6 +386,9 @@ def groupInfo(request, name):
         for post in posts:
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
+                
+                comments_response = requests.get(API_BASE_URL + 'groupe/publication/' + str(post['id']) + '/comment/').json()
+                post['comment_count'] = len(comments_response)  
 
         return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
@@ -367,6 +397,7 @@ def groupInfo(request, name):
 def groupPost(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
     groupe_id = response.json().get('id')
+    user_get_data = get_user_data(request)
     if request.method == 'POST':
         content = request.POST.get('content')
         image = request.FILES.get('image')  # Use FILES to get the uploaded image
@@ -399,7 +430,7 @@ def groupPost(request, name):
             messages.error(request, 'Content is required')
             return redirect('group', name=name)
 
-    return render(request, 'groupPost.html', {'groupe': response.json()})
+    return render(request, 'groupPost.html', {'groupe': response.json() ,'user': user_get_data.get('user')})
 
 
 
@@ -483,9 +514,10 @@ def followers(request ):
     user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
     user_id = user.get('id')
     response = requests.get(API_BASE_URL + 'users/' + user_id + '/followers/')
+    user_get_data = get_user_data(request)
     if response.status_code == 200:
         followers = response.json()
-        return render(request, 'followers.html', {'followers': followers.get('followers')})
+        return render(request, 'followers.html', {'followers': followers.get('followers') , 'user': user_get_data.get('user')})
     else:
         return render(request, 'followers.html', {'error': 'Unable to fetch followers'})
     
@@ -526,8 +558,16 @@ def createGroupe(request):
 
     return render(request, 'createGroupe.html')
 
+def getAllGroupes(request):
+    response = requests.get(API_BASE_URL + 'groupe/')
+    user_get_data = get_user_data(request)
+    if response.status_code == 200:
+        return render(request, 'groupes.html', {'groupes': response.json() , 'user': user_get_data.get('user')})
+    else:
+        return render(request, 'groupes.html', {'error': 'Unable to fetch groupes'})
 
 
+@token_required
 def userSettings(request , name):
     user_data = get_user_data(request)
     if user_data:
@@ -540,7 +580,7 @@ def userSettings(request , name):
     else:
         return render(request, 'userSettings.html', {'error': 'Unable to fetch user data'})
     
-
+@token_required
 def deleteUser(request , name):
     response = requests.delete(API_BASE_URL + 'users/' + name + '/')
     if response.status_code == 204:
@@ -550,9 +590,101 @@ def deleteUser(request , name):
         return render(request, 'userSettings.html', {'error': 'Unable to delete account'})
 
 
+@token_required
 def codeSession(request, post_id):
     return render(request, 'codeSession.html', {'post_id': post_id})
 
 
 def runCode(request):
     return render(request, 'codeSession.html')
+###for user post now
+def userPostAdd(request):
+    user_data = get_user_data(request)
+    if request.method == 'POST':
+        language = request.POST.get('language')
+        code = request.POST.get('code')
+        content = request.POST.get('content')
+        image = request.FILES.get('image') 
+
+        if content:
+            token = request.session.get('token')
+            user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+            if user_response.status_code == 200:
+                user_id = user_response.json().get('id')
+                if user_id:
+                    data = {
+                        'language': language if language else '',
+                        'code': code if code else '',
+                        'content': content,
+                        'author': str(user_id),
+                    }
+                    files = {'image': image} if image else None
+                    response = requests.post(API_BASE_URL + 'post/', data=data, files=files)
+                    if response.status_code == 201:
+                        
+                        
+                        return redirect('home')              
+                    else:
+                        messages.error(request, f'Error creating post: {response.text}')
+                        return redirect('home')
+                else:
+                    messages.error(request, 'User ID not found')
+                    return redirect('home')
+            else:
+                messages.error(request, 'Invalid token')
+                return redirect('home')
+        else:
+            messages.error(request, 'Content is required')
+            return redirect('home')
+
+    return render(request, 'userPostAdd.html' , {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings'),
+        'groupes': user_data.get('groupes') 
+    } )
+    
+
+@token_required
+def usersPost(request):
+    posts = requests.get(API_BASE_URL + 'post/').json()
+    user_data = get_user_data(request)
+    users = user_data.get('users')
+    user = user_data.get('user')
+    followings = user_data.get('followings')
+    id_followings = [following.get('id') for following in followings.get('followings')]
+    
+    posts_without_user = [post for post in posts if post['author'] != user_data.get('user').get('id')]
+    posts_from_following = [post for post in posts_without_user if post['author'] in id_followings]
+    
+    user_id_to_username = {user['id']: user['username'] for user in users}
+    
+    for post in posts_from_following:
+        if post['author'] in user_id_to_username:
+            post['author'] = user_id_to_username[post['author']]
+    
+    if posts_from_following:
+        return render(request, 'feed.html', {
+            'posts': posts_from_following,
+            'user': user_data.get('user'),
+            'users': user_data.get('users'),
+            'followers': user_data.get('followers'),
+            'followings': user_data.get('followings')
+        })
+    else:
+        return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
+
+def usersPostExplorer(request):
+    posts = requests.get(API_BASE_URL + 'post/').json()
+    user_data = get_user_data(request)
+    if posts:
+        users = user_data.get('users')
+        user_id_to_username = {user['id']: user['username'] for user in users}
+        for post in posts:
+            if post['author'] in user_id_to_username:
+                post['author'] = user_id_to_username[post['author']]
+        
+        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings')})
+    else:
+        return render(request, 'explorer.html', {'error': 'Unable to fetch posts'})

@@ -38,17 +38,20 @@
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'runCode' %}">Run Code</a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'feed' %}">Feed </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'explorer' %}">Explorer </a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'groupes' %}">groups </a>
 
                     {% else %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'subscribe' %}">Register</a>
                     {% endif %}
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a>
+                   {% comment %}  <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="#">Privacy and Terms</a> {% endcomment %}
 
                 </div>
                 </div>
                 <div class="flex flex-1 justify-end gap-8">
                   <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                    {% comment %} afficher que si on est pas sur l'url home {% endcomment %}
+                    {% if  request.path != '/home/' %}
                     <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
                       <div
                         class="text-[#CBCBCB] flex border-none bg-[#333333] items-center justify-center pl-4 rounded-l-xl border-r-0"
@@ -63,11 +66,13 @@
                         </svg>
                       </div>
                       <input
+                        id="search_base"
                         placeholder="Search"
                         class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#FFFFFF] focus:outline-0 focus:ring-0 border-none bg-[#333333] focus:border-none h-full placeholder:text-[#CBCBCB] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                         value=""
                       />
                     </div>
+                    {% endif %}
                   </label>
                   {% if request.session.token %}
                   <a href="{% url 'profile' %}">
@@ -98,6 +103,7 @@
 </body>
 </html>
 {% block extra_js %}
+
 
 
 {% endblock%}

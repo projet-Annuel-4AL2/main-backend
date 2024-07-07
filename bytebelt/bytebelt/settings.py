@@ -26,11 +26,7 @@ SECRET_KEY = 'django-insecure-pwy9d8i(ai1s_dxpb413d%0s&j+$wz!f+kk0#jth-z2j1v5haf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-     '0.0.0.0',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -50,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'channels',
+    'corsheaders',
     ]
 
 ASGI_APPLICATION = 'bytebelt.routing.application'
@@ -68,7 +65,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost' ,
+                        'http://localhost' ,
+                        'https://gavinaperano.com' ,
+                        'https://www.gavinaperano.com',
+                        'http://gavinaperano.com',
+                        'http://www.gavinaperano.com',
+                        'http://172.171.177.96/'
+                        ]
 
 ROOT_URLCONF = 'bytebelt.urls'
 

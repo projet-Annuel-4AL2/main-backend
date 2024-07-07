@@ -23,7 +23,7 @@ Profile
       </div>
     </div>
       {% if messages %}
-            <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
+            <div class="bg-gray-500 text-white p-4 rounded-lg mb-4">
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
@@ -54,60 +54,79 @@ Profile
       </div>
     </div>
     <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
-      <div class="flex items-center gap-4">
-        <div
-          class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
-          data-icon="UserCirclePlus"
-          data-size="24px"
-          data-weight="regular"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-              d="M168,56a8,8,0,0,1,8-8h16V32a8,8,0,0,1,16,0V48h16a8,8,0,0,1,0,16H208V80a8,8,0,0,1-16,0V64H176A8,8,0,0,1,168,56Zm62.56,54.68a103.92,103.92,0,1,1-85.24-85.24,8,8,0,0,1-2.64,15.78A88.07,88.07,0,0,0,40,128a87.62,87.62,0,0,0,22.24,58.41A79.66,79.66,0,0,1,98.3,157.66a48,48,0,1,1,59.4,0,79.66,79.66,0,0,1,36.06,28.75A87.62,87.62,0,0,0,216,128a88.85,88.85,0,0,0-1.22-14.68,8,8,0,1,1,15.78-2.64ZM128,152a32,32,0,1,0-32-32A32,32,0,0,0,128,152Zm0,64a87.57,87.57,0,0,0,53.92-18.5,64,64,0,0,0-107.84,0A87.57,87.57,0,0,0,128,216Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">Followers</p>
-      </div>
-      <div class="shrink-0">
-        <button
-          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
-        >
-          <span class="truncate">View All</span>
-        </button>
-      </div>
     </div>
   </div>
-  <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-    <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
-     
+  <div class="layout-content-container flex flex-col max-w-[960px] flex-1" style="margin-left: 100px;">
+    <div class="flex flex-col gap-4 bg-black px-4 min-h-14">
+      {% for post in posts %}
+              <div class="p-2 @container">
+                <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
+                  <div class="w-full aspect-video rounded-xl overflow-auto bg-gray-950 text-white p-4" style="max-height: 100000px; width:  120000px;">
+                      <div id="code-{{ forloop.counter }}" style="height: 100%;" required></div>
+                  </div>
+                  <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+                    <div class="flex items-end gap-3 justify-between">
+                      <div class="flex flex-col gap-1">
+                        <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                        {{ post.content|truncatechars:600 }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
     </div>
-    <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
-      <div class="flex items-center gap-4">
-        <div
-          class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
-          data-icon="ArrowCircleUp"
-          data-size="24px"
-          data-weight="regular"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-            <path
-              d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm37.66-101.66a8,8,0,0,1-11.32,11.32L136,107.31V168a8,8,0,0,1-16,0V107.31l-18.34,18.35a8,8,0,0,1-11.32-11.32l32-32a8,8,0,0,1,11.32,0Z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">All posts </p>
-      </div>
-      <div class="shrink-0">
-        <button
-          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
-        >
-          <span class="truncate">View All</span>
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    function initializeEditors() {
+        {% for post in posts %}
+            monaco.editor.create(document.getElementById('code-{{ forloop.counter }}'), {
+                value: `{{ post.code|escapejs }}`,
+                language: '{{ post.language }}',
+                theme: 'vs-dark',
+                readOnly: true
+            });
+        {% endfor %}
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeEditors();
+    });
+
+    function likePost(postId, userId) {
+        var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                'user_id': userId,
+            },
+            success: function(response) {
+                $('#post-container').load(location.href + ' #post-container > *', function() {
+                    initializeEditors();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+</script>
 {% endblock %}

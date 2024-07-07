@@ -7,99 +7,15 @@
 <div class="gap-1 px-6 flex flex-1 justify-center py-5">
   <div class="layout-content-container flex flex-row max-w-[1200px] flex-1">
     <!--filter-->
-    <div class="layout-content-container flex flex-col w-10 absolute left-0">
-        <div class="flex gap-3 p-3 flex-wrap pr-4">
-          <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#333333] pl-2 pr-2">
-            <div class="text-[#FFFFFF]" data-icon="Funnel" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"
-                ></path>
-              </svg>
-            </div>
-            <p class="text-[#FFFFFF] text-sm font-medium leading-normal">All Posts</p>
-            <div class="text-[#FFFFFF]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-              </svg>
-            </div>
-          </button>
-          <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#333333] pl-2 pr-2" id="latest">
-            <div class="text-[#FFFFFF]" data-icon="FilmReel" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M224,216H183.36A103.95,103.95,0,1,0,128,232h96a8,8,0,0,0,0-16ZM40,128a88,88,0,1,1,88,88A88.1,88.1,0,0,1,40,128Zm88-24a24,24,0,1,0-24-24A24,24,0,0,0,128,104Zm0-32a8,8,0,1,1-8,8A8,8,0,0,1,128,72Zm24,104a24,24,0,1,0-24,24A24,24,0,0,0,152,176Zm-32,0a8,8,0,1,1,8,8A8,8,0,0,1,120,176Zm56-24a24,24,0,1,0-24-24A24,24,0,0,0,176,152Zm0-32a8,8,0,1,1-8,8A8,8,0,0,1,176,120ZM80,104a24,24,0,1,0,24,24A24,24,0,0,0,80,104Zm0,32a8,8,0,1,1,8-8A8,8,0,0,1,80,136Z"
-                ></path>
-              </svg>
-            </div>
-            <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Latest</p>
-            <div class="text-[#FFFFFF]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-              </svg>
-            </div>
-          </button>
-          <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#333333] pl-2 pr-2" id="popular">
-            <div class="text-[#FFFFFF]" data-icon="TrendUp" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M240,56v64a8,8,0,0,1-16,0V75.31l-82.34,82.35a8,8,0,0,1-11.32,0L96,123.31,29.66,189.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0L136,140.69,212.69,64H168a8,8,0,0,1,0-16h64A8,8,0,0,1,240,56Z"
-                ></path>
-              </svg>
-            </div>
-            <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Popular</p>
-            <div class="text-[#FFFFFF]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-              </svg>
-            </div>
-          </button>
-          <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#333333] pl-2 pr-2">
-            <div class="text-[#FFFFFF]" data-icon="Users" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"
-                ></path>
-              </svg>
-            </div>
-            <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Following</p>
-            <div class="text-[#FFFFFF]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-              </svg>
-            </div>
-          </button>
-          <button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-full bg-[#333333] pl-2 pr-2">
-            <div class="text-[#FFFFFF]" data-icon="User" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path
-                  d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"
-                ></path>
-              </svg>
-            </div>
-            <p class="text-[#FFFFFF] text-sm font-medium leading-normal">My Posts</p>
-            <div class="text-[#FFFFFF]" data-icon="CaretDown" data-size="20px" data-weight="regular">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-              </svg>
-            </div>
-          </button>
-        </div>
-      </div>
-    
+
       <!-- Main content (posts) -->
-    <div class="flex flex-col flex-[3] p-20 @container">
+    
+      <div class="flex flex-col flex-[3] p-20 @container">
       <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-        {% if messages %}
-        <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
+      <div id="allPosts">
         {% for post in posts %}
-        <div class="flex flex-col items-stretch justify-center gap-1 py-4 bg-zinc-800 rounded p-4">
-          <div class="flex flex-col items-stretch justify-center gap-1 py-4">
+        <div class="post flex flex-col items-stretch justify-center gap-1 py-4 mb-4 bg-zinc-800 rounded p-4">
+          <div class=" flex flex-col items-stretch justify-center gap-1 py-4">
 
               {% comment %} <form method="POST" action="{% url 'editPost' post.id %}">
                 {% csrf_token %}
@@ -133,17 +49,16 @@
                 </p>
                 <div class="flex items-center gap-2">
                   <button id="like" onclick="likePost({{ post.id }}, '{{ user_id }}')" class="flex items-center justify-center gap-1">
-                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path>
+                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
                     <span style="color: #808080;">{{ post.likes|length }} likes</span>
                   </button>
-                  <button onclick="commentPost({{ post.id }})" class="flex items-center justify-center gap-1">
-                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 10c0 1.105.895 2 2 2h4V8H4c-1.105 0-2 .895-2 2zm14-2v4h4c0-1.105-.895-2-2-2s-2-.895-2-2zm-2 6.414l-4 4-4-4H5l5 5 5-5h-3V8h3l-5-5-5 5h3v6.414z"></path>
+                  <a href="{% url 'groupPostInfo' name=groupe.name id=post.id %}" class="flex items-center">                    <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" >
+                        <path d="M 25 4 C 12.316406 4 2 12.972656 2 24 C 2 30.1875 5.335938 36.066406 10.949219 39.839844 C 10.816406 40.890625 10.285156 43.441406 8.183594 46.425781 L 7.078125 47.992188 L 9.054688 48 C 14.484375 48 18.15625 44.671875 19.363281 43.394531 C 21.195313 43.796875 23.089844 44 25 44 C 37.683594 44 48 35.027344 48 24 C 48 12.972656 37.683594 4 25 4 Z"></path>
                     </svg>
-                    <span style="color: #808080;">{{ post.comments.count|length }} comments</span>
-                  </button>
+                    <span style="color: #808080;">{{ post.comment_count }} comments</span>
+                     </a>
                 </div>
               </div>
               <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal">
@@ -153,6 +68,7 @@
           </div>
         </div>
         {% endfor %}
+       </div>
       </div>
     </div>
     
@@ -187,7 +103,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     function likePost(postId, userId) {
-        var url = 'http://localhost:8000/api/groupe/publications/' + postId + '/like/';
+        var url = 'http://localhost:80/api/groupe/publications/' + postId + '/like/';
         
         $.ajax({
             url: url,
@@ -207,6 +123,26 @@
             }
         });
     }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const search = document.getElementById('search_base');
+        const allGroupe = document.getElementById('allPosts'); 
+        const groupes = allGroupe.querySelectorAll('.post');
+      
+        search.addEventListener('input', (e) => {
+          const value = e.target.value.toLowerCase();
+          groupes.forEach(groupe => {
+            const name =  groupe.querySelector('.text-base.font-normal').textContent.toLowerCase();
+            if (name.includes(value)) {
+              groupe.style.display = 'flex';
+            } else {
+              groupe.style.display = 'none';
+            }
+          });
+        });
+      });
+      
 </script>
 
 

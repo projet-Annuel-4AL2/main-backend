@@ -15,7 +15,7 @@
                   <div class="flex flex-col justify-center">
                     <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user_info.name }}</p>
                     <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user.bio|default:"don't have any bio" }}</p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} Followers {{ followings.followings|length }} Followings</p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user.followers|length }} followers {{ followings.followings|length }} following</p>
                   </div>
                 </div>
               </div>
@@ -61,29 +61,18 @@
                       <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Users</p>
                     </div>
                   </a>
-                  <a href="{% url 'home' %}">
-                    <div class="flex items-center gap-3 px-3 py-2">
-                      <div class="text-[#FFFFFF]" data-icon="ToggleRight" data-size="24px" data-weight="regular">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                          <path
-                            d="M176,56H80a72,72,0,0,0,0,144h96a72,72,0,0,0,0-144Zm0,128H80A56,56,0,0,1,80,72h96a56,56,0,0,1,0,112Zm0-96a40,40,0,1,0,40,40A40,40,0,0,0,176,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,176,152Z"
-                          ></path>
-                        </svg>
-                      </div>
-                      <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Settings</p>
-                    </div>
-                  </a>
                 </div>
                 <div class="flex flex-col gap-4">
-                  <button
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
-                  >
-                    <span class="truncate">Add Posts</span>
-                  </button>
-                  <button
-                    onclick="window.location.href = '{% url 'createGroupe' %}'"
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
-                  >
+                    <button
+                      onclick="window.location.href = '{% url 'userPostAdd' %}'"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
+                    >
+                      <span class="truncate">Add Posts</span>
+                    </button>
+                    <button
+                      onclick="window.location.href = '{% url 'createGroupe' %}'"
+                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
+                    >
                     <span class="truncate">Create Groupe</span>
                   </button>
                   <div class="flex flex-col gap-1">
@@ -130,35 +119,36 @@
                 {% endfor %}
               </div>
             </div>
-            <div class="p-4 @container">
+            {% if post is not None %}
+            <div class="p-4 @container" id="post-container">
               <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
-                <div
-                  class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/e741ad76-084a-456f-bd42-047b9c7c8b6b.png");'
-                ></div>
+                <div class="w-full aspect-video rounded-xl overflow-auto bg-gray-950 text-white p-4" style="max-height: 100000px; width:  120000px;">
+                    <div id="code-editor" style="height: 100%;"></div>
+                </div>
                 <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
-                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">Mar 04 at 2:14 PM</p>
-                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">Brandon Morton</p>
+                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+                  <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
                   <div class="flex items-end gap-3 justify-between">
                     <div class="flex flex-col gap-1">
                       <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                        Design Shot is an invitation to ponder on design as a living entity, capable of embodying and influencing the flow of thoughts and sensations in an
-                        ever-changing reality...
+                       {{ post.content|truncatechars:600 }}
                       </p>
-                      <p class="text-[#CBCBCB] text-base font-normal leading-normal">10k likes 2.2k shares 351 comments</p>
+                    <div class="flex items-center">
+                        <button id="like" onclick="likePost({{ post.id }}, '{{ user.id }}')" class="flex items-center mr-4">
+                            <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span style="color: #808080;">{{ post.likes|length }} likes</span>
+                        </button>
                     </div>
-                    <button
-                      class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#FFFFFF] text-black text-sm font-medium leading-normal"
-                    >
-                      <span class="truncate">...</span>
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="pb-3">
               <div class="flex border-b border-[#434343] px-4 justify-between">
-                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-[#FFFFFF] text-[#FFFFFF] gap-1 pb-[7px] pt-2.5 flex-1" href="#">
+                <a href={% url 'groupes' %} class="flex flex-col items-center justify-center border-b-[3px] border-b-[#FFFFFF] text-[#FFFFFF] gap-1 pb-[7px] pt-2.5 flex-1" href="#">
                   <div class="text-[#FFFFFF]" data-icon="ArrowCircleRight" data-size="24px" data-weight="fill">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                       <path
@@ -166,10 +156,11 @@
                       ></path>
                     </svg>
                   </div>
-                  <p class="text-[#FFFFFF] text-sm font-bold leading-normal tracking-[0.015em]">Groupe</p>
+                  <p class="text-[#FFFFFF] text-sm font-bold leading-normal tracking-[0.015em]">View All Groupe</p>
                 </a>
               </div>
             </div>
+            {% endif %}
             <div class="px-4 py-3">
               <label class="flex flex-col min-w-40 h-12 w-full">
                 <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
@@ -186,6 +177,7 @@
                     </svg>
                   </div>
                   <input
+                    id = "search"
                     placeholder="Search..."
                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#FFFFFF] focus:outline-0 focus:ring-0 border-none bg-[#333333] focus:border-none h-full placeholder:text-[#CBCBCB] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                     value=""
@@ -193,8 +185,9 @@
                 </div>
               </label>
             </div>
-            {% for groupe in groupes%}
-            <div class="flex items-center gap-4 bg-black px-4 min-h-[72px] py-2 justify-between">
+            <div id="allGroupe">
+            {% for groupe in groupes|slice:"8"%}
+            <div class="groupe flex items-center gap-4 bg-black px-4 min-h-[72px] py-2 justify-between">
               <div class="flex items-center gap-4">
                 <div
                   class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-14 w-fit"
@@ -207,15 +200,12 @@
               </div>
               <div class="shrink-0">
                 <div class="text-[#FFFFFF] flex size-7 items-center justify-center" data-icon="DiscordLogo" data-size="24px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M104,140a12,12,0,1,1-12-12A12,12,0,0,1,104,140Zm60-12a12,12,0,1,0,12,12A12,12,0,0,0,164,128Zm74.45,64.9-67,29.71a16.17,16.17,0,0,1-21.71-9.1l-8.11-22q-6.72.45-13.63.46t-13.63-.46l-8.11,22a16.18,16.18,0,0,1-21.71,9.1l-67-29.71a15.93,15.93,0,0,1-9.06-18.51L38,58A16.07,16.07,0,0,1,51,46.14l36.06-5.93a16.22,16.22,0,0,1,18.26,11.88l3.26,12.84Q118.11,64,128,64t19.4.93l3.26-12.84a16.21,16.21,0,0,1,18.26-11.88L205,46.14A16.07,16.07,0,0,1,218,58l29.53,116.38A15.93,15.93,0,0,1,238.45,192.9ZM232,178.28,202.47,62s0,0-.08,0L166.33,56a.17.17,0,0,0-.17,0l-2.83,11.14c5,.94,10,2.06,14.83,3.42A8,8,0,0,1,176,86.31a8.09,8.09,0,0,1-2.16-.3A172.25,172.25,0,0,0,128,80a172.25,172.25,0,0,0-45.84,6,8,8,0,1,1-4.32-15.4c4.82-1.36,9.78-2.48,14.82-3.42L89.83,56s0,0-.12,0h0L53.61,61.93a.17.17,0,0,0-.09,0L24,178.33,91,208a.23.23,0,0,0,.22,0L98,189.72a173.2,173.2,0,0,1-20.14-4.32A8,8,0,0,1,82.16,170,171.85,171.85,0,0,0,128,176a171.85,171.85,0,0,0,45.84-6,8,8,0,0,1,4.32,15.41A173.2,173.2,0,0,1,158,189.72L164.75,208a.22.22,0,0,0,.21,0Z"
-                    ></path>
-                  </svg>
+                  <svg viewBox="0 0 350 350" style="color:currentColor" xmlns="http://www.w3.org/2000/svg" class="h-full w-full"><rect width="512" height="512" x="0" y="0" rx="30" fill="transparent" stroke="transparent" stroke-width="0" stroke-opacity="100%" paint-order="stroke"></rect><svg width="256px" height="256px" viewBox="0 0 24 24" fill="currentColor" x="128" y="128" role="img" style="display:inline-block;vertical-align:middle" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill="currentColor" d="M10.27 12h3.46a1.5 1.5 0 0 0 1.48-1.75l-.3-1.79a2.951 2.951 0 0 0-5.82.01l-.3 1.79c-.15.91.55 1.74 1.48 1.74zm-8.61-.89c-.13.26-.18.57-.1.88c.16.69.76 1.03 1.53 1h1.95c.83 0 1.51-.58 1.51-1.29c0-.14-.03-.27-.07-.4c-.01-.03-.01-.05.01-.08c.09-.16.14-.34.14-.53c0-.31-.14-.6-.36-.82c-.03-.03-.03-.06-.02-.1c.07-.2.07-.43.01-.65a1.12 1.12 0 0 0-.99-.74a.09.09 0 0 1-.07-.03C5.03 8.14 4.72 8 4.37 8c-.3 0-.57.1-.75.26c-.03.03-.06.03-.09.02a1.24 1.24 0 0 0-1.7 1.03c0 .02-.01.04-.03.06c-.29.26-.46.65-.41 1.05c.03.22.12.43.25.6c.03.02.03.06.02.09zm14.58 2.54c-1.17-.52-2.61-.9-4.24-.9c-1.63 0-3.07.39-4.24.9A2.988 2.988 0 0 0 6 16.39V18h12v-1.61c0-1.18-.68-2.26-1.76-2.74zm-15.02.93A2.01 2.01 0 0 0 0 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29c-.37-.06-.74-.1-1.13-.1c-.99 0-1.93.21-2.78.58zm21.56 0A6.95 6.95 0 0 0 20 14c-.39 0-.76.04-1.13.1c.4.68.63 1.46.63 2.29V18H24v-1.57c0-.81-.48-1.53-1.22-1.85zM22 11v-.5c0-1.1-.9-2-2-2h-2c-.42 0-.65.48-.39.81l.7.63c-.19.31-.31.67-.31 1.06c0 1.1.9 2 2 2s2-.9 2-2z"/></g></svg></svg>
                 </div>
               </div>
             </div>
             {% endfor %}
+          </div>
           </div>
         </div>
       </div>
@@ -238,6 +228,69 @@ elements.forEach(element => {
   element.addEventListener('mouseout', removeHoverStyle);
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
+  const search = document.getElementById('search');
+  const allGroupe = document.getElementById('allGroupe'); 
+  const groupes = allGroupe.querySelectorAll('.groupe');
+
+  search.addEventListener('input', (e) => {
+    const value = e.target.value.toLowerCase();
+    groupes.forEach(groupe => {
+      const name = groupe.querySelector('.flex.flex-col.justify-center > a').textContent.toLowerCase();
+      if (name.includes(value)) {
+        groupe.style.display = 'flex';
+      } else {
+        groupe.style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+<script>
+  var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+  function initializeEditor() {
+    monaco.editor.create(document.getElementById('code-editor'), {
+        value: `{{ post.code|escapejs }}`,
+        language: '{{ post.language }}',
+        theme: 'vs-dark',
+        readOnly: true
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeEditor();
+});
+
+  function likePost(postId, userId) {
+      var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+
+      $.ajax({
+          url: url,
+          type: 'POST',
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          data: {
+              'user_id': userId,
+          },
+          success: function(response) {
+              $('#post-container').load(location.href + ' #post-container > *', function() {
+                  initializeEditor();
+              });
+          },
+          error: function(xhr, status, error) {
+              console.log(xhr.responseText);
+          }
+      });
+  }
 </script>
 
 {% endblock %}

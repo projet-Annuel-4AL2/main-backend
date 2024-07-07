@@ -1,9 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.shortcuts import render
-from .models import CustomUser
+from .models import CustomUser , UserPost
 from rest_framework import generics
-from .serializers import UserSerializer
+from .serializers import UserSerializer , UserPostSerializer
 from .AuthTokenSerializer import AuthTokenSerializer
 from .filters import UserFilter
 from rest_framework.views import APIView
@@ -141,6 +141,10 @@ class UserAuthToken(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        try:
+            user.auth_token.delete()
+        except:
+            pass
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
@@ -186,3 +190,70 @@ class ChangePassword(APIView):
             return Response({'status': 'password changed'}, status=status.HTTP_200_OK)
         return Response({'error': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
         
+
+###for user post
+
+class UserPostListCreate(generics.ListCreateAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all().order_by('-created_at')
+    serializer_class = UserPostSerializer
+    
+
+class UserPostDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+  
+  
+class GetUserPostByUsername(generics.ListCreateAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+    
+    def get_queryset(self):
+        queryset = self.queryset
+        username = self.kwargs.get('username', None)
+        if username is not None:
+            queryset = queryset.filter(author__username=username)
+        return queryset
+      
+class AddLike(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, pk):
+        post = get_object_or_404(UserPost, pk=pk)
+        user = get_object_or_404(CustomUser, pk=request.data['user_id'])
+        
+        if user in post.likes.all():
+            post.likes.remove(user)
+            message = 'Unliked'  
+        else:
+            post.likes.add(user)
+            message = 'Liked'
+            
+        return Response({'status': message}, status=status.HTTP_200_OK)
+    
+class AddComment(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, pk):
+        post = get_object_or_404(UserPost, pk=pk)
+        user = get_object_or_404(CustomUser, pk=request.data['user_id'])
+        comment = request.data.get('comment')
+        if comment is not None:
+            post.comments.add(user)
+            message = 'Commented'
+        return Response({'status': message}, status=status.HTTP_200_OK)
+    
+class GetComments(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        post = get_object_or_404(UserPost, pk=pk)
+        comments = post.comments.all()
+        return Response({'comments': UserSerializer(comments, many=True).data}, status=status.HTTP_200_OK)
+    
+class GetLikes(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        post = get_object_or_404(UserPost, pk=pk)
+        likes = post.likes.all()
+        return Response({'likes': UserSerializer(likes, many=True).data}, status=status.HTTP_200_OK)
+    

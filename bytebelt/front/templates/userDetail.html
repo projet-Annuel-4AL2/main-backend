@@ -56,34 +56,28 @@
               </div>
             </div>
           </div>
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
-             
-            </div>
-            <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
-              <div class="flex items-center gap-4">
-                <div
-                  class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
-                  data-icon="ArrowCircleUp"
-                  data-size="24px"
-                  data-weight="regular"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm37.66-101.66a8,8,0,0,1-11.32,11.32L136,107.31V168a8,8,0,0,1-16,0V107.31l-18.34,18.35a8,8,0,0,1-11.32-11.32l32-32a8,8,0,0,1,11.32,0Z"
-                    ></path>
-                  </svg>
+           
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1" style="margin-left: 100px;">
+                <div class="flex flex-col gap-4 bg-black px-4 min-h-14">
+                  {% for post in posts %}
+                          <div class="p-2 @container">
+                            <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
+                              <div class="w-full aspect-video rounded-xl overflow-auto bg-gray-950 text-white p-4" style="max-height: 100000px; width:  120000px;">
+                                  <div id="code-{{ forloop.counter }}" style="height: 100%;" required></div>
+                              </div>
+                              <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
+                                <div class="flex items-end gap-3 justify-between">
+                                  <div class="flex flex-col gap-1">
+                                    <p class="text-[#CBCBCB] text-base font-normal leading-normal">
+                                    {{ post.content|truncatechars:600 }}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    {% endfor %}
                 </div>
-                <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">All posts </p>
-              </div>
-              <div class="shrink-0">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
-                >
-                  <span class="truncate">View All</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -136,4 +130,51 @@
   </script>
   
 
+<script>
+    var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    function initializeEditors() {
+        {% for post in posts %}
+            monaco.editor.create(document.getElementById('code-{{ forloop.counter }}'), {
+                value: `{{ post.code|escapejs }}`,
+                language: '{{ post.language }}',
+                theme: 'vs-dark',
+                readOnly: true
+            });
+        {% endfor %}
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeEditors();
+    });
+
+    function likePost(postId, userId) {
+        var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                'user_id': userId,
+            },
+            success: function(response) {
+                $('#post-container').load(location.href + ' #post-container > *', function() {
+                    initializeEditors();
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+</script>
 {% endblock%}
