@@ -7,6 +7,9 @@ class Language(StrEnum):
 
     @staticmethod
     def from_str(language: str):
+        if language is None:
+            raise ValueError(f'Language cannot be null')
+
         try:
             return Language[language.upper()]
         except KeyError:

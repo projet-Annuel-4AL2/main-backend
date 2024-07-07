@@ -34,7 +34,8 @@ urlpatterns = [
     
     ######code session
     path('codeSession/<int:post_id>', views.codeSession, name='codeSession'),
-    
+    path('runCode/', views.runCode, name='runCode'),
+
     
     ######for user post
     path('post/', views.userPostAdd, name='userPostAdd'),

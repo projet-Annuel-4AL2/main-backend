@@ -588,11 +588,15 @@ def deleteUser(request , name):
         return redirect('login')  
     else:
         return render(request, 'userSettings.html', {'error': 'Unable to delete account'})
+
+
 @token_required
 def codeSession(request, post_id):
     return render(request, 'codeSession.html', {'post_id': post_id})
 
 
+def runCode(request):
+    return render(request, 'codeExecution.html')
 ###for user post now
 def userPostAdd(request):
     user_data = get_user_data(request)

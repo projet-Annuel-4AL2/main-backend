@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container mx-auto mt-5">
-    <h1 class="text-center text-2xl font-bold mb-4">Code Editor for {{ post_id }}</h1>
+    <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
     <select id="languageSelector" class="mb-4">
         <option value="python">Python</option>
         <option value="javascript">JavaScript</option>
@@ -57,12 +57,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const postId = "{{ post_id }}";  // Assuming `post_id` is passed to the template context
-        const socket = new WebSocket(`ws://${window.location.host}/ws/codesession/${postId}/`);
-
         let editor;
         let currentLanguage = 'python';
-        let debounceTimer;
         let resultWindow = null;
 
         require(['vs/editor/editor.main'], function() {
@@ -87,48 +83,7 @@
             document.getElementById('languageSelector').addEventListener('change', function() {
                 currentLanguage = this.value;
                 monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
-                socket.send(JSON.stringify({
-                    'type': 'language_change',
-                    'language': currentLanguage
-                }));
             });
-
-            editor.onDidChangeModelContent(() => {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    const code = editor.getValue();
-                    socket.send(JSON.stringify({
-                        'type': 'code_change',
-                        'code': code
-                    }));
-                }, 300);
-            });
-
-            socket.onmessage = function(event) {
-                const data = JSON.parse(event.data);
-                if (data.type === 'init') {
-                    if (currentLanguage === null) {
-                        currentLanguage = data.language;
-                        monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
-                        document.getElementById('languageSelector').value = currentLanguage;
-                    }
-                    if (editor.getValue() !== data.code) {
-                        editor.setValue(data.code);
-                    }
-                } else if (data.type === 'code_change') {
-                    const code = data['code'];
-                    if (editor.getValue() !== code) {
-                        editor.setValue(code);
-                    }
-                } else if (data.type === 'language_change') {
-                    const language = data['language'];
-                    if (currentLanguage !== language) {
-                        currentLanguage = language;
-                        monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
-                        document.getElementById('languageSelector').value = currentLanguage;
-                    }
-                }
-            };
 
             function runCode() {
                 const currentModel = editor.getModel();
