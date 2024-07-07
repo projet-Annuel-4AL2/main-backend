@@ -100,42 +100,45 @@ jobs:
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      #- name: Install NGINX Ingress Controller
-      #  run: |
-      #    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-      #    helm repo update
-      #    helm install ingress-nginx ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx
-
-
-      - name: Install Helm
+      
+      - name: Add ingress-nginx Helm repo
         run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+      
+      - name: Uninstall existing ingress-nginx (if any)
+        run: |
+          helm uninstall ingress-nginx-default --namespace default || true
 
       - name: Install cert-manager
         run: |
           kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.0/cert-manager.yaml
-      
 
-      - name: Install cert-manager
+      - name: Install NGINX Ingress Controller
         run: |
-           kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.6.0/cert-manager.yaml
+          helm install ingress-nginx-default ingress-nginx/ingress-nginx --create-namespace --namespace default
 
-      #deploy postgres service 
+      - name: Apply Ingress and Certificate
+        run: |
+          kubectl apply -f ./manifests/ingress.yaml
+          kubectl apply -f ./manifests/certificate.yaml
+      
       - name: Deploy PostgreSQL Service
         uses: Azure/k8s-deploy@v1
         with:
           action: deploy
-          manifests: ./manifests/db-service.yaml
+          manifests: |
+            ./manifests/db-service.yaml
+            ./manifests/deployment.yaml
+          images: |
+            gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
 
-      # Deploys application based on given manifest file and add certificate ssl
-      #faire le    ./manifests/nginx-ingress-service.yaml en cmd
       - name: Deploys application
         uses: Azure/k8s-deploy@v4
         with:
           action: deploy
           manifests: |
-            ./manifests/deployment.yaml
-            ./manifests/ingress.yaml
             ./manifests/certificate.yaml
-          images: |
-            gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
+            ./manifests/cluster-issuer.yaml
+          #images: |
+          #  gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
