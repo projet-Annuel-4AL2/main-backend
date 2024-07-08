@@ -6,23 +6,33 @@
 {% block content %}
 <div class="container mx-auto mt-5">
     <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
-    <select id="languageSelector" class="mb-4">
-        <option value="python">Python</option>
-        <option value="javascript">JavaScript</option>
-        <option value="java">Java</option>
-        <option value="csharp">C#</option>
-        <option value="cpp">C++</option>
-    </select>
+    <div>
+        <select id="languageSelector" class="btn btn-light mb-4 text-left">
+            <option value="python">Python</option>
+            <option value="javascript">JavaScript</option>
+            <option value="java">Java</option>
+            <option value="csharp">C#</option>
+            <option value="cpp">C++</option>
+        </select>
+        <div class="mb-3">
+          <label for="formFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
+          <input class="btn btn-light form-control" type="file" id="formFile" style="input-border-color:white; input-btn-focus-width:20em">
+        </div>
+    </div>
     <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
     <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
     <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
 </div>
 
-{% endblock %}
+{% endblock %}q
 
 {% block extra_js %}
 {% comment %} for monaco  {% endcomment %}
 
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<!-- Monaco editor bundle -->
 <script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } }</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
@@ -84,6 +94,19 @@
                 currentLanguage = this.value;
                 monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
             });
+
+           document.getElementById('formFile').addEventListener('change', function (event) {
+                const uploadedFile = event.target.files[0];
+                if (uploadedFile == undefined) {
+                    return;
+                }
+
+                const fileName = uploadedFile.name;
+
+                uploadedFile.text()
+                    .then(textContent => editor.getModel().setValue(textContent))
+                    .catch(err => console.err(err));
+           });
 
             function runCode() {
                 const currentModel = editor.getModel();
