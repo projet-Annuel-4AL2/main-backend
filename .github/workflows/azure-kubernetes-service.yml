@@ -130,6 +130,8 @@ jobs:
           manifests: |
             ./manifests/db-service.yaml
             ./manifests/deployment.yaml
+          images: |
+            gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
 
       - name: Deploys application
         uses: Azure/k8s-deploy@v4
@@ -138,5 +140,8 @@ jobs:
           manifests: |
             ./manifests/certificate.yaml
             ./manifests/cluster-issuer.yaml
-          images: |
-            gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
+          #images: |
+          #  gaveenregistry.azurecr.io/bytebelt:${{ github.sha }}
+     # - name: Install NGINX Ingress Controller
+      #  run: |
+      #    helm install ingress-nginx ingress-nginx/ingress-nginx --create-namespace --namespace default
