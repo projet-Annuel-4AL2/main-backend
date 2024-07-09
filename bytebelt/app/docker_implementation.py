@@ -11,6 +11,8 @@ from .runner import Implementation
 
 
 class DockerImplementation(Implementation):
+    TEMP_SRC_DIR_ABS_PATH = '/tmp_code/src/'
+
     def __init__(self):
         self.client = docker.from_env()
         self.containers = []
@@ -56,7 +58,7 @@ class DockerImplementation(Implementation):
 
         container.put_archive(dest_path, folder_data)
 
-    def run(self, language: Language, container_name: str):
+    def start(self, language: Language, container_name: str):
         container = None
         # Command to keep the containers running
         initial_command = 'tail -f /dev/null'
@@ -86,7 +88,6 @@ class DockerImplementation(Implementation):
 
         while container.status != 'running':
             container = self.client.containers.get(container.name)
-            print(container.status)
             time.sleep(0.1)
 
         return container
@@ -100,19 +101,31 @@ class DockerImplementation(Implementation):
         container.kill()
         container.remove()
 
+    @classmethod
+    def run_code(cls, container, container_name: str, filepath: str):
+        execution_result = None
+
+        if container_name.startswith(Language.PYTHON.value):
+            execution_result = container.exec_run(['python', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
+        elif container_name.startswith(Language.PHP.value):
+            execution_result = container.exec_run(['php', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
+
+        return execution_result
+
+    @classmethod
+    def _get_source_code_filename(cls, container) -> str:
+        binary_output = container.exec_run(['ls', cls.TEMP_SRC_DIR_ABS_PATH]).output
+
+        return list(filter(lambda fname: fname.endswith('.py'), binary_output.decode().strip().split('\n')))[0]
+
     def exec(self, container_name: str):
         container = self._find_container(container_name)
 
         if container is None:
             raise ValueError(f'Container {container_name} does not exist')
 
-        execution_result = None
-        src_code_dir = 'tmp_code/src'
-        file_name = container.exec_run(['ls', src_code_dir]).output.decode().strip()
+        source_file_name = self._get_source_code_filename(container)
 
-        if container_name.startswith(Language.PYTHON.value):
-            execution_result = container.exec_run(['python', f'{src_code_dir}/{file_name}'])
-        elif container_name.startswith(Language.PHP.value):
-            execution_result = container.exec_run(['php', f'{src_code_dir}/{file_name}'])
+        execution_result = self.run_code(container, container_name, f'{source_file_name}')
 
         return execution_result.exit_code, execution_result.output
