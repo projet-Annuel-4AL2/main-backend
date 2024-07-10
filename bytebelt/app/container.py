@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import json
 from typing import Any
 from re import sub
@@ -13,13 +13,14 @@ def snake(s):
                 s.replace('-', ' '))).split()).lower()
 
 
-@dataclass
+@dataclass(order=True)
 class Container(object):
-    name: str = None
-    src_code_path: str = None
-    language: Language = None
-    input_file_path: str = None
+    name: str = field(compare=False, default=None)
+    src_code_path: str = field(compare=False, default=None)
+    language: Language = field(compare=False, default=None)
+    input_file_path: str = field(compare=False, default=None)
     execution_order: int = None
+    output_file_name: str = field(compare=False, default=None)
 
     @staticmethod
     def snake_keys_recursive(d: dict[str, Any]):
