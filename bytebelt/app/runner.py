@@ -8,6 +8,7 @@ import uuid
 
 from .container import Container
 
+
 class Implementation(ABC):
     class Meta:
         abstract = True
@@ -92,14 +93,14 @@ class Runner(object):
 
         for container in containers:
             container.name = self._setup(container.src_code_path, container.language, container.input_file_path)
-            pipeline.put((container.execution_order, container.name))
+            pipeline.put((container.execution_order, container))
 
     def execute_pipeline(self, pipeline_id):
         pipeline = self.pipelines[pipeline_id]
 
-        _, container_name = pipeline.get()
+        _, container = pipeline.get()
         while not pipeline.empty():
-            exit_code, result = self._execute_code(container_name)
+            exit_code, result = self._execute_code(container.name)
 
             if exit_code != 0:
                 return exit_code, result
@@ -107,12 +108,12 @@ class Runner(object):
             with tempfile.NamedTemporaryFile('wt') as outputFile:
                 outputFile.write(result.decode())
                 temp_dir_name = os.path.dirname(outputFile.name)
-                shutil.move(outputFile.name, os.path.join(temp_dir_name, 'input.csv'))
-                outputFile.name = os.path.join(temp_dir_name, 'input.csv')
+                shutil.move(outputFile.name, os.path.join(temp_dir_name, container.output_file_name))
+                outputFile.name = os.path.join(temp_dir_name, container.output_file_name)
                 outputFile.flush()
-                _, container_name = pipeline.get()
-                self._copy_files(container_name, outputFile.name)
+                _, container = pipeline.get()
+                self._copy_files(container.name, outputFile.name)
 
-        exit_code, result = self._execute_code(container_name)
+        exit_code, result = self._execute_code(container.name)
 
         return exit_code, result
