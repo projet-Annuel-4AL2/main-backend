@@ -66,20 +66,22 @@ class DockerImplementation(Implementation):
         if not container_name.startswith(language.value):
             container_name = language.value + '-' + container_name
 
+        common_config = {
+            'command': initial_command,
+            'detach': True,
+            'name': container_name,
+            'mem_limit': '1GB',
+        }
         match language:
             case Language.PHP:
                 container = self.client.containers.run(
                     image='php',
-                    command=initial_command,
-                    detach=True,
-                    name=container_name
+                    **common_config,
                 )
             case Language.PYTHON:
                 container = self.client.containers.run(
                     image='python',
-                    command=initial_command,
-                    detach=True,
-                    name=container_name
+                    **common_config,
                 )
             case _:
                 raise NotImplementedError(f'Runner for {language.value} is not implemented yet')
