@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.shortcuts import render
-from .models import CustomUser , UserPost
+from .models import CustomUser , UserPost , Device
 from rest_framework import generics
 from .serializers import UserSerializer , UserPostSerializer
 from .AuthTokenSerializer import AuthTokenSerializer
@@ -14,7 +14,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-
+import secrets
 
 
 
@@ -132,6 +132,20 @@ class GetAllFollowing(APIView):
         user = get_object_or_404(CustomUser, pk=pk)
         following = user.following.all()
         return Response({'followings': UserSerializer(following, many=True).data}, status=status.HTTP_200_OK)
+
+class GetUserIdByTokenDevice(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        token_device = request.data.get('token_device')
+        if token_device is not None:
+            try:
+                device = Device.objects.get(token_device=token_device)
+                user = device.user
+                return Response({'user_id': user.id}, status=status.HTTP_200_OK)
+            except Device.DoesNotExist:
+                return Response({'error': 'device not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'error': 'token device not provided'}, status=status.HTTP_400_BAD_REQUEST)
     
 class UserAuthToken(ObtainAuthToken):
     permission_classes = [AllowAny]
@@ -141,15 +155,25 @@ class UserAuthToken(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        try:
-            user.auth_token.delete()
-        except:
-            pass
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'id': user.id
-        })
+        if request.data.get('device') is not None:
+            token_device , created = Device.objects.get_or_create(user=user)
+            token_device.token_device = secrets.token_hex(16)
+            token_device.save()
+            return Response({
+                'token': token_device.token_device,
+                'id': user.id,
+            })
+        else:
+            try:
+                user.auth_token.delete()
+            except:
+                pass
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'id': user.id,
+                #"token_device": request.data.get('token_device'),
+            })
     
 class RegisterUser(APIView):
     permission_classes = [AllowAny] 
@@ -163,8 +187,15 @@ class RegisterUser(APIView):
             if CustomUser.objects.filter(email=email).exists():
                 return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
             user = serializer.save()
-            token = Token.objects.create(user=user)
-            return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+            if request.data.get('device') is not None:
+                token_device , created = Device.objects.get_or_create(user=user)
+                token_device.token_device = secrets.token_hex(16)
+                token_device.save()
+                token = token_device.token_device,
+                return Response({'token': token, 'user': serializer.data}, status=status.HTTP_201_CREATED)  
+            else:  
+                token = Token.objects.create(user=user)
+                return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 

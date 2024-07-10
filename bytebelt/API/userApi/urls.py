@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes , GetUserPostByUsername 
+from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes , GetUserPostByUsername  , GetUserIdByTokenDevice
 
 urlpatterns = [
     path('users/', UserListCreate.as_view(), name='user-list-create'),
@@ -23,6 +23,11 @@ urlpatterns = [
     path('post/<int:pk>/add-comment/', AddComment.as_view(), name='add-comment'),
     path('post/<int:pk>/get-comment/', GetComments.as_view(), name='get-comments'),
     path('post/<int:pk>/get-like/', GetLikes.as_view(), name='get-likes'),
+    
+    
+    #for mobile
+    
+    path('device/', GetUserIdByTokenDevice.as_view(), name='device'),
     
 
 ]

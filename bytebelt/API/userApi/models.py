@@ -27,3 +27,8 @@ class UserPost(models.Model):
     likes = models.ManyToManyField(CustomUser, related_name='post_likes', blank=True)
     comments = models.ManyToManyField(CustomUser, related_name='post_comments', blank=True)
     image = models.ImageField(upload_to='post_pics/', null=True, blank=True)
+    
+class Device(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token_device = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
