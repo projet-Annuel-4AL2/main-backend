@@ -1,47 +1,12 @@
-import time
 from abc import abstractmethod, ABC
-from dataclasses import dataclass
 from .enums.language_implementation import Language
-import json
-from typing import Any
-from re import sub
-import uuid
+import os
 import queue
+import shutil
+import tempfile
+import uuid
 
-
-def snake(s):
-    return '_'.join(
-        sub(r'([A-Z][a-z]+)', r' \1',
-            sub(r'([A-Z]+)', r' \1',
-                s.replace('-', ' '))).split()).lower()
-
-
-@dataclass
-class Container(object):
-    name: str = None
-    # or code
-    src_code_path: str = None
-    language: Language = None
-    # or inputFile
-    input_file_path: str = None
-    execution_order: int = None
-
-    @staticmethod
-    def snake_keys_recursive(d: dict[str, Any]):
-        if isinstance(d, dict):
-            return {snake(key): Container.snake_keys_recursive(value) for key, value in d.items()}
-        else:
-            return d
-
-    @classmethod
-    def from_json(cls, json_kwargs: str | dict):
-        if type(json_kwargs) == str:
-            json_kwargs = json.loads(json_kwargs)
-            assert type(json_kwargs) == dict, 'json_kwargs must be a dict or dict-like json formatted string'
-        json_kwargs = Container.snake_keys_recursive(json_kwargs)
-
-        return Container(**json_kwargs)
-
+from .container import Container
 
 class Implementation(ABC):
     class Meta:
@@ -126,5 +91,28 @@ class Runner(object):
         pipeline = self.pipelines[pipeline_id]
 
         for container in containers:
-            self._setup(container.src_code_path, container.language, container.input_file_path)
-            pipeline.put((container.execution_order, container.src_code_path))
+            container.name = self._setup(container.src_code_path, container.language, container.input_file_path)
+            pipeline.put((container.execution_order, container.name))
+
+    def execute_pipeline(self, pipeline_id):
+        pipeline = self.pipelines[pipeline_id]
+
+        _, container_name = pipeline.get()
+        while not pipeline.empty():
+            exit_code, result = self._execute_code(container_name)
+
+            if exit_code != 0:
+                return exit_code, result
+
+            with tempfile.NamedTemporaryFile('wt') as outputFile:
+                outputFile.write(result.decode())
+                temp_dir_name = os.path.dirname(outputFile.name)
+                shutil.move(outputFile.name, os.path.join(temp_dir_name, 'input.csv'))
+                outputFile.name = os.path.join(temp_dir_name, 'input.csv')
+                outputFile.flush()
+                _, container_name = pipeline.get()
+                self._copy_files(container_name, outputFile.name)
+
+        exit_code, result = self._execute_code(container_name)
+
+        return exit_code, result

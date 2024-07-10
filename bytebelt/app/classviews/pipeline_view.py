@@ -10,9 +10,10 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from ..container import Container
 from ..docker_implementation import DockerImplementation
 from ..enums.language_implementation import Language
-from ..runner import Runner, Container
+from ..runner import Runner
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -71,4 +72,6 @@ class PipelineView(View):
         if response is not None:
             return response
 
-        return JsonResponse({'status': 'success'}, status=200)
+        exit_code, output = runner.execute_pipeline(pipeline_id)
+
+        return JsonResponse({'exit_code': exit_code, 'output': output.decode()}, status=200)
