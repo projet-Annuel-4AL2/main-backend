@@ -597,6 +597,9 @@ def codeSession(request, post_id):
 
 def runCode(request):
     return render(request, 'codeExecution.html')
+def runPipeline(request):
+    return render(request, 'pipelineExecution.html')
+
 ###for user post now
 def userPostAdd(request):
     user_data = get_user_data(request)

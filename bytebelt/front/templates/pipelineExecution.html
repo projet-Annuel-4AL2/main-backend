@@ -4,53 +4,79 @@
 
 
 {% block content %}
-<div class="container mx-auto mt-5">
-    <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3 mt-4">
-                <select id="programSelector" class="btn btn-light mb-4 text-left">
-                    <option value="python">Python</option>
-                    <option value="add">Add program</option>
-                </select>
-            </div>
-            <div class="col-md-5">
-                <div class="mb-3 p-1" style="width:50%">
-                  <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
-                  <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 20%;">
+    <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <svg class="me-2 mb-3" width="40" height="40" viewBox="0 0 16 16"><path xmlns="http://www.w3.org/2000/svg" fill="#000000" fill-rule="evenodd" d="M2.75 2.5A1.75 1.75 0 001 4.25v1C1 6.216 1.784 7 2.75 7h1a1.75 1.75 0 001.732-1.5H6.5a.75.75 0 01.75.75v3.5A2.25 2.25 0 009.5 12h1.018c.121.848.85 1.5 1.732 1.5h1A1.75 1.75 0 0015 11.75v-1A1.75 1.75 0 0013.25 9h-1a1.75 1.75 0 00-1.732 1.5H9.5a.75.75 0 01-.75-.75v-3.5A2.25 2.25 0 006.5 4H5.482A1.75 1.75 0 003.75 2.5h-1zM2.5 4.25A.25.25 0 012.75 4h1a.25.25 0 01.25.25v1a.25.25 0 01-.25.25h-1a.25.25 0 01-.25-.25v-1zm9.75 6.25a.25.25 0 00-.25.25v1c0 .138.112.25.25.25h1a.25.25 0 00.25-.25v-1a.25.25 0 00-.25-.25h-1z" clip-rule="evenodd"/></svg>
+      <span class="fs-4 mb-3 ml-2">Pipeline</span>
+    </div>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto" id="pipelineList">
+      <li class="nav-item" style="cursor:pointer" onclick="setAsActive(event)">
+        <a class="nav-link active pt-3 pb-3" aria-current="page">
+          Step 1
+        </a>
+      </li>
+    </ul>
+    <hr>
+    <h6 class="sidebar-heading d-flex justify-content-center align-items-center px-3 mt-4 mb-1 text-muted" id="addStep">
+          <a class="link-secondary" href="#" aria-label="Add a new report">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          </a>
+    </h6>
+  </div>
+
+    <main class="col-md-9 ms-sm-auto px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container mx-auto mt-5">
+            <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 mt-4">
+                        <select id="programSelector" class="btn btn-light mb-4 text-left">
+                            <option value="python">Python</option>
+                            <option value="add">Add program</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="mb-3 p-1" style="width:50%">
+                          <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
+                          <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-4">
+                        <select id="languageSelector" class="btn btn-light mb-4 text-left">
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript    </option>
+                            <option value="java">Java</option>
+                            <option value="csharp">C#</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4 mt-4">
-                <select id="languageSelector" class="btn btn-light mb-4 text-left">
-                    <option value="python">Python</option>
-                    <option value="javascript">JavaScript    </option>
-                    <option value="java">Java</option>
-                    <option value="csharp">C#</option>
-                    <option value="cpp">C++</option>
-                </select>
+            <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-5">
+                    <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 p-1">
+                          <label for="inputFile" class="text-2xl font-bold text-white mb-2">Upload Input File (If needed)</label>
+                          <input class="rounded btn btn-light form-control text-white" type="file" id="inputFile" style="input-border-color:white; input-btn-focus-width:20em" title="In case your program needs to access a file. WARNING: the file name should match the one used in the code to manipulate it.">
+                    </div>
+                </div>
+              </div>
             </div>
+            <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
         </div>
-    </div>
-    <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-5">
-            <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
-        </div>
-        <div class="col-md-4">
-            <div class="mb-3 p-1">
-                  <label for="inputFile" class="text-2xl font-bold text-white mb-2">Upload Input File (If needed)</label>
-                  <input class="rounded btn btn-light form-control text-white" type="file" id="inputFile" style="input-border-color:white; input-btn-focus-width:20em" title="In case your program needs to access a file. WARNING: the file name should match the one used in the code to manipulate it.">
-            </div>
-        </div>
-      </div>
-    </div>
-    <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
+    </main>
+  </div>
 </div>
 
 
-
-{% endblock %}q
+{% endblock %}
 
 {% block extra_js %}
 {% comment %} for monaco  {% endcomment %}
@@ -92,11 +118,39 @@
 </script>
 
 <script>
+    let currentActiveElement = document.querySelector('.nav-item');
+    console.log(currentActiveElement)
+    function setAsActive(event) {
+        currentActiveElement.lastElementChild.classList.remove('active')
+        currentActiveElement = event.target.parentNode
+        event.target.classList.add('active');
+    }
+</script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         let editor;
         let currentLanguage = 'python';
         let resultWindow = null;
         let inputFile = {"name" : null, "content" : null};
+
+        let stepCounter = 1;
+
+        function createPipelineStep(event) {
+            const pipelineList = document.getElementById('pipelineList');
+            const lastStep = pipelineList.lastElementChild;
+
+            let newStep = lastStep.cloneNode(true);
+
+            newStep.lastElementChild.textContent = newStep.lastElementChild.textContent.replace(`${stepCounter}`, `${stepCounter + 1}`)
+            console.log(newStep.classList);
+            if (newStep.lastElementChild.classList.contains('active')) {
+                newStep.lastElementChild.classList.remove('active')
+            }
+            ++stepCounter;
+
+            pipelineList.insertBefore(newStep, lastStep.nextSibling);
+        }
 
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
@@ -116,6 +170,8 @@
                 cursorBlinking: false,
                 cursorWidth: 0,
             });
+
+            document.getElementById('addStep').addEventListener('click', createPipelineStep);
 
             document.getElementById('languageSelector').addEventListener('change', function() {
                 currentLanguage = this.value;
