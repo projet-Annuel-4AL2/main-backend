@@ -13,15 +13,15 @@
     </div>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" id="pipelineList">
-      <li class="nav-item" style="cursor:pointer" onclick="setAsActive(event)">
-        <a class="nav-link active pt-3 pb-3" aria-current="page">
+      <li class="nav-item" style="cursor:pointer" onclick="handleOnStepClick(event)">
+        <div class="nav-link active pt-3 pb-3" aria-current="page">
           Step 1
-        </a>
+        </div>
       </li>
     </ul>
     <hr>
     <h6 class="sidebar-heading d-flex justify-content-center align-items-center px-3 mt-4 mb-1 text-muted" id="addStep">
-          <a class="link-secondary" href="#" aria-label="Add a new report">
+          <a class="link-secondary" aria-label="Add a new report">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
           </a>
     </h6>
@@ -29,24 +29,19 @@
 
     <main class="col-md-9 ms-sm-auto px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
         <div class="container mx-auto mt-5">
-            <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
+            <h1 class="text-center text-2xl font-bold text-white mb-4 pr-7">Step code editor</h1>
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 mt-4">
-                        <select id="programSelector" class="btn btn-light mb-4 text-left">
-                            <option value="python">Python</option>
-                            <option value="add">Add program</option>
-                        </select>
-                    </div>
-                    <div class="col-md-5">
+                    <div class="col-md-8">
                         <div class="mb-3 p-1" style="width:50%">
                           <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
                           <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
                         </div>
                     </div>
-                    <div class="col-md-4 mt-4">
+                    <div class="col-md-4 mt-4 d-flex justify-content-center">
                         <select id="languageSelector" class="btn btn-light mb-4 text-left">
                             <option value="python">Python</option>
+                            <option value="php">PHP</option>
                             <option value="javascript">JavaScript    </option>
                             <option value="java">Java</option>
                             <option value="csharp">C#</option>
@@ -55,15 +50,20 @@
                     </div>
                 </div>
             </div>
-            <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
+            <div id="editor" class="w-full h-64" style="height:25em;width:90%;"></div>
             <div class="container">
               <div class="row">
-                <div class="col-md-5">
-                    <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-light mb-4 mt-4" id="runPipeline">Run Pipeline</button>
+                </div>
+                <div class="col-md-4 d-flex justify-content-left pt-3">
+                    <div class="mb-3 p-1 text-white">
+                      <input id="outputFileName" class="form-control rounded" type="text" placeholder="Output file name" aria-label=".form-control-sm example">
+                    </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3 p-1">
-                          <label for="inputFile" class="text-2xl font-bold text-white mb-2">Upload Input File (If needed)</label>
+                          <label for="inputFile" class="text-2xl font-bold text-white mb-2">Upload Input File <br>(If needed)</label>
                           <input class="rounded btn btn-light form-control text-white" type="file" id="inputFile" style="input-border-color:white; input-btn-focus-width:20em" title="In case your program needs to access a file. WARNING: the file name should match the one used in the code to manipulate it.">
                     </div>
                 </div>
@@ -89,7 +89,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
-<script>const EXECUTION_URL = '{% url 'execute_code' %}'</script>
+<script>const EXECUTION_URL = '{% url 'execute_pipeline' %}'</script>
 
 <script>
     function getOs() {
@@ -101,7 +101,7 @@
         return "Unknown OS";
     }
 
-    const button = document.getElementById('runCode');
+    const button = document.getElementById('runPipeline');
 
     switch(getOs()) {
         case "MacOS":
@@ -118,12 +118,55 @@
 </script>
 
 <script>
+    let currentStepIndex = 0;
     let currentActiveElement = document.querySelector('.nav-item');
-    console.log(currentActiveElement)
+    let steps = [
+          {
+            executionOrder: 1,
+            code: "",
+            language: "python",
+            inputFile: {"name":"","content":""},
+            outputFileName:  "",
+          },
+        ];
+
+    let stepCounter = 1;
+
+    function populateElementsWithCurrentStepValue() {}
+
+    function handleOnStepClick(event) {
+      setAsActive(event);
+      populateElementsWithCurrentStepValue();
+    }
+
     function setAsActive(event) {
         currentActiveElement.lastElementChild.classList.remove('active')
         currentActiveElement = event.target.parentNode
         event.target.classList.add('active');
+        currentStepIndex = Number(event.target.innerText[event.target.innerText.length - 1]) - 1;
+    }
+
+    function createPipelineStep(event) {
+        const pipelineList = document.getElementById('pipelineList');
+        const lastStep = pipelineList.lastElementChild;
+
+        let newStep = lastStep.cloneNode(true);
+
+        newStep.lastElementChild.textContent = newStep.lastElementChild.textContent.replace(`${stepCounter}`, `${stepCounter + 1}`)
+        if (newStep.lastElementChild.classList.contains('active')) {
+            newStep.lastElementChild.classList.remove('active')
+        }
+        pipelineList.insertBefore(newStep, lastStep.nextSibling);
+
+        stepCounter += 1;
+
+        steps.push({
+          executionOrder: stepCounter,
+          code: "",
+          language: "python",
+          inputFile: {"name":"","content":""},
+          outputFileName:  "",
+        })
     }
 </script>
 
@@ -134,28 +177,14 @@
         let resultWindow = null;
         let inputFile = {"name" : null, "content" : null};
 
-        let stepCounter = 1;
-
-        function createPipelineStep(event) {
-            const pipelineList = document.getElementById('pipelineList');
-            const lastStep = pipelineList.lastElementChild;
-
-            let newStep = lastStep.cloneNode(true);
-
-            newStep.lastElementChild.textContent = newStep.lastElementChild.textContent.replace(`${stepCounter}`, `${stepCounter + 1}`)
-            console.log(newStep.classList);
-            if (newStep.lastElementChild.classList.contains('active')) {
-                newStep.lastElementChild.classList.remove('active')
-            }
-            ++stepCounter;
-
-            pipelineList.insertBefore(newStep, lastStep.nextSibling);
-        }
-
         require(['vs/editor/editor.main'], function() {
             editor = monaco.editor.create(document.getElementById('editor'), {
-                language: 'python',
+                language: steps[currentStepIndex].language,
                 theme: 'vs-dark',
+            });
+
+            editor.onDidChangeModelContent(model => {
+                steps[currentStepIndex].code = editor.getModel().getValue();
             });
 
             resultWindow = monaco.editor.create(document.getElementById('result'), {
@@ -172,10 +201,16 @@
             });
 
             document.getElementById('addStep').addEventListener('click', createPipelineStep);
+            populateElementsWithCurrentStepValue = () => {
+                document.getElementById('languageSelector').value = steps[currentStepIndex].language;
+                editor.getModel().setValue(steps[currentStepIndex].code)
+                document.getElementById('outputFileName').value = steps[currentStepIndex].outputFileName;
+            }
 
             document.getElementById('languageSelector').addEventListener('change', function() {
                 currentLanguage = this.value;
                 monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                steps[currentStepIndex].language = currentLanguage;
             });
 
            document.getElementById('sourceCodeFile').addEventListener('change', function (event) {
@@ -185,8 +220,15 @@
                 }
 
                 uploadedFile.text()
-                    .then(textContent => editor.getModel().setValue(textContent))
+                    .then(textContent => {
+                      editor.getModel().setValue(textContent);
+                      steps[currentStepIndex].code = textContent;
+                    })
                     .catch(err => console.err(err));
+           });
+
+           document.getElementById('outputFileName').addEventListener('change', function (event) {
+              steps[currentStepIndex].outputFileName = this.value;
            });
 
            document.getElementById('inputFile').addEventListener('change', function (event) {
@@ -199,23 +241,28 @@
                     .then((textContent) => {
                         inputFile['name'] = uploadedFile.name;
                         inputFile['content'] = textContent;
+                        const currentStep = steps[currentStepIndex];
+                        currentStep.inputFile['name'] = uploadedFile.name;
+                        currentStep.inputFile['content'] = textContent;
                     })
                     .catch(err => console.err(err));
            });
 
-            function runCode() {
-                const currentModel = editor.getModel();
-                const code = currentModel.getValue();
-
+            function runPipeline() {
                 const options = {
                     method: 'POST',
-                    body: JSON.stringify({"code": code, "language": currentLanguage, "inputFile": inputFile}),
+                    body: JSON.stringify(steps),
                 };
+
+                console.log(options);
+                console.log(`options = ${options}`);
 
                 fetch(EXECUTION_URL, options)
                     .then(response => {
+                        console.log(response.status);
                         const data = response.json().then(data => {
-                            const output = `Code exited with exit code ${data['exit_code']}
+                            const output = `Output from Step ${data.step_number}
+Code exited with exit code ${data['exit_code']}
 
 Output:
 ${data['output']}`;
@@ -228,12 +275,12 @@ ${data['output']}`;
                     });
             };
 
-            document.getElementById('runCode').addEventListener('click', runCode);
+            document.getElementById('runPipeline').addEventListener('click', runPipeline);
 
             document.addEventListener("keydown", (keyDownEvent) => {
                 if (keyDownEvent.metaKey && keyDownEvent.key == 'Enter') {
                     keyDownEvent.preventDefault();
-                    runCode();
+                    runPipeline();
                 }
             });
 
