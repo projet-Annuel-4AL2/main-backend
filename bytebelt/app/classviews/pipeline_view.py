@@ -20,6 +20,11 @@ from ..runner import Runner
 class PipelineView(View):
     @classmethod
     def _create_temp_files(cls, containers_json: list[dict[str, Any]], runner: Runner, pipeline_id: uuid.UUID):
+        def has_input_file(json_file_data):
+            return json_file_data is not None \
+                   and json_file_data['name'] != "" \
+                   and json_file_data['content'] != ""
+
         for container_data in containers_json:
             code = container_data.get('code')
             file_data = container_data.get('inputFile')
@@ -29,10 +34,8 @@ class PipelineView(View):
                 language_enum_value = Language.from_str(language)
                 container_data['language'] = language_enum_value
             except ValueError:
-                return JsonResponse(
-                    {'error': 'Either language name incorrect or language not yet implemented'},
-                    status=400
-                )
+                return JsonResponse({'error': 'Either language name incorrect or language not yet implemented'},
+                                    status=400)
 
             with tempfile.NamedTemporaryFile('wt', suffix='.py', encoding='utf8') as src_file:
                 src_file.write(code)
@@ -40,7 +43,7 @@ class PipelineView(View):
 
                 container_data['srcCodePath'] = src_file.name
                 del container_data['code']
-                if file_data is not None:
+                if has_input_file(file_data):
                     with tempfile.NamedTemporaryFile('wt') as inputFile:
                         inputFile.write(file_data['content'])
                         temp_dir_name = os.path.dirname(inputFile.name)
@@ -53,6 +56,8 @@ class PipelineView(View):
                         container = Container.from_json(container_data)
                         runner.populate_pipeline(pipeline_id, [container])
                 else:
+                    if 'inputFile' in container_data:
+                        del container_data['inputFile']
                     container = Container.from_json(container_data)
                     runner.populate_pipeline(pipeline_id, [container])
 
@@ -67,11 +72,12 @@ class PipelineView(View):
 
         runner = Runner(DockerImplementation())
         pipeline_id = runner.create_pipeline()
-        response = self._create_temp_files(containers_json=data, runner=runner, pipeline_id=pipeline_id)
+        error_response = self._create_temp_files(containers_json=data, runner=runner, pipeline_id=pipeline_id)
 
-        if response is not None:
-            return response
+        if error_response is not None:
+            return error_response
 
-        exit_code, output = runner.execute_pipeline(pipeline_id)
+        execution_order, exit_code, output = runner.execute_pipeline(pipeline_id)
 
-        return JsonResponse({'exit_code': exit_code, 'output': output.decode()}, status=200)
+        return JsonResponse({'step_number': execution_order, 'exit_code': exit_code, 'output': output.decode()},
+                            status=200)

@@ -88,22 +88,23 @@ class Runner(object):
 
         return pipeline_id
 
-    def populate_pipeline(self, pipeline_id, containers: list[Container]):
+    def populate_pipeline(self, pipeline_id: uuid.UUID, containers: list[Container]):
         pipeline = self.pipelines[pipeline_id]
 
         for container in containers:
             container.name = self._setup(container.src_code_path, container.language, container.input_file_path)
             pipeline.put((container.execution_order, container))
 
-    def execute_pipeline(self, pipeline_id):
+    def execute_pipeline(self, pipeline_id: uuid.UUID):
         pipeline = self.pipelines[pipeline_id]
 
-        _, container = pipeline.get()
+        execution_order, container = pipeline.get()
         while not pipeline.empty():
             exit_code, result = self._execute_code(container.name)
 
             if exit_code != 0:
-                return exit_code, result
+                del self.pipelines[pipeline_id]
+                return execution_order, exit_code, result
 
             with tempfile.NamedTemporaryFile('wt') as outputFile:
                 outputFile.write(result.decode())
@@ -111,9 +112,9 @@ class Runner(object):
                 shutil.move(outputFile.name, os.path.join(temp_dir_name, container.output_file_name))
                 outputFile.name = os.path.join(temp_dir_name, container.output_file_name)
                 outputFile.flush()
-                _, container = pipeline.get()
+                execution_order, container = pipeline.get()
                 self._copy_files(container.name, outputFile.name)
 
         exit_code, result = self._execute_code(container.name)
 
-        return exit_code, result
+        return execution_order, exit_code, result
