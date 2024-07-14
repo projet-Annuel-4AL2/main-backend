@@ -16,6 +16,7 @@
       <li class="nav-item" style="cursor:pointer" onclick="handleOnStepClick(event)">
         <div class="nav-link active pt-3 pb-3" aria-current="page">
           Step 1
+          <button type="button" class="btn-close float-right me-2 hidden" aria-label="Close" onclick="deletePipelineStep(event)"></button>
         </div>
       </li>
     </ul>
@@ -119,7 +120,7 @@
 
 <script>
     let currentStepIndex = 0;
-    let currentActiveElement = document.querySelector('.nav-item');
+    let currentActiveStep = document.querySelector('.nav-item');
     let steps = [
           {
             executionOrder: 1,
@@ -135,13 +136,15 @@
     function populateElementsWithCurrentStepValue() {}
 
     function handleOnStepClick(event) {
-      setAsActive(event);
+      if (! event.target.classList.contains('btn-close')) {
+        setAsActive(event);
+      }
       populateElementsWithCurrentStepValue();
     }
 
     function setAsActive(event) {
-        currentActiveElement.lastElementChild.classList.remove('active')
-        currentActiveElement = event.target.parentNode
+        currentActiveStep.lastElementChild.classList.remove('active')
+        currentActiveStep = event.target.parentNode
         event.target.classList.add('active');
         currentStepIndex = Number(event.target.innerText[event.target.innerText.length - 1]) - 1;
     }
@@ -152,9 +155,13 @@
 
         let newStep = lastStep.cloneNode(true);
 
-        newStep.lastElementChild.textContent = newStep.lastElementChild.textContent.replace(`${stepCounter}`, `${stepCounter + 1}`)
+        newStep.lastElementChild.innerHTML = newStep.lastElementChild.innerHTML.replace(`${stepCounter}`, `${stepCounter + 1}`)
         if (newStep.lastElementChild.classList.contains('active')) {
             newStep.lastElementChild.classList.remove('active')
+        }
+        // removing hidden from the close button on steps other than Step 1
+        if (newStep.lastElementChild.lastElementChild.classList.contains('hidden')) {
+            newStep.lastElementChild.lastElementChild.classList.remove('hidden')
         }
         pipelineList.insertBefore(newStep, lastStep.nextSibling);
 
@@ -167,6 +174,40 @@
           inputFile: {"name":"","content":""},
           outputFileName:  "",
         })
+    }
+
+    function resetExecutionOrder(steps) {
+        for (let i = 0; i < steps.length; ++i) {
+            steps[i].executionOrder = i + 1;
+        }
+    }
+
+    function resetStepNumbers() {
+        const pipeline = document.getElementById('pipelineList');
+
+        for (let i = 0; i < pipeline.childElementCount; ++i) {
+          pipeline.children[i].innerHTML = pipeline.children[i].innerHTML.replace(/Step \d/gi, `Step ${i + 1}`)
+        }
+    }
+
+    function deletePipelineStep(event) {
+        const pipelineStep = event.target.parentNode.parentNode;
+
+        const stepLabel = event.target.parentNode.innerText;
+        removedStepIndex = Number(stepLabel[stepLabel.length - 1]) - 1;
+        steps.splice(removedStepIndex, 1);
+
+        stepCounter -= 1;
+
+        if (currentStepIndex == removedStepIndex) {
+            currentStepIndex = removedStepIndex - 1;
+            currentActiveStep = pipelineStep.previousElementSibling;
+            currentActiveStep.firstElementChild.classList.add('active');
+        }
+        pipelineStep.remove();
+
+        resetExecutionOrder(steps);
+        resetStepNumbers();
     }
 </script>
 
