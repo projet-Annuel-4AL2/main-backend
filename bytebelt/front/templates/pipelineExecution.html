@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Code Session {% endblock %}
+
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 20%;">
+    <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <svg class="me-2 mb-3" width="40" height="40" viewBox="0 0 16 16"><path xmlns="http://www.w3.org/2000/svg" fill="#000000" fill-rule="evenodd" d="M2.75 2.5A1.75 1.75 0 001 4.25v1C1 6.216 1.784 7 2.75 7h1a1.75 1.75 0 001.732-1.5H6.5a.75.75 0 01.75.75v3.5A2.25 2.25 0 009.5 12h1.018c.121.848.85 1.5 1.732 1.5h1A1.75 1.75 0 0015 11.75v-1A1.75 1.75 0 0013.25 9h-1a1.75 1.75 0 00-1.732 1.5H9.5a.75.75 0 01-.75-.75v-3.5A2.25 2.25 0 006.5 4H5.482A1.75 1.75 0 003.75 2.5h-1zM2.5 4.25A.25.25 0 012.75 4h1a.25.25 0 01.25.25v1a.25.25 0 01-.25.25h-1a.25.25 0 01-.25-.25v-1zm9.75 6.25a.25.25 0 00-.25.25v1c0 .138.112.25.25.25h1a.25.25 0 00.25-.25v-1a.25.25 0 00-.25-.25h-1z" clip-rule="evenodd"/></svg>
+      <span class="fs-4 mb-3 ml-2">Pipeline</span>
+    </div>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto" id="pipelineList">
+      <li class="nav-item" style="cursor:pointer" onclick="handleOnStepClick(event)">
+        <div class="nav-link active pt-3 pb-3" aria-current="page">
+          Step 1
+          <button type="button" class="btn-close float-right me-2 hidden" aria-label="Close" onclick="deletePipelineStep(event)"></button>
+        </div>
+      </li>
+    </ul>
+    <hr>
+    <h6 class="d-flex justify-content-center align-items-center px-3 mt-4 mb-1" style="cursor:pointer" id="addStep">
+          <a class="link-secondary" aria-label="Add a new report">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          </a>
+    </h6>
+  </div>
+
+    <main class="col-md-9 ms-sm-auto px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <div class="container mx-auto mt-5">
+            <h1 class="text-center text-2xl font-bold text-white mb-4 pr-7" id="stepNameHeading">Step 1 Code Editor</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3 p-1" style="width:50%">
+                          <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
+                          <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-4 d-flex justify-content-center">
+                        <select id="languageSelector" class="btn btn-light mb-4 text-left">
+                            <option value="python">Python</option>
+                            <option value="php">PHP</option>
+                            <option value="javascript">JavaScript    </option>
+                            <option value="java">Java</option>
+                            <option value="csharp">C#</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="editor" class="w-full h-64" style="height:25em;width:90%;"></div>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-light mb-4 mt-4" id="runPipeline">Run Pipeline</button>
+                </div>
+                <div class="col-md-4 d-flex justify-content-left pt-3">
+                    <div class="mb-3 p-1 text-white">
+                        <input id="outputFileName" class="form-control rounded hidden" type="text" placeholder="Output file name" aria-label=".form-control-sm example">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 p-1">
+                          <label for="inputFile" class="text-2xl font-bold text-white mb-2">Upload Input File <br>(If needed)</label>
+                          <input class="rounded btn btn-light form-control text-white" type="file" id="inputFile" style="input-border-color:white; input-btn-focus-width:20em" title="In case your program needs to access a file. WARNING: the file name should match the one used in the code to manipulate it.">
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
+        </div>
+    </main>
+  </div>
+  <div class="modal fade" id="errorModal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalToggleLabel">Error</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalText">
+        Output file name is required on all steps except the last.
+        <br>The field has been left empty on
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+{% comment %} for monaco  {% endcomment %}
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<!-- Monaco editor bundle -->
+<script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+<script>const EXECUTION_URL = '{% url 'execute_pipeline' %}'</script>
+
+<script>
+    function getOs() {
+        if (navigator.appVersion.indexOf("Win") != -1) return "Windows";
+        if (navigator.appVersion.indexOf("Mac") != -1) return "MacOS";
+        if (navigator.appVersion.indexOf("X11") != -1) return "UNIX";
+        if (navigator.appVersion.indexOf("Linux") != -1) return "Linux";
+
+        return "Unknown OS";
+    }
+
+    const button = document.getElementById('runPipeline');
+
+    switch(getOs()) {
+        case "MacOS":
+            button.textContent += ' (⌘ + Enter)';
+            break;
+        case "Windows":
+            button.textContent += ' (windows + Enter)';
+            break;
+        case "Linux":
+            button.textContent += ' (Alt + Enter)';
+            break;
+    }
+
+</script>
+
+<script>
+    let currentStepIndex = 0;
+    let currentActiveStep = document.querySelector('.nav-item');
+    let steps = [
+          {
+            executionOrder: 1,
+            code: "",
+            language: "python",
+            inputFile: {"name":"","content":""},
+            outputFileName:  "",
+          },
+        ];
+
+    let stepCounter = 1;
+
+    function populateElementsWithCurrentStepValue() {}
+
+    function isLastStepSelected() {
+        return (currentStepIndex + 1) == steps.length;
+    }
+
+    function handleOnStepClick(event) {
+      // to handle when the click event was fired because a user clicked on the close button of a step
+      if (! event.target.classList.contains('btn-close')) {
+        setAsActive(event);
+
+        const outputFileUploader = document.getElementById('outputFileName');
+        if (isLastStepSelected()) {
+            outputFileUploader.classList.add('hidden');
+        } else {
+            outputFileUploader.classList.remove('hidden');
+        }
+      }
+
+      populateElementsWithCurrentStepValue();
+    }
+
+    function setAsActive(event) {
+        currentActiveStep.lastElementChild.classList.remove('active')
+        currentActiveStep = event.target.parentNode
+        event.target.classList.add('active');
+        currentStepIndex = Number(event.target.innerText.match(/Step (\d+)/i)[1]) - 1;
+
+        const heading = document.getElementById('stepNameHeading');
+        heading.innerHTML = heading.innerHTML.replace(/Step \d+/gi, `Step ${currentStepIndex + 1}`);
+    }
+
+    function createPipelineStep(event) {
+        const pipelineList = document.getElementById('pipelineList');
+        const lastStep = pipelineList.lastElementChild;
+
+        let newStep = lastStep.cloneNode(true);
+
+        newStep.lastElementChild.innerHTML = newStep.lastElementChild.innerHTML.replace(`${stepCounter}`, `${stepCounter + 1}`)
+        newStep.lastElementChild.classList.remove('active')
+
+        if (steps.length == 1) {
+            document.getElementById('outputFileName').classList.remove('hidden');
+        }
+
+        // removing hidden from the close button on steps other than Step 1
+        if (newStep.lastElementChild.lastElementChild.classList.contains('hidden')) {
+            newStep.lastElementChild.lastElementChild.classList.remove('hidden')
+        }
+        pipelineList.insertBefore(newStep, lastStep.nextSibling);
+
+        stepCounter += 1;
+
+        steps.push({
+          executionOrder: stepCounter,
+          code: "",
+          language: "python",
+          inputFile: {"name":"","content":""},
+          outputFileName:  "",
+        })
+    }
+
+    function resetExecutionOrder(steps) {
+        for (let i = 0; i < steps.length; ++i) {
+            steps[i].executionOrder = i + 1;
+        }
+    }
+
+    function resetStepNumbers() {
+        const pipeline = document.getElementById('pipelineList');
+
+        for (let i = 0; i < pipeline.childElementCount; ++i) {
+          pipeline.children[i].innerHTML = pipeline.children[i].innerHTML.replace(/Step \d+/gi, `Step ${i + 1}`)
+        }
+    }
+
+    function deletePipelineStep(event) {
+        const pipelineStep = event.target.parentNode.parentNode;
+
+        const stepLabel = event.target.parentNode.innerText;
+        removedStepIndex = Number(stepLabel[stepLabel.length - 1]) - 1;
+        steps.splice(removedStepIndex, 1);
+
+        stepCounter -= 1;
+
+        if (currentStepIndex == removedStepIndex) {
+            currentStepIndex = removedStepIndex - 1;
+            currentActiveStep = pipelineStep.previousElementSibling;
+            currentActiveStep.firstElementChild.classList.add('active');
+        } else if (currentStepIndex > removedStepIndex) {
+            currentStepIndex -= 1;
+        }
+
+        pipelineStep.remove();
+
+        resetExecutionOrder(steps);
+        resetStepNumbers();
+
+        if (steps.length == 1) {
+            document.getElementById('outputFileName').classList.add('hidden');
+        }
+    }
+</script>
+
+<script>
+  function validateStepsOutputFileText(steps) {
+      if (steps.length == 1) {
+          return true;
+      }
+
+      return steps.slice(0, steps.length - 1)
+        .reduce((isLastStepValid, step) => {
+            return isLastStepValid && step.outputFileName !== '';
+        }, true);
+  }
+
+  function findInvalidStepsIndices(steps) {
+    if (steps.length == 1) {
+          return [];
+    }
+
+    return steps.slice(0, steps.length - 1)
+      .map((step, index) => {
+          if (step.outputFileName === '') {
+              return index;
+          }
+      });
+  }
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let editor;
+        let currentLanguage = 'python';
+        let resultWindow = null;
+        let inputFile = {"name" : null, "content" : null};
+
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                language: steps[currentStepIndex].language,
+                theme: 'vs-dark',
+            });
+
+            editor.onDidChangeModelContent(model => {
+                steps[currentStepIndex].code = editor.getModel().getValue();
+            });
+
+            resultWindow = monaco.editor.create(document.getElementById('result'), {
+                value: null,
+                theme: 'vs-dark',
+                readOnly: true,
+                contextmenu: false,
+                minimap: {
+                    enabled: false
+                },
+                selectOnLineNumbers: false,
+                cursorBlinking: false,
+                cursorWidth: 0,
+            });
+
+            document.getElementById('addStep').addEventListener('click', createPipelineStep);
+            populateElementsWithCurrentStepValue = () => {
+                document.getElementById('languageSelector').value = steps[currentStepIndex].language;
+                editor.getModel().setValue(steps[currentStepIndex].code)
+                document.getElementById('outputFileName').value = steps[currentStepIndex].outputFileName;
+            }
+
+            document.getElementById('languageSelector').addEventListener('change', function() {
+                currentLanguage = this.value;
+                monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                steps[currentStepIndex].language = currentLanguage;
+            });
+
+           document.getElementById('sourceCodeFile').addEventListener('change', function (event) {
+                const uploadedFile = event.target.files[0];
+                if (uploadedFile == undefined) {
+                    return;
+                }
+
+                uploadedFile.text()
+                    .then(textContent => {
+                      editor.getModel().setValue(textContent);
+                      steps[currentStepIndex].code = textContent;
+                    })
+                    .catch(err => console.err(err));
+           });
+
+           document.getElementById('outputFileName').addEventListener('change', function (event) {
+              steps[currentStepIndex].outputFileName = this.value;
+           });
+
+           document.getElementById('inputFile').addEventListener('change', function (event) {
+                const uploadedFile = event.target.files[0];
+                if (uploadedFile == undefined) {
+                    return;
+                }
+
+                uploadedFile.text()
+                    .then((textContent) => {
+                        inputFile['name'] = uploadedFile.name;
+                        inputFile['content'] = textContent;
+                        const currentStep = steps[currentStepIndex];
+                        currentStep.inputFile['name'] = uploadedFile.name;
+                        currentStep.inputFile['content'] = textContent;
+                    })
+                    .catch(err => console.err(err));
+           });
+
+            function runPipeline() {
+                if (! validateStepsOutputFileText(steps)) {
+                    const invalidStepsIndices = findInvalidStepsIndices(steps)
+                      .map(index => index + 1);
+                    const modalText = document.getElementById('modalText');
+                    modalText.textContent = modalText.textContent.replace(/Step.*$/, '');
+
+                    if (invalidStepsIndices.length == 1) {
+                        modalText.textContent += ` Step ${invalidStepsIndices[0]}`;
+                    } else {
+                        modalText.textContent += ' Steps ' + invalidStepsIndices
+                          .slice(0, invalidStepsIndices.length - 1)
+                          .reduce((acc, index) => acc + index + ', ', '')
+                          .replace(/, $/, ` and ${invalidStepsIndices[invalidStepsIndices.length - 1]}`);
+                    }
+
+                    new bootstrap.Modal(document.getElementById('errorModal')).show();
+                    return;
+                }
+
+                const options = {
+                    method: 'POST',
+                    body: JSON.stringify(steps),
+                };
+
+                fetch(EXECUTION_URL, options)
+                    .then(response => {
+                        const data = response.json().then(data => {
+                            const output = `Output from Step ${data.step_number}
+Code exited with exit code ${data['exit_code']}
+
+Output:
+${data['output']}`;
+                            resultWindow.setValue(output);
+                        });
+                    })
+                    .catch(error => {
+                      console.error("Error fetching data:", error);
+                      // Handle errors
+                    });
+            };
+
+            document.getElementById('runPipeline').addEventListener('click', runPipeline);
+
+            document.addEventListener("keydown", (keyDownEvent) => {
+                if (keyDownEvent.metaKey && keyDownEvent.key == 'Enter') {
+                    keyDownEvent.preventDefault();
+                    runPipeline();
+                }
+            });
+
+        });
+    });
+</script>
+{% endblock %}

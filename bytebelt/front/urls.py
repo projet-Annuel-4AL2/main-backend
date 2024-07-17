@@ -35,6 +35,7 @@ urlpatterns = [
     ######code session
     path('codeSession/<int:post_id>', views.codeSession, name='codeSession'),
     path('runCode/', views.runCode, name='runCode'),
+    path('runPipeline/', views.runPipeline, name='runPipeline'),
 
     
     ######for user post

@@ -38,7 +38,8 @@
                   <div class="flex items-center gap-9">
                     {% if request.session.token %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'home' %}">Home </a>
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'runCode' %}">Run Code</a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'runCode' %}">Code Editor</a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'runPipeline' %}">Pipeline Editor</a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'feed' %}">Feed </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'explorer' %}">Explorer </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'groupes' %}">groups </a>
