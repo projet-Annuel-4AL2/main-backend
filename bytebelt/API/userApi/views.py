@@ -43,6 +43,26 @@ class UserInfo(APIView):
         else:
             raise AuthenticationFailed('Authentication token were not provided.')
         
+class UpdateUserBio(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        token_header = request.headers.get('Authorization')
+        if token_header is not None:
+            try:
+                token_key = token_header.split(' ')[1]
+                token = Token.objects.get(key=token_key)
+                user = token.user
+                user_info = get_object_or_404(CustomUser, id=user.id)
+                bio = request.data.get('bio')
+                if bio is not None:
+                    user_info.bio = bio
+                user_info.save()
+                return Response({'status': 'bio updated'}, status=status.HTTP_200_OK)
+            except (Token.DoesNotExist, IndexError):
+                raise AuthenticationFailed('Invalid token')
+        else:
+            raise AuthenticationFailed('Authentication credentials were not provided.')
+        
 class UpdateUser(APIView):
     permission_classes = [AllowAny] 
     def post(self, request):
@@ -235,14 +255,24 @@ class UserPostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = UserPost.objects.all()
     serializer_class = UserPostSerializer
   
-  
+class userPostDelete(generics.DestroyAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+
+class UserPostUpdate(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+    
+    
 class GetUserPostByUsername(generics.ListCreateAPIView):
     permission_classes = [AllowAny] 
     queryset = UserPost.objects.all()
     serializer_class = UserPostSerializer
     
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = self.queryset.order_by('-created_at') 
         username = self.kwargs.get('username', None)
         if username is not None:
             queryset = queryset.filter(author__username=username)

@@ -288,8 +288,107 @@ def profile(request):
         })
     else:
         return render(request, 'profile.html', {'error': 'Unable to fetch user info'})
-    
-        
+ 
+def deleteUserPost(request, id):
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    post = requests.get(API_BASE_URL + 'post/' + str(id) + '/')
+    if request.method == 'POST':
+        response = requests.delete(API_BASE_URL + 'post/' + str(id) + '/delete/')
+        if response.status_code == 200:
+            return redirect('profile')
+        else:
+            messages.error(request, 'Error deleting post')
+            return redirect('profile')
+    return render(request, 'deleteUserPost.html', {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings'),
+        'post': post.json()
+    })   
+
+def updateUserPost(request , id):
+    user_data = get_user_data(request)
+    user_id = user_data.get('user').get('id')
+    post = requests.get(API_BASE_URL + 'post/' + str(id) + '/')
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        code = request.POST.get('code')
+        language = request.POST.get('language')
+        image = request.FILES.get('image')  # Use FILES to get the uploaded image
+
+        if content:
+            token = request.session.get('token')
+            user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+            if user_response.status_code == 200:
+                user_id = user_response.json().get('id')
+                if user_id:
+                    data = {
+                        'content': content,
+                        'code': code if code else '',
+                        'language': language if language else '',
+                        'author': str(user_id),
+                    }
+                    files = {'image': image} if image else None
+                    response = requests.patch(API_BASE_URL + 'post/' + str(id) + '/update/', data=data, files=files)
+                    if response.status_code == 200:
+                        return redirect('profile')
+                    else:
+                        messages.error(request, f'Error updating post: {response.text}')
+                        return redirect('profile')
+                else:
+                    messages.error(request, 'User ID not found')
+                    return redirect('profile')
+            else:
+                messages.error(request, 'Invalid token')
+                return redirect('profile')
+        else:
+            messages.error(request, 'Content is required')
+            return redirect('profile')
+
+    return render(request, 'updateUserPost.html', {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings'),
+        'post': post.json()
+    })
+def updateUserBio(request):
+    user_data = get_user_data(request)
+    user = user_data.get('user')
+    user_bio = user.get('bio')
+    if request.method == 'POST':
+        bio = request.POST.get('bio')
+        if bio:
+            token = request.session.get('token')
+            headers = {'Authorization': 'Token ' + token}
+            data = {'bio': bio}
+            response = requests.post(API_BASE_URL + 'updateuserbio/', headers=headers, data=data)
+            if response.status_code == 200:
+                return redirect('profile')
+            else:
+                messages.error(request, 'Error updating bio')
+                return render(request, 'profile.html', {
+                    'users': user_data.get('users'),
+                    'user': user_data.get('user'),
+                    'followers': user_data.get('followers'),
+                    'followings': user_data.get('followings')
+                })
+        else:
+            messages.error(request, 'Bio is required')
+            return render(request, 'profile.html', {
+                'users': user_data.get('users'),
+                'user': user_data.get('user'),
+                'followers': user_data.get('followers'),
+                'followings': user_data.get('followings')
+            })
+    return render(request, 'updateUserBio.html', {
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings')
+    })
     
 def updateProfile(request):
     user_data = get_user_data(request)

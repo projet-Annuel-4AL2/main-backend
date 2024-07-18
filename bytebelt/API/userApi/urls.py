@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes , GetUserPostByUsername  , GetUserIdByTokenDevice
+from .views import UserListCreate, UserDetail , AddFollower , UserAuthToken , RegisterUser , PasswordReset , ChangePassword , UserInfo , UpdateUser , UserPostUpdate , UpdateUserBio, GetAllFollowers , GetAllFollowing , GetUserByName, GetFollowingById , UserPostListCreate , userPostDelete ,UserPostDetail , AddLike , AddComment , GetComments , GetLikes , GetUserPostByUsername  , GetUserIdByTokenDevice
 
 urlpatterns = [
     path('users/', UserListCreate.as_view(), name='user-list-create'),
@@ -13,12 +13,15 @@ urlpatterns = [
     path('ChangePassword/', ChangePassword.as_view(), name='change-password'),
     path('user/', UserInfo.as_view(), name='user-info'),
     path('updateuser/', UpdateUser.as_view(), name='update-user'),
+    path('updateuserbio/', UpdateUserBio.as_view(), name='update-user-bio'),
     path('users/<uuid:pk>/followers/', GetAllFollowers.as_view(), name='get-all-followers'),
     path('users/<uuid:pk>/followings/', GetAllFollowing.as_view(), name='get-all-following'),
     ##for user post
     path('post/', UserPostListCreate.as_view(), name='user-post-list-create'),
     path('post/user/<str:username>/', GetUserPostByUsername.as_view(), name='get-user-post-by-username'),
     path('post/<int:pk>/', UserPostDetail.as_view(), name='user-post-detail'),
+    path('post/<int:pk>/update/', UserPostUpdate.as_view(), name='user-post-update'),
+    path('post/<int:pk>/delete/', userPostDelete.as_view(), name='user-post-delete'),
     path('post/<int:pk>/add-like/', AddLike.as_view(), name='add-like'),
     path('post/<int:pk>/add-comment/', AddComment.as_view(), name='add-comment'),
     path('post/<int:pk>/get-comment/', GetComments.as_view(), name='get-comments'),
