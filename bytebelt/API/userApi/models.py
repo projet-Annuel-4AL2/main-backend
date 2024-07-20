@@ -28,6 +28,13 @@ class UserPost(models.Model):
     comments = models.ManyToManyField(CustomUser, related_name='post_comments', blank=True)
     image = models.ImageField(upload_to='post_pics/', null=True, blank=True)
     
+class Comment(models.Model):
+    post = models.ForeignKey(UserPost, on_delete=models.CASCADE, related_name='post_comments')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
 class Device(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     token_device = models.CharField(max_length=100)
