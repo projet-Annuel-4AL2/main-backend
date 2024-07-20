@@ -1,9 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.shortcuts import render
-from .models import CustomUser , UserPost , Device
+from .models import CustomUser , UserPost , Device , Comment
 from rest_framework import generics
-from .serializers import UserSerializer , UserPostSerializer
+from .serializers import UserSerializer , UserPostSerializer ,UserCommentPostSerializer
 from .AuthTokenSerializer import AuthTokenSerializer
 from .filters import UserFilter
 from rest_framework.views import APIView
@@ -42,6 +42,26 @@ class UserInfo(APIView):
                 raise AuthenticationFailed('Invalid token')
         else:
             raise AuthenticationFailed('Authentication token were not provided.')
+        
+class UpdateUserBio(APIView):
+    permission_classes = [AllowAny] 
+    def post(self, request):
+        token_header = request.headers.get('Authorization')
+        if token_header is not None:
+            try:
+                token_key = token_header.split(' ')[1]
+                token = Token.objects.get(key=token_key)
+                user = token.user
+                user_info = get_object_or_404(CustomUser, id=user.id)
+                bio = request.data.get('bio')
+                if bio is not None:
+                    user_info.bio = bio
+                user_info.save()
+                return Response({'status': 'bio updated'}, status=status.HTTP_200_OK)
+            except (Token.DoesNotExist, IndexError):
+                raise AuthenticationFailed('Invalid token')
+        else:
+            raise AuthenticationFailed('Authentication credentials were not provided.')
         
 class UpdateUser(APIView):
     permission_classes = [AllowAny] 
@@ -235,14 +255,24 @@ class UserPostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = UserPost.objects.all()
     serializer_class = UserPostSerializer
   
-  
+class userPostDelete(generics.DestroyAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+
+class UserPostUpdate(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AllowAny] 
+    queryset = UserPost.objects.all()
+    serializer_class = UserPostSerializer
+    
+    
 class GetUserPostByUsername(generics.ListCreateAPIView):
     permission_classes = [AllowAny] 
     queryset = UserPost.objects.all()
     serializer_class = UserPostSerializer
     
     def get_queryset(self):
-        queryset = self.queryset
+        queryset = self.queryset.order_by('-created_at') 
         username = self.kwargs.get('username', None)
         if username is not None:
             queryset = queryset.filter(author__username=username)
@@ -268,19 +298,21 @@ class AddComment(APIView):
     def post(self, request, pk):
         post = get_object_or_404(UserPost, pk=pk)
         user = get_object_or_404(CustomUser, pk=request.data['user_id'])
-        comment = request.data.get('comment')
-        if comment is not None:
-            post.comments.add(user)
+        comment_text = request.data.get('comment')
+        if comment_text is not None:
+            comment = Comment(post=post, author=user, content=comment_text)
+            comment.save()
             message = 'Commented'
+        else:
+            message = 'No comment provided'
         return Response({'status': message}, status=status.HTTP_200_OK)
     
 class GetComments(APIView):
     permission_classes = [AllowAny]
     def get(self, request, pk):
         post = get_object_or_404(UserPost, pk=pk)
-        comments = post.comments.all()
-        return Response({'comments': UserSerializer(comments, many=True).data}, status=status.HTTP_200_OK)
-    
+        comments = Comment.objects.filter(post=post)  
+        return Response(UserCommentPostSerializer(comments, many=True).data, status=status.HTTP_200_OK)
 class GetLikes(APIView):
     permission_classes = [AllowAny]
     def get(self, request, pk):

@@ -19,29 +19,29 @@
             <label for="code" class="text-white text-sm font-normal">code:</label>
             <div id="code" class="w-full rounded px-1 py-2  border-gray-300" style="height: 400px; height: 500px" required></div>
         </div>
-        <form method="POST" action="{% url 'userPostAdd' %}" class="w-full mb-4">
+        <form method="POST" action="{% url 'updateUserPost' post.id %}" class="w-full mb-4">
             {% csrf_token %}
             <div class="mb-4">
                 <label for="language" class="text-white text-sm font-normal">language:</label>
                 <select name="language" id="language" class="w-full rounded px-4 py-2 text-gray-700 border border-gray-300" required>
-                    <option value="python">Python</option>
-                    <option value="javascript">Javascript</option>
-                    <option value="java">Java</option>
-                    <option value="c">C</option>
-                    <option value="c++">C++</option>
-                    <option value="php">PHP</option>
+                    <option value="python" {% if post.language == "python" %}selected{% endif %}>Python</option>
+                    <option value="javascript" {% if post.language == "javascript" %}selected{% endif %}>Javascript</option>
+                    <option value="java" {% if post.language == "java" %}selected{% endif %}>Java</option>
+                    <option value="c" {% if post.language == "c" %}selected{% endif %}>C</option>
+                    <option value="c++" {% if post.language == "c++" %}selected{% endif %}>C++</option>
+                    <option value="php" {% if post.language == "php" %}selected{% endif %}>PHP</option>
                 </select>
             </div>
             <div class="mb-4">
                 <label for="content" class="text-white text-sm font-normal">content:</label>
-                <textarea name="content" id="content" class="w-full h-32 rounded px-4 py-2 text-gray-700 border border-gray-300" required></textarea>
+                <textarea name="content" id="content" class="w-full h-32 rounded px-4 py-2 text-gray-700 border border-gray-300" required>{{ post.content }}</textarea>
             </div>
             <input type="hidden" name="code" id="hiddenCode">
             <div class="flex items-center justify-between">
                 <button type="submit" class="rounded-full px-4 py-2 bg-gray-800 text-white font-medium hover:bg-blue-600">
-                    Create
+                    Update
                 </button>
-                <a href="{% url 'home' %}" class="text-white hover:text-blue-800 font-bold text-sm">
+                <a href="{% url 'profile' %}" class="text-white hover:text-blue-800 font-bold text-sm">
                     Back
                 </a>
             </div>
@@ -66,10 +66,11 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        let currentLanguage = 'python';
+        let currentLanguage = "{{ post.language }}";
 
         require(['vs/editor/editor.main'], function() {
             var editor = monaco.editor.create(document.getElementById('code'), {
+                value: "{{ post.code|escapejs|safe }}",
                 language: currentLanguage,
                 theme: 'vs-dark',
             });

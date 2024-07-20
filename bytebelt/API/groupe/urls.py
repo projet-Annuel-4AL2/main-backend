@@ -3,6 +3,7 @@ from .views import CreateGroupeView ,GetAllGroupeView , GetGroupeByName , GetAll
 
 urlpatterns = [
     path('', GetAllGroupeView.as_view(), name='get-all-groupe'),
+    path('update/<int:groupe_id>/', EditPostForGroupeView.as_view(), name='update-groupe'),
     path('create/', CreateGroupeView.as_view(), name='create-groupe'),
     path('info/<name>/', GetGroupeByName.as_view(), name='get-groupe-by-name'),
     path('inf/<int:groupe_id>/', GetGroupeById.as_view(), name='get-groupe-by-id'),

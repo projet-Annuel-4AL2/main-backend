@@ -13,7 +13,7 @@
                   <div class="flex flex-col justify-center">
                     <p class="text-[#FFFFFF] text-[22px] font-bold leading-tight tracking-[-0.015em]">{{ user_.name }}</p>
                     <p class="text-[#CBCBCB] text-base font-normal leading-normal">{{ user_.bio|default:"don't have any bio" }}</p>
-                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user_.followers|length }} Followers  {{ followings_users|length }} Followings</p>
+                    <p class="text-[#CBCBCB] text-base font-normal leading-normal"> {{ user_.followers|length }} Followers  {{ followings_users|length }} Following</p>
                   </div>
                 </div>
 
@@ -45,17 +45,111 @@
                     ></path>
                   </svg>
                 </div>
+                <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">Following</p>
+              </div>
+              <div class="shrink-0">
+                <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit" type="button">
+                  <span class="truncate">View All</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+              <div class="relative p-4 w-full max-w-md max-h-full">
+                  <!-- Modal content -->
+                  <div class="relative bg-grey rounded-lg shadow dark:bg-gray-700">
+                      <!-- Modal header -->
+                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                             All Following users
+                          </h3>
+                          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
+                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                              </svg>
+                              <span class="sr-only">Close modal</span>
+                          </button>
+                      </div>
+                      <!-- Modal body -->
+                      <div class="p-4 md:p-7">
+                        <div class="flex flex-col gap-1 overflow-y-auto max-h-64">
+                              {% for followings_name in followings_usernames %}
+                              <div class="flex items-center gap-3 px-3 py-2">
+                                <div class="text-[#FFFFFF]" data-icon="UserCircle" data-size="24px" data-weight="regular">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                    <path
+                                      d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"
+                                    ></path>
+                                  </svg>
+                                </div>
+                                <a class="text-[#FFFFFF] text-sm font-medium leading-normal hover:text-[#808080]" href="{% url 'profil' followings_name %}">{{ followings_name }}</a>
+                              </div>
+                              {%endfor%}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div> 
+
+            <div class="flex items-center gap-4 bg-black px-4 min-h-14 justify-between">
+              <div class="flex items-center gap-4">
+                <div
+                  class="text-[#FFFFFF] flex items-center justify-center rounded-lg bg-[#333333] shrink-0 size-10"
+                  data-icon="UserCirclePlus"
+                  data-size="24px"
+                  data-weight="regular"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M168,56a8,8,0,0,1,8-8h16V32a8,8,0,0,1,16,0V48h16a8,8,0,0,1,0,16H208V80a8,8,0,0,1-16,0V64H176A8,8,0,0,1,168,56Zm62.56,54.68a103.92,103.92,0,1,1-85.24-85.24,8,8,0,0,1-2.64,15.78A88.07,88.07,0,0,0,40,128a87.62,87.62,0,0,0,22.24,58.41A79.66,79.66,0,0,1,98.3,157.66a48,48,0,1,1,59.4,0,79.66,79.66,0,0,1,36.06,28.75A87.62,87.62,0,0,0,216,128a88.85,88.85,0,0,0-1.22-14.68,8,8,0,1,1,15.78-2.64ZM128,152a32,32,0,1,0-32-32A32,32,0,0,0,128,152Zm0,64a87.57,87.57,0,0,0,53.92-18.5,64,64,0,0,0-107.84,0A87.57,87.57,0,0,0,128,216Z"
+                    ></path>
+                  </svg>
+                </div>
                 <p class="text-[#FFFFFF] text-base font-normal leading-normal flex-1 truncate">Followers</p>
               </div>
               <div class="shrink-0">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit"
-                >
+                <button data-modal-target="crud-modal_2" data-modal-toggle="crud-modal_2" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#333333] text-[#FFFFFF] text-sm font-medium leading-normal w-fit" type="button">
                   <span class="truncate">View All</span>
                 </button>
               </div>
             </div>
           </div>
+          <div id="crud-modal_2" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-grey rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                           All Followers users
+                        </h3>
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal_2">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-7">
+                      <div class="flex flex-col gap-1 overflow-y-auto max-h-64">
+                            {% for followers_username in followers_usernames %}
+                            <div class="flex items-center gap-3 px-3 py-2">
+                              <div class="text-[#FFFFFF]" data-icon="UserCircle" data-size="24px" data-weight="regular">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                  <path
+                                    d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"
+                                  ></path>
+                                </svg>
+                              </div>
+                              <a class="text-[#FFFFFF] text-sm font-medium leading-normal hover:text-[#808080]" href="{% url 'profil' followers_username %}">{{ followers_username }}</a>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
            
             <div class="layout-content-container flex flex-col max-w-[960px] flex-1" style="margin-left: 100px;">
                 <div class="flex flex-col gap-4 bg-black px-4 min-h-14">
