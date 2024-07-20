@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}See user Post{% endblock %}
+
+{% block content %}
+<div class=" justify-center my-[-15px]">
+    <div class="layout-content-container flex flex-row max-w-[1500px] flex-1">
+        <!-- Conteneur Flex Parent -->
+        <div class="flex flex-row w-full"style="padding-left: -100px; padding-right: -3000px;"> <!-- Réduire le padding gauche ici -->
+            <!-- Première div à gauche -->
+            <div class="flex flex-col flex-1 p-20" style="flex-basis: 80%;">
+                <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                    <h1 class="text-white text-lg font-bold mb-2">See user Post</h1>
+                        <!-- Afficher l'image de profil actuelle si elle existe -->
+                        {% if messages %}
+                            <div class="bg-green-100 text-white p-4 rounded-lg mb-4">
+                                {% for message in messages %}
+                                    <p>{{ message }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="w-full">
+                            <label for="code" class="text-white text-sm font-normal">code:</label>
+                            <div id="code" clas`s="w-full rounded px-1 py-2  border-gray-300" style="height: 400px; height: 500px" required></div>
+                        </div>
+                        <form method="POST" action="{% url 'updateUserPost' post.id %}" class="w-full mb-4">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="language" class="text-white text-sm font-normal">language:</label>
+                                <select name="language" id="language" class="w-full rounded px-4 py-2 text-gray-700 border border-gray-300" required>
+                                    {% if post.language == "python" %}
+                                    <option value="python" selected>Python</option>
+                                    {% elif post.language == "javascript" %}
+                                    <option value="javascript" selected>Javascript</option>
+                                    {% elif post.language == "java" %}
+                                    <option value="java" selected>Java</option>
+                                    {% elif post.language == "c" %}
+                                    <option value="c" selected>C</option>
+                                    {% elif post.language == "c++" %}
+                                    <option value="c++" selected>C++</option>
+                                    {% elif post.language == "php" %}
+                                    <option value="php" selected>PHP</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="content" class="text-white text-sm font-normal">content:</label>
+                                <textarea name="content" id="content" class="w-full h-32 rounded px-4 py-2 text-gray-700 border border-gray-300 bg-white" required readonly>{{ post.content }}</textarea>                            </div>
+                            <input type="hidden" name="code" id="hiddenCode">
+                            <div class="flex items-center justify-between">
+                                <button type="submit" class="rounded-full px-4 py-2 bg-gray-800 text-white font-medium hover:bg-blue-600">
+                                    execute
+                                </button>
+                                <a href="{% url 'feed' %}" class="text-white hover:text-blue-800 font-bold text-sm">
+                                    Back
+                                </a>
+                            </div>
+                        </form>
+                </div>
+            </div>
+            <!-- Deuxième div à droite -->
+            <div class="flex flex-col flex-1 p-20" style="flex-basis: 25%;">
+                <h2 class="text-white text-lg font-bold mb-1">Comments</h2>
+                <!-- Ici, vous pouvez itérer sur les commentaires et les afficher -->
+                <div class="flex flex-col items-center py-4" style=" padding-right: -3000px;">
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <ul>
+                            {% for comment in comments %}
+                            <li class="text-[#CBCBCB] bg-gray-800 p-4 rounded mb-2">{{ comment.author }}: {{ comment.content }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                  </div>
+                <form id="commentForm" method="POST" action="http://localhost:80/api/post/{{ post.id }}/add-comment/">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="comment" class="text-white text-sm font-normal">Add a new comment:</label>
+                        <input type="text" name="comment" id="comment" class="w-full h-32 rounded px-4 py-2 text-gray-700 border border-gray-300" required>
+                    </div>
+                    <div hidden>
+                        <input id="user_id" type="user_id" name="user_id" value="{{ user_id }}">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button type="submit" class="rounded-full px-4 py-2 bg-gray-800 text-white font-medium hover:bg-blue-600">
+                            Add Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        
+
+      
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.nls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/editor/editor.main.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        let currentLanguage = "{{ post.language }}";
+
+        require(['vs/editor/editor.main'], function() {
+            if (`{{ post.code|escapejs }}`.trim() !== "") {
+
+            var editor = monaco.editor.create(document.getElementById('code'), {
+                value: "{{ post.code|escapejs|safe }}",
+                language: currentLanguage,
+                theme: 'vs-dark',
+                readOnly: true
+            });
+        } else {
+            document.getElementById('code').parentElement.remove();
+            
+        }
+            
+
+            
+        });
+    });
+
+    document.getElementById('commentForm').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+
+        const formData = new FormData(this);
+        const actionUrl = this.action; 
+
+        fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}', 
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload(); 
+            } else {
+                alert('we got an erro');
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
+    });
+</script>
+{% endblock %}

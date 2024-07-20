@@ -15,6 +15,10 @@
                 {% endfor %}
             </div>
         {% endif %}
+        <div class="w-full">
+            <label for="code" class="text-white text-sm font-normal">code:</label>
+            <div id="code" class="w-full rounded px-1 py-2  border-gray-300" style="height: 400px; height: 500px" required></div>
+        </div>
         <form method="POST" action="{% url 'userPostAdd' %}" class="w-full mb-4">
             {% csrf_token %}
             <div class="mb-4">
@@ -42,10 +46,10 @@
                 </a>
             </div>
         </form>
-        <div class="w-full">
+        {% comment %} <div class="w-full">
             <label for="code" class="text-white text-sm font-normal">code:</label>
             <div id="code" class="w-full rounded px-4 py-2  border-gray-300" style="height: 400px; height: 500px" required></div>
-        </div>
+        </div> {% endcomment %}
     </div>
 </div>
 

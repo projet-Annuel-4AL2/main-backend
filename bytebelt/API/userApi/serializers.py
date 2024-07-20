@@ -34,3 +34,12 @@ class UserPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPost
         fields = '__all__'
+
+
+class UserCommentPostSerializer(serializers.ModelSerializer):
+    #author = UserSerializer(read_only=True)
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = UserPost
+        fields = ['author', 'content', 'created_at']

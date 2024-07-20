@@ -1,9 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.shortcuts import render
-from .models import CustomUser , UserPost , Device
+from .models import CustomUser , UserPost , Device , Comment
 from rest_framework import generics
-from .serializers import UserSerializer , UserPostSerializer
+from .serializers import UserSerializer , UserPostSerializer ,UserCommentPostSerializer
 from .AuthTokenSerializer import AuthTokenSerializer
 from .filters import UserFilter
 from rest_framework.views import APIView
@@ -298,19 +298,21 @@ class AddComment(APIView):
     def post(self, request, pk):
         post = get_object_or_404(UserPost, pk=pk)
         user = get_object_or_404(CustomUser, pk=request.data['user_id'])
-        comment = request.data.get('comment')
-        if comment is not None:
-            post.comments.add(user)
+        comment_text = request.data.get('comment')
+        if comment_text is not None:
+            comment = Comment(post=post, author=user, content=comment_text)
+            comment.save()
             message = 'Commented'
+        else:
+            message = 'No comment provided'
         return Response({'status': message}, status=status.HTTP_200_OK)
     
 class GetComments(APIView):
     permission_classes = [AllowAny]
     def get(self, request, pk):
         post = get_object_or_404(UserPost, pk=pk)
-        comments = post.comments.all()
-        return Response({'comments': UserSerializer(comments, many=True).data}, status=status.HTTP_200_OK)
-    
+        comments = Comment.objects.filter(post=post)  
+        return Response(UserCommentPostSerializer(comments, many=True).data, status=status.HTTP_200_OK)
 class GetLikes(APIView):
     permission_classes = [AllowAny]
     def get(self, request, pk):

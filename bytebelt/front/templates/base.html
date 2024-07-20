@@ -57,7 +57,13 @@
                 <div class="flex flex-1 justify-end gap-8">
                   <label class="flex flex-col min-w-40 !h-10 max-w-64">
                     {% comment %} afficher que si on est pas sur l'url home {% endcomment %}
+                   
+                    {% if  request.path == '/profile/' or request.path == '/feed/' or  request.path == '/explorer/' %}
+
+                    {%else%}
                     {% if  request.path != '/home/' %}
+
+                    {% if request.session.token  %}
                     <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
                       <div
                         class="text-[#CBCBCB] flex border-none bg-[#333333] items-center justify-center pl-4 rounded-l-xl border-r-0"
@@ -79,6 +85,10 @@
                       />
                     </div>
                     {% endif %}
+
+                    {% endif%}
+                   
+                    {% endif %}
                   </label>
                   {% if request.session.token %}
                   <a href="{% url 'profile' %}">
@@ -91,8 +101,8 @@
                     {% endif %}                    
                     ></div>
                 </a>
-                <a href={% url 'logout'%}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="currentColor" viewBox="0 0 256 256">
+                <a href={% url 'logout'%} style="text-[#808080]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="white" viewBox="0 0 256 256">
                         <path d="M216,40H168a8,8,0,0,0,0,16h40V200H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path>
                         <path d="M114.34,170.34a8,8,0,0,0,11.32,0l56-56a8,8,0,0,0,0-11.32l-56-56a8,8,0,0,0-11.32,11.32L157.66,104H40a8,8,0,0,0,0,16H157.66l-43.32,43.32A8,8,0,0,0,114.34,170.34Z"></path>
                       </svg>

@@ -18,7 +18,20 @@ class CreateGroupeView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
+class EditPostForGroupeView(APIView):
+    permission_classes = [AllowAny]
+    def put(self, request, *args, **kwargs):
+        groupe_id = kwargs.get('groupe_id')
+        if not groupe_id:
+            return Response({'error': 'groupe_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        groupe = get_object_or_404(Groupe, id=groupe_id)
+        groupe.name = request.data.get('name')
+        groupe.description = request.data.get('description')
+        image_file = request.FILES.get('group_pic')
+        if image_file:
+            groupe.group_pic = image_file
+        groupe.save()
+        return Response({'status': 'groupe edited'}, status=status.HTTP_200_OK)
 class CreatePostForGroupeViewByGroupeId(APIView):
     permission_classes = [AllowAny]
     def post(self, request ,*args, **kwargs):
@@ -55,7 +68,7 @@ class EditPostForGroupeView(APIView):
 class GetAllGroupeView(APIView):
     permission_classes = [AllowAny]
     def get(self, request, format=None):
-        groupes = Groupe.objects.all()
+        groupes = Groupe.objects.all().order_by('-created_at')
         serializer = GroupeSerializer(groupes, many=True)
         return Response(serializer.data)
 

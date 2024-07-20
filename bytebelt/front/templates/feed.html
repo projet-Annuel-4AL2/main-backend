@@ -4,6 +4,7 @@
 {% block content %}
         <div class="gap-1 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1" id="post-container">
+            <div id ="posts">
             {% for post in posts %}
             <div class="p-2 @container">
               <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
@@ -16,20 +17,25 @@
                   <div class="flex items-end gap-3 justify-between">
                     <div class="flex flex-col gap-1">
                       <p class="text-[#CBCBCB] text-base font-normal leading-normal">
-                       {{ post.content|truncatechars:600 }}
+                       {{ post.content|truncatechars:400 }}
                       </p>
-                    <div class="flex items-center">
-                        <button id="like" onclick="likePost({{ post.id }}, '{{ user.id }}')" class="flex items-center mr-4">
-                            <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
-                            <span style="color: #808080;">{{ post.likes|length }} likes</span>
-                        </button>
-                        <a href="" class="flex items-center">
-                            <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" >
-                                <path d="M 25 4 C 12.316406 4 2 12.972656 2 24 C 2 30.1875 5.335938 36.066406 10.949219 39.839844 C 10.816406 40.890625 10.285156 43.441406 8.183594 46.425781 L 7.078125 47.992188 L 9.054688 48 C 14.484375 48 18.15625 44.671875 19.363281 43.394531 C 21.195313 43.796875 23.089844 44 25 44 C 37.683594 44 48 35.027344 48 24 C 48 12.972656 37.683594 4 25 4 Z"></path>
-                            </svg>
-                            <span style="color: #808080;">{{ post.comments|length }} comments</span>
+                      <div class="mt-4 flex flex-col items-start">
+                        <div class="flex items-center mb-2">
+                            <button id="like" onclick="likePost({{ post.id }}, '{{ user.id }}')" class="flex items-center mr-4">
+                                <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span style="color: #808080;">{{ post.likes|length }} likes</span>
+                            </button>
+                            <a href="" class="flex items-center">
+                                <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M 25 4 C 12.316406 4 2 12.972656 2 24 C 2 30.1875 5.335938 36.066406 10.949219 39.839844 C 10.816406 40.890625 10.285156 43.441406 8.183594 46.425781 L 7.078125 47.992188 L 9.054688 48 C 14.484375 48 18.15625 44.671875 19.363281 43.394531 C 21.195313 43.796875 23.089844 44 25 44 C 37.683594 44 48 35.027344 48 24 C 48 12.972656 37.683594 4 25 4 Z"></path>
+                                </svg>
+                                <span style="color: #808080;">{{ post.comments|length }} comments</span>
+                            </a>
+                        </div>
+                        <a href="{% url 'singleUserPost' post.id %}" class="mt-4 px-4 py-2 bg-white rounded-full text-black">
+                            <span>See more</span>
                         </a>
                     </div>
                     </div>
@@ -38,6 +44,8 @@
               </div>
             </div>
             {% endfor %}
+        </div>
+       
         </div>
       </div>
     </div>
@@ -55,12 +63,18 @@
 <script>
     function initializeEditors() {
         {% for post in posts %}
-            monaco.editor.create(document.getElementById('code-{{ forloop.counter }}'), {
-                value: `{{ post.code|escapejs }}`,
-                language: '{{ post.language }}',
-                theme: 'vs-dark',
-                readOnly: true
-            });
+            if (`{{ post.code|escapejs }}`.trim() !== "") {
+                monaco.editor.create(document.getElementById('code-{{ forloop.counter }}'), {
+                    value: `{{ post.code|escapejs }}`,
+                    language: '{{ post.language }}',
+                    theme: 'vs-dark',
+                    readOnly: true
+                });
+            } else {
+                // supprimer la div parente
+                document.getElementById('code-{{ forloop.counter }}').parentElement.remove();
+                
+            }
         {% endfor %}
     }
 
@@ -90,5 +104,8 @@
             }
         });
     }
+
+   
+
 </script>
 {% endblock %}

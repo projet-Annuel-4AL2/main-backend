@@ -3,7 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-        <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+        <div class="gap-10 px-6 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col w-80">
             <div class="flex p-4 @container">
               <div class="flex w-full flex-col gap-4 items-start">
@@ -40,10 +40,10 @@
                   <a href="{% url 'explorer' %}">
                     <div class="flex items-center gap-3 px-3 py-2 ">
                       <div class="text-[#FFFFFF]" data-icon="DiscordLogo" data-size="24px" data-weight="fill">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                          <path
-                            d="M247.51,174.39,218,58a16.08,16.08,0,0,0-13-11.88l-36.06-5.92a16.22,16.22,0,0,0-18.26,11.88l-.21.85a4,4,0,0,0,3.27,4.93,155.62,155.62,0,0,1,24.41,5.62,8.2,8.2,0,0,1,5.62,9.7,8,8,0,0,1-10.19,5.64,155.4,155.4,0,0,0-90.8-.1,8.22,8.22,0,0,1-10.28-4.81,8,8,0,0,1,5.08-10.33,156.85,156.85,0,0,1,24.72-5.72,4,4,0,0,0,3.27-4.93l-.21-.85A16.21,16.21,0,0,0,87.08,40.21L51,46.13A16.08,16.08,0,0,0,38,58L8.49,174.39a15.94,15.94,0,0,0,9.06,18.51l67,29.71a16.17,16.17,0,0,0,21.71-9.1l3.49-9.45a4,4,0,0,0-3.27-5.35,158.13,158.13,0,0,1-28.63-6.2,8.2,8.2,0,0,1-5.61-9.67,8,8,0,0,1,10.2-5.66,155.59,155.59,0,0,0,91.12,0,8,8,0,0,1,10.19,5.65,8.19,8.19,0,0,1-5.61,9.68,157.84,157.84,0,0,1-28.62,6.2,4,4,0,0,0-3.27,5.35l3.49,9.45a16.18,16.18,0,0,0,21.71,9.1l67-29.71A15.94,15.94,0,0,0,247.51,174.39ZM92,152a12,12,0,1,1,12-12A12,12,0,0,1,92,152Zm72,0a12,12,0,1,1,12-12A12,12,0,0,1,164,152Z"
-                          ></path>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="23px" height="23px" fill="currentColor" class="bi bi-explicit" viewBox="0 0 16 16">
+                          <path d="M6.826 10.88H10.5V12h-5V4.002h5v1.12H6.826V7.4h3.457v1.073H6.826z"/>
+                          <path d="M2.5 0A2.5 2.5 0 0 0 0 2.5v11A2.5 2.5 0 0 0 2.5 16h11a2.5 2.5 0 0 0 2.5-2.5v-11A2.5 2.5 0 0 0 13.5 0zM1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5z"/>
                         </svg>
                       </div>
                       <p class="text-[#FFFFFF] text-sm font-medium leading-normal">Explorer</p>
@@ -62,7 +62,7 @@
                     </div>
                   </a>
                 </div>
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4" class="hover:text-[#CBCBCB]">
                     <button
                       onclick="window.location.href = '{% url 'userPostAdd' %}'"
                       class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
@@ -73,7 +73,7 @@
                       onclick="window.location.href = '{% url 'createGroupe' %}'"
                       class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]"
                     >
-                    <span class="truncate">Create Groupe</span>
+                    <span class="truncate">Create Group</span>
                   </button>
                   <div class="flex flex-col gap-1">
                     {% for follower in followers.followers|slice:"8" %}
@@ -91,7 +91,7 @@
                     <div class="flex justify-center items-center gap-3 px-3 py-2">
                       <a href="{% url 'followers' %}">
                         <button class="flex min-w-[280px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#FFFFFF] text-black text-sm font-bold leading-normal tracking-[0.015em]">
-                          <span class="truncate">View All</span>
+                          <span class="truncate">View All Followers</span>
                         </button>
                       </a>
                     </div>
@@ -156,7 +156,7 @@
                       ></path>
                     </svg>
                   </div>
-                  <p class="text-[#FFFFFF] text-sm font-bold leading-normal tracking-[0.015em]">View All Groupe</p>
+                  <p class="text-[#FFFFFF] text-sm font-bold leading-normal tracking-[0.015em]">View All Groups</p>
                 </a>
               </div>
             </div>

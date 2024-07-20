@@ -77,7 +77,7 @@ def userDetail (request , pk):
     user_info = requests.post(API_BASE_URL + 'user/', data={'token': request.session.get('token')})
     if response.status_code == 200 and user_info.status_code == 200:
         user = response.json()
-        user_info = user_info.json()        
+        user_info = user_info.json()   
         return render(request, 'userDetail.html', {'user': user , 'user_info': user_info})
     else:
         redirect('home')
@@ -86,7 +86,7 @@ def userDetail (request , pk):
 def userInfos (request , username):
     response = requests.get(API_BASE_URL + 'users/' + username + '/')
     user_info = requests.post(API_BASE_URL + 'user/', data={'token': request.session.get('token')})
-
+    users = requests.get(API_BASE_URL + 'users/').json()
     if response.status_code == 200 and  user_info.status_code == 200:
         user = response.json()
         user_info = user_info.json()
@@ -94,9 +94,24 @@ def userInfos (request , username):
         followings = [following.get('id') for following in followings.get('following')]
         followings_users = requests.get(API_BASE_URL + 'users/' + user.get('id') + '/get-following/').json()
         followings_users = [following.get('id') for following in followings_users.get('following')]
+        followers = requests.get(API_BASE_URL + 'users/' + user.get('id') + '/followers/').json()
+        followers = [follower.get('username') for follower in followers.get('followers')]
         posts = requests.get(API_BASE_URL + 'post/user/' + username + '/').json()
+        followings_usernames = []
+
+        for followings_user in followings_users:
+            for user_data in users:
+                if followings_user == user_data.get('id'):
+                   followings_usernames.append(user_data.get('username'))
+                   break
+        followers_usernames = []
+        for following in followings:
+            for user_data in users:
+                if following == user_data.get('id'):
+                   followers_usernames.append(user_data.get('username'))
+                   break
         #user = response.json()
-        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followings': followings , 'followings_users': followings_users , 'posts': posts})
+        return render(request, 'userDetail.html', {'user_': user , 'user_info': user_info , 'followers_usernames': followers , 'followings_usernames':followings_usernames,  'followings': followings , 'followings_users': followings_users , 'posts': posts})
     else:
         redirect('home')
 
@@ -354,6 +369,30 @@ def updateUserPost(request , id):
         'followings': user_data.get('followings'),
         'post': post.json()
     })
+
+def singleUserPost(request , id):
+    user_data = get_user_data(request)
+    users = user_data.get('users')
+    user_id = user_data.get('user').get('id')
+    post = requests.get(API_BASE_URL + 'post/' + str(id) + '/')
+    comments = requests.get(API_BASE_URL + 'post/' + str(id) + '/get-comment/').json()
+
+    for comment in comments:
+        for user in users:
+            if comment['author'] == user['id']:
+                comment['author'] = user['username']
+                break
+  
+    return render(request, 'singleUserPost.html', {
+        'user_id': user_id,
+        'users': user_data.get('users'),
+        'user': user_data.get('user'),
+        'followers': user_data.get('followers'),
+        'followings': user_data.get('followings'),
+        'post': post.json(),
+        'comments': comments
+    })
+    
 def updateUserBio(request):
     user_data = get_user_data(request)
     user = user_data.get('user')
@@ -472,10 +511,12 @@ def groupInfo(request, name):
     posts = requests.get(API_BASE_URL + 'groupe/publications/' + str(groupe_id) + '/')
     token = request.session.get('token')
     user = requests.post(API_BASE_URL + 'user/', data={'token': token}).json()
+    username = user.get('username')
     user_id = user.get('id')
     users_response = requests.get(API_BASE_URL + 'users/')
     groupe = response.json()
     groupe_author_id = groupe.get('author')
+    
     
 
     if response.status_code == 200 and posts.status_code == 200:
@@ -488,10 +529,51 @@ def groupInfo(request, name):
                 
                 comments_response = requests.get(API_BASE_URL + 'groupe/publication/' + str(post['id']) + '/comment/').json()
                 post['comment_count'] = len(comments_response)  
-
+        
         return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
+
+def updateGroupInfo(request, name):
+    response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
+    groupe_id = response.json().get('id')
+    user_get_data = get_user_data(request)
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        image = request.FILES.get('image')
+
+        if name and description:
+            token = request.session.get('token')
+            user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
+            if user_response.status_code == 200:
+                user_id = user_response.json().get('id')
+                if user_id:
+                    data = {
+                        'groupe_id': groupe_id,
+                        'name': name,
+                        'description': description,
+                        'author': str(user_id),
+                    }
+                    files = {'group_pic': image} if image else None
+                    response = requests.patch(API_BASE_URL + 'groupe/update/' + str(groupe_id) + '/', data=data, files=files)
+                    if response.status_code == 200:
+                        return redirect('group', name=name)
+                    else:
+                        messages.error(request, f'Error updating group: {response.text}')
+                        return redirect('group', name=name)
+                else:
+                    messages.error(request, 'User ID not found')
+                    return redirect('group', name=name)
+            else:
+                messages.error(request, 'Invalid token')
+                return redirect('group', name=name)
+        else:
+            messages.error(request, 'Name and description are required')
+            return redirect('group', name=name)
+        
+    return render(request, 'updateGroupInfo.html', {'groupe': response.json() ,'user': user_get_data.get('user')})
+
 
 def groupPost(request, name):
     response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
