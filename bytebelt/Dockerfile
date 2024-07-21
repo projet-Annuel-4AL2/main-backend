@@ -18,9 +18,20 @@ COPY . /bytebelt/
 
 
 # Command to run your Django application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
+#CMD ["python", "manage.py", "runserver", "0.0.0.0:80"]
 #mise en production
-#CMD ["daphne", "-b", "0.0.0.0", "-p", "80", "bytebelt.asgi:application"]
+#CMD ["daphne", "-b", "0.0.0.0", "-p", "$PORT", "bytebelt.asgi:application"]
+RUN python manage.py collectstatic --noinput
+CMD ["sh", "-c", "daphne -b 0.0.0.0 -p ${PORT} bytebelt.asgi:application"]
+
+
+
+# heroku logs --tail -a bytebelt-app  
+#docker build --platform linux/amd64 -t bytebelt-app .
+#docker tag bytebelt-app registry.heroku.com/bytebelt-app/web
+#docker push registry.heroku.com/bytebelt-app/web
+#heroku container:release web -a bytebelt-app
+
 
 #RUN chmod +x ./start.sh
 #CMD ["./start.sh"]

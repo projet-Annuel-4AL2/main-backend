@@ -113,7 +113,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     function likePost(postId, userId) {
-        var url = 'http://localhost:80/api/groupe/publications/' + postId + '/like/';
+        var url = "{{ LOCALHOST }}" + '/api/groupe/publications/' + postId + '/like/';
+        //var url = 'http://localhost:80/api/groupe/publications/' + postId + '/like/';
         
         $.ajax({
             url: url,

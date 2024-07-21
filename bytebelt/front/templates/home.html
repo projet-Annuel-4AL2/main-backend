@@ -119,7 +119,7 @@
                 {% endfor %}
               </div>
             </div>
-            {% if post is not None %}
+            {% if post  %}
             <div class="p-4 @container" id="post-container">
               <div class="flex flex-col items-stretch justify-start rounded-xl @xl:flex-row @xl:items-start">
                 <div class="w-full aspect-video rounded-xl overflow-auto bg-gray-950 text-white p-4" style="max-height: 100000px; width:  120000px;">
@@ -270,7 +270,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   function likePost(postId, userId) {
-      var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+      var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/add-like/';
+      //var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
 
       $.ajax({
           url: url,
