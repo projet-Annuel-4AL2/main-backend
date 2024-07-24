@@ -35,7 +35,7 @@ jobs:
     - name: Copy files to GCE instance
       run: |
         echo "Copying files to GCE instance"
-        gcloud compute scp --recurse . ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_IP }}:/home/marcmalha/bytebelt
+        gcloud compute scp --recurse --zone europe-west9-c . ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_IP }}:/home/marcmalha/bytebelt
       shell: bash
 
 
