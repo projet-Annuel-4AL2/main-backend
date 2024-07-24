@@ -37,6 +37,20 @@ jobs:
         docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA ./bytebelt/
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
 
+    - name: Wait for Image to be Available in GCR
+      run: |
+        IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-django-app:$GITHUB_SHA"
+        echo "Checking availability of Image: $IMAGE_NAME"
+        for i in {1..10}; do
+          if gcloud container images list-tags gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-django-app --filter="tags:$GITHUB_SHA" | grep -q $GITHUB_SHA; then
+            echo "Image is available in GCR."
+            break
+          else
+            echo "Image not found. Retrying in 1 second..."
+            sleep 1
+          fi
+        done
+
     - name: Start SSH Agent and Add Key
       uses: webfactory/ssh-agent@v0.5.3
       with:
