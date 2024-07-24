@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 
 
 API_BASE_URL = config('API_BASE_URL')
-
+LOCALHOST = config('LOCALHOST')
 
 def token_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -66,7 +66,8 @@ def home(request):
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
             'groupes': user_data.get('groupes'),
-            'post': post
+            'post': post,
+            'LOCALHOST': LOCALHOST
         })
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch user data'})
@@ -225,7 +226,10 @@ def subscribe(request):
                         if post['author'] == user['id']:
                             post['author'] = user['username']
                             break
-                    post =  post_without_following[0]
+                    if post_without_following:
+                        post = post_without_following[0]
+                    else:
+                        post = []
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
@@ -371,6 +375,7 @@ def updateUserPost(request , id):
     })
 
 def singleUserPost(request , id):
+    
     user_data = get_user_data(request)
     users = user_data.get('users')
     user_id = user_data.get('user').get('id')
@@ -390,7 +395,8 @@ def singleUserPost(request , id):
         'followers': user_data.get('followers'),
         'followings': user_data.get('followings'),
         'post': post.json(),
-        'comments': comments
+        'comments': comments,
+        'LOCALHOST': LOCALHOST
     })
     
 def updateUserBio(request):
@@ -859,7 +865,8 @@ def usersPost(request):
             'users': user_data.get('users'),
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
-            
+            'LOCALHOST': LOCALHOST 
+          
         })
     else:
         return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
@@ -874,6 +881,6 @@ def usersPostExplorer(request):
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
         
-        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings')})
+        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings') , 'LOCALHOST': LOCALHOST})
     else:
         return render(request, 'explorer.html', {'error': 'Unable to fetch posts'})

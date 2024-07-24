@@ -151,7 +151,8 @@ Profile
     });
 
     function likePost(postId, userId) {
-        var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+        var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/add-like/';
+        //var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
 
         $.ajax({
             url: url,
@@ -174,7 +175,7 @@ Profile
     }
 
     function deletePost(postId) {
-      var url = 'http://localhost:80/api/post/' + postId + '/delete/';
+      var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/delete/';
       console.log(url);
   
       $.ajax({

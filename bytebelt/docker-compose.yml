@@ -17,7 +17,8 @@ services:
       
   web:
     build: .
-    container_name: bytebelt
+    container_name: web
+    image: web
     ports:
       - "80:80"
     volumes:
