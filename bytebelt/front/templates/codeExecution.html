@@ -5,16 +5,16 @@
 
 {% block content %}
 <div class="container mx-auto mt-5">
-    <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="mb-3 p-1" style="width:50%">
-                  <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
-                  <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
+    <h1 class="text-center text-2xl font-bold mb-4 text-[#CBCBCB]">Code Editor</h1>
+    <div class="container mt-4">
+    <div class="row justify-content-center">
+            <div >
+                <div class="mb-3 p-1">
+                    <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Upload Source Code</label>
+                    <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white;  input-btn-focus-width:20em;">
                 </div>
             </div>
-            <div class="col-md-4 mt-4">
+            <div >
                 <select id="languageSelector" class="btn btn-light mb-4 text-left">
                     <option value="python">Python</option>
                     <option value="php">PHP</option>
@@ -26,9 +26,9 @@
             </div>
         </div>
     </div>
-    <div id="editor" class="w-full h-64" style="height:25em;width:75%;"></div>
-    <div class="container">
-      <div class="row">
+    <div id="editor" class="mx-auto" style="height:25em;width:75%;"></div>
+    <div class="container mt-4">
+    <div class="row justify-content-center">
         <div class="col-md-5">
             <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
         </div>
@@ -40,7 +40,7 @@
         </div>
       </div>
     </div>
-    <div id="result" class="w-full h-64" style="height:250px;width:75%"></div>
+     <div id="result" class="mx-auto" style="height:250px;width:75%;"></div>
 </div>
 
 {% endblock %}

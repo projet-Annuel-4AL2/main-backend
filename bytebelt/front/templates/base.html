@@ -63,7 +63,7 @@
                   <label class="flex flex-col min-w-40 !h-10 max-w-64">
                     {% comment %} afficher que si on est pas sur l'url home {% endcomment %}
                    
-                    {% if  request.path == '/profile/' or request.path == '/feed/' or  request.path == '/explorer/' %}
+                    {% if  request.path == '/profile/' or request.path == '/feed/' or  request.path == '/explorer/' or request.path == '/runCode/' or request.path == '/runPipeline/' %}
 
                     {%else%}
                     {% if  request.path != '/home/' %}
@@ -96,16 +96,21 @@
                     {% endif %}
                   </label>
                   {% if request.session.token %}
+                  {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
+                  {% else %}
                   <a href="{% url 'profile' %}">
                     <div
                       class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    {% if user.profile_pic %}
-                      style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
-                    {% else %}
-                      style='background-image: url("{{ user_info.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
-                    {% endif %}                    
+                     
+                          {% if user.profile_pic %}
+                            style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+                          {% else %}
+                            style='background-image: url("{{ user_info.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
+                          {% endif %}   
+                                          
                     ></div>
                 </a>
+                {% endif %}         
                 <a href={% url 'logout'%} style="text-[#808080]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="white" viewBox="0 0 256 256">
                         <path d="M216,40H168a8,8,0,0,0,0,16h40V200H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path>
