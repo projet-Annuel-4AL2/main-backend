@@ -44,7 +44,7 @@ jobs:
 
     - name: SSH into GCE and deploy
       run: |
-          docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-django-app:$GITHUB_SHA
+          docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
           docker stop bytebelt-web || true
           docker rm bytebelt-web || true
           docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
@@ -60,3 +60,7 @@ jobs:
 #          docker rm bytebelt-web || true
 #          docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
 #          docker exec -it bytebelt-web python3 manage.py migrate
+
+
+docker pull gcr.io/pa-final-project/my-django-app:357033e9ac7c5553660d18ef8ac3dd9110e9d5c8
+docker pull gcr.io/pa-final-project/bytebelt-web:357033e9ac7c5553660d18ef8ac3dd9110e9d5c8
