@@ -15,7 +15,7 @@ jobs:
 
     - name: Set up Cloud SDK
       run: |
-        echo ${{ secrets.GCP_SA_KEY }} | jq .
+#        echo ${{ secrets.GCP_SA_KEY }} | jq .
         echo ${{ secrets.GCP_SA_KEY }} > "${HOME}/gcp-key.json"
         cat "${HOME}/gcp-key.json"
         gcloud auth activate-service-account --key-file="${HOME}/gcp-key.json"
