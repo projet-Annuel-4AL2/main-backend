@@ -44,8 +44,13 @@ jobs:
         username: ${{ secrets.GCE_SSH_USER }}
         key: ${{ secrets.GCE_SSH_KEY }}
         script: |
+          set -x # Enable debugging
+          ssh -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_IP }} << 'EOF'
+          echo "Starting deployment script"
           docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-django-app:$GITHUB_SHA
           docker stop bytebelt-web || true
           docker rm bytebelt-web || true
           docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
           docker exec -it bytebelt-web python3 manage.py migrate
+          echo "Deployment script finished"
+          EOF
