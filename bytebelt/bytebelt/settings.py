@@ -191,7 +191,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
-print(f'HELLLOOO {config("DB_HOST", default="DIDNT READ")}')
 
 #
 # GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON = ast.literal_eval(config('GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON'))
