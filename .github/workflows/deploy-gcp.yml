@@ -60,6 +60,7 @@ jobs:
       run: |
           IMAGE_NAME="gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
           ssh -T -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }} << 'EOF'
+          export IMAGE_NAME=$IMAGE_NAME
           echo "Starting deployment script"
           if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt-web\$"; then
             docker stop bytebelt-web
