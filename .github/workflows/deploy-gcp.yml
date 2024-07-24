@@ -19,10 +19,6 @@ jobs:
         gcloud auth activate-service-account --key-file="${HOME}/gcp-key.json"
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
-#    - name: Authenticate Docker to Google Cloud Registry
-#      run: |
-#        echo '${{ secrets.GCP_SA_KEY }}' | docker login -u _json_key --password-stdin https://gcr.io
-
     - name: Create secrets file
       run: |
         echo "GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
@@ -65,46 +61,5 @@ jobs:
           docker build -t bytebelt-web .
           docker run --name bytebelt -p 80:80 -d bytebelt-web
           echo "Deployment script finished"
+        exit
         EOF
-
-#    - name: Build and Push Docker image
-#      run: |
-#        docker build -t gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA ./bytebelt/
-#        docker push gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
-#
-#    - name: Wait for Image to be Available in GCR
-#      run: |
-#        IMAGE_NAME="gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
-#        echo "Checking availability of Image: $IMAGE_NAME"
-#        for i in {1..10}; do
-#          if gcloud container images list-tags gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web --filter="tags:$GITHUB_SHA" | grep -q $GITHUB_SHA; then
-#            echo "Image is available in GCR."
-#            break
-#          else
-#            echo "Image not found. Retrying in 1 second..."
-#            sleep 1
-#          fi
-#        done
-
-#    - name: Start SSH Agent and Add Key
-#      uses: webfactory/ssh-agent@v0.5.3
-#      with:
-#        ssh-private-key: ${{ secrets.GCE_SSH_KEY }}
-#
-#    - name: SSH into GCE and deploy
-#      run: |
-#          IMAGE_NAME="gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
-#          ssh -T -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }} << 'EOF'
-#          export IMAGE_NAME="$IMAGE_NAME"
-#          echo "Starting deployment script"
-#          echo $IMAGE_NAME
-#          if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt-web\$"; then
-#            docker stop bytebelt-web
-#            docker rm bytebelt-web
-#          fi
-#          docker pull \$IMAGE_NAME
-#          docker images # List images to ensure the pull was successful
-#          docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
-#          docker ps -a # List all containers to check if the new container is running
-#          echo "Deployment script finished"
-#          EOF
