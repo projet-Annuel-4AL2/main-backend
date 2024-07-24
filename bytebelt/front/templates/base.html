@@ -9,8 +9,11 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-12/assets/css/login-12.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
+    {%else%}
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
+    {% endif %}
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link
@@ -22,6 +25,8 @@
     <title>{% block title %}Galileo Design{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^2.0.0/build/global/luxon.min.js"></script>
+
 </head>
 <body>
     <div class="relative flex size-full min-h-screen flex-col bg-black dark group/design-root overflow-x-hidden" style='font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;'>
@@ -44,7 +49,7 @@
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'runPipeline' %}">Pipeline Editor</a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'feed' %}">Feed </a>
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'explorer' %}">Explorer </a>
-                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'groupes' %}">groups </a>
+                    <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'groupes' %}">Groups </a>
 
                     {% else %}
                     <a class="text-[#FFFFFF] text-sm font-medium leading-normal" href="{% url 'login' %}">Login </a>
@@ -58,7 +63,7 @@
                   <label class="flex flex-col min-w-40 !h-10 max-w-64">
                     {% comment %} afficher que si on est pas sur l'url home {% endcomment %}
                    
-                    {% if  request.path == '/profile/' or request.path == '/feed/' or  request.path == '/explorer/' %}
+                    {% if  request.path == '/profile/' or request.path == '/feed/' or  request.path == '/explorer/' or request.path == '/runCode/' or request.path == '/runPipeline/' %}
 
                     {%else%}
                     {% if  request.path != '/home/' %}
@@ -92,19 +97,25 @@
                   </label>
                    
                   {% if request.session.token %}
+                  {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
+                  {% else %}
                   <a href="{% url 'profile' %}">
                     <div
                       class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+
                       {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
                       {% else %}
+
                           {% if user.profile_pic %}
                             style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                           {% else %}
                             style='background-image: url("{{ user_info.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                           {% endif %}   
+
                       {% endif %}                
                     ></div>
                 </a>
+                {% endif %}         
                 <a href={% url 'logout'%} style="text-[#808080]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="white" viewBox="0 0 256 256">
                         <path d="M216,40H168a8,8,0,0,0,0,16h40V200H168a8,8,0,0,0,0,16h48a8,8,0,0,0,8-8V48A8,8,0,0,0,216,40Z"></path>

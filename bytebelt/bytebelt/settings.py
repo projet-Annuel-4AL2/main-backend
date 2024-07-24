@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+from decouple import config
+# from google.oauth2 import service_account
+# import ast
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'channels',
     'corsheaders',
+    'storages',
     ]
 
 ASGI_APPLICATION = 'bytebelt.routing.application'
@@ -117,11 +120,11 @@ WSGI_APPLICATION = 'bytebelt.wsgi.application'
 ''' DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bytebelt',
-        'USER': 'bytebelt',
-        'PASSWORD': 'bytebelt',
-        'HOST': 'db',  #c'est le nom du service dans le docker-compose
-        'PORT': '5432',
+        'NAME': config('DB_NAME', default='bytebelt'),
+        'USER': config('DB_USER', default='bytebelt'),
+        'PASSWORD': config('DB_PASSWORD', default='bytebelt'),
+        'HOST': config('DB_HOST', default='db'),
+        'PORT': config('DB_PORT', default='5432'),
     }
 } '''
 
@@ -201,3 +204,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+#
+# GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON = ast.literal_eval(config('GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON'))
+#
+#
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+#     GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON
+# )
+#
+# GS_BUCKET_NAME = 'django-bytebelt-media'
+#
+# STORAGE_MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/media/'
+#
+#

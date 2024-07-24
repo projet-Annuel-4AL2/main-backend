@@ -1,0 +1,65 @@
+name: Deploy Django to GCE
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      run: |
+        echo '${{ secrets.GCP_SA_KEY }}' > "${HOME}/gcp-key.json"
+        gcloud auth activate-service-account --key-file="${HOME}/gcp-key.json"
+        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Create secrets file
+      run: |
+        echo "GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_HOST=${{ secrets.DB_HOST }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_PORT=${{ secrets.DB_PORT }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+
+    - name: Copy .env to GCE instance
+      run: |
+        echo "Copying files to GCE instance"
+        gcloud compute scp --zone europe-west9-c ${GITHUB_WORKSPACE}/bytebelt/.env ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }}:/home/marcmalha/main-backend/bytebelt/.env
+      shell: bash
+
+    - name: Start SSH Agent and Add Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: |
+          ${{ secrets.GCE_SSH_KEY }}
+          ${{ secrets.REPO_SSH_KEY }}
+
+    - name: SSH into GCE and deploy
+      run: |
+        set -x # Enable debugging
+        SSH_USER="${{ secrets.GCE_SSH_USER }}"
+        SSH_IP="${{ secrets.GCE_INSTANCE_IP }}"
+        
+        ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP << EOF
+          set -x # Enable debugging in remote shell
+          cd /home/marcmalha/main-backend/bytebelt
+          git pull
+          if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt\$"; then
+            docker stop bytebelt
+            docker rm bytebelt
+          fi
+          if docker images | grep -q bytebelt-web; then
+            docker rmi bytebelt-web
+          fi
+          docker build -t bytebelt-web .
+          docker run --name bytebelt -p 80:80 -d bytebelt-web
+          echo "Deployment script finished"
+        exit
+        EOF

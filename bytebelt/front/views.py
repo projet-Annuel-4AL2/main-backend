@@ -538,10 +538,10 @@ def groupInfo(request, name):
         
         return render(request, 'groupInfo.html', {'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
     else:
-        return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info'})
+        return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info' ,'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
 
 def updateGroupInfo(request, name):
-    response = requests.get(API_BASE_URL + 'groupe/info/' + name + '/')
+    response = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
     groupe_id = response.json().get('id')
     user_get_data = get_user_data(request)
     if request.method == 'POST':
@@ -562,7 +562,9 @@ def updateGroupInfo(request, name):
                         'author': str(user_id),
                     }
                     files = {'group_pic': image} if image else None
-                    response = requests.patch(API_BASE_URL + 'groupe/update/' + str(groupe_id) + '/', data=data, files=files)
+                    response = requests.put(API_BASE_URL + 'groupe/update/' + str(groupe_id) + '/', data=data, files=files)
+                   
+                    
                     if response.status_code == 200:
                         return redirect('group', name=name)
                     else:
@@ -849,6 +851,8 @@ def usersPost(request):
     posts_from_following = [post for post in posts_without_user if post['author'] in id_followings]
     
     user_id_to_username = {user['id']: user['username'] for user in users}
+        
+
     
     for post in posts_from_following:
         if post['author'] in user_id_to_username:
@@ -862,6 +866,7 @@ def usersPost(request):
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
             'LOCALHOST': LOCALHOST 
+          
         })
     else:
         return render(request, 'feed.html', {'error': 'Unable to fetch posts'})

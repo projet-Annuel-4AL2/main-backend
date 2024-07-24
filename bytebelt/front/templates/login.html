@@ -4,6 +4,44 @@
 Home
 {% endblock %}
 
+<div class="container mx-auto mt-5 text-center">
+  <h1 class="text-center text-2xl font-bold mb-4">Code Editor</h1>
+  <div class="container mb-4">
+      <div class="row justify-content-center">
+          <div class="col-md-8">
+              <div class="mb-3 p-1">
+                  <label for="sourceCodeFile" class="text-2xl font-bold mb-2">Or Upload Source Code</label>
+                  <input class="rounded btn btn-light form-control" type="file" id="sourceCodeFile">
+              </div>
+          </div>
+          <div class="col-md-4 mt-4">
+              <select id="languageSelector" class="btn btn-light mb-4 text-left">
+                  <option value="python">Python</option>
+                  <option value="php">PHP</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="java">Java</option>
+                  <option value="csharp">C#</option>
+                  <option value="cpp">C++</option>
+              </select>
+          </div>
+      </div>
+  </div>
+  <div id="editor" class="mx-auto" style="height:25em;width:75%;"></div>
+  <div class="container mt-4">
+      <div class="row justify-content-center">
+          <div class="col-md-5">
+              <button type="submit" class="btn btn-light mb-4 mt-4" id="runCode">Run code</button>
+          </div>
+          <div class="col-md-4">
+              <div class="mb-3 p-1">
+                  <label for="inputFile" class="text-2xl font-bold mb-2">Upload Input File (If needed)</label>
+                  <input class="rounded btn btn-light form-control" type="file" id="inputFile" title="In case your program needs to access a file. WARNING: the file name should match the one used in the code to manipulate it.">
+              </div>
+          </div>
+      </div>
+  </div>
+  <div id="result" class="mx-auto" style="height:250px;width:75%;"></div>
+</div>
 {% block content %}
 <section class="py-3 py-md-5 py-xl-8">
     <div class="container">

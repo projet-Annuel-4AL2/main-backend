@@ -126,7 +126,7 @@
                     <div id="code-editor" style="height: 100%;"></div>
                 </div>
                 <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
-                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+                  <p class="text-[#CBCBCB] text-sm font-normal leading-normal" data-created-at="{{ post.created_at }}" id="postDate"></p>
                   <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
                   <div class="flex items-end gap-3 justify-between">
                     <div class="flex flex-col gap-1">
@@ -256,22 +256,48 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 
-  function initializeEditor() {
-    monaco.editor.create(document.getElementById('code-editor'), {
-        value: `{{ post.code|escapejs }}`,
-        language: '{{ post.language }}',
-        theme: 'vs-dark',
-        readOnly: true
-    });
-}
 
 document.addEventListener('DOMContentLoaded', function() {
-    initializeEditor();
-});
+    luxon.Settings.defaultLocale = "en";
 
-  function likePost(postId, userId) {
+    function updateRelativeTimes() {
+      var element = document.getElementById('postDate');
+
+      if (element) {
+        var postDate = element.getAttribute('data-created-at');
+        var postDateISO = postDate.replace(' ', 'T');
+        
+        var postDateTime = luxon.DateTime.fromISO(postDateISO, { zone: 'UTC' }).setZone(luxon.DateTime.local().zoneName);
+
+        var relativeTime = postDateTime.toRelative();
+        
+        element.innerText = `Posté ${relativeTime}`;
+    }
+
+    }
+
+  
+
+    function initializeEditor() {
+      monaco.editor.create(document.getElementById('code-editor'), {
+          value: `{{ post.code|escapejs }}`,
+          language: '{{ post.language }}',
+          theme: 'vs-dark',
+          readOnly: true
+      });
+  }
+  
+      updateRelativeTimes();
+      initializeEditor();
+
+
+      setInterval(updateRelativeTimes, 60000);
+
+
+
+      window.likePost = function(postId, userId) {
       var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/add-like/';
-      //var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+
 
       $.ajax({
           url: url,
@@ -285,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
           success: function(response) {
               $('#post-container').load(location.href + ' #post-container > *', function() {
                   initializeEditor();
+                  updateRelativeTimes();
               });
           },
           error: function(xhr, status, error) {
@@ -292,6 +319,10 @@ document.addEventListener('DOMContentLoaded', function() {
           }
       });
   }
+
+});
+
+
 </script>
 
 {% endblock %}

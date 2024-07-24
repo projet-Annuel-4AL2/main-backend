@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import CreateGroupeView ,GetAllGroupeView , GetGroupeByName , GetAllPostForGroupeView ,CreatePostForGroupeViewByGroupeId ,LikePublicationView , CommentPublicationView , GetPublicationGroupeById , GetCommentGroupeById , DeletePostForGroupeView  ,GetGroupeById , GetPostInfoView , EditPostForGroupeView
+from .views import CreateGroupeView ,GetAllGroupeView , GetGroupeByName , GetAllPostForGroupeView ,CreatePostForGroupeViewByGroupeId ,LikePublicationView , CommentPublicationView , GetPublicationGroupeById , GetCommentGroupeById , DeletePostForGroupeView  ,GetGroupeById , GetPostInfoView , EditPostForGroupeView , EditGroupeView
 
 urlpatterns = [
     path('', GetAllGroupeView.as_view(), name='get-all-groupe'),
-    path('update/<int:groupe_id>/', EditPostForGroupeView.as_view(), name='update-groupe'),
+    path('update/<int:groupe_id>/', EditGroupeView.as_view(), name='update-groupe'),
     path('create/', CreateGroupeView.as_view(), name='create-groupe'),
     path('info/<name>/', GetGroupeByName.as_view(), name='get-groupe-by-name'),
     path('inf/<int:groupe_id>/', GetGroupeById.as_view(), name='get-groupe-by-id'),

@@ -34,5 +34,5 @@ CMD ["sh", "-c", "daphne -b 0.0.0.0 -p ${PORT} bytebelt.asgi:application"]
 #see  heroku ps -a bytebelt-app 
 #heroku ps:autoscale web --min=2 --max=10 -a your-app-name
 
-#RUN chmod +x ./start.sh
-#CMD ["./start.sh"]
+RUN chmod +x ./start.sh
+CMD ["./start.sh"]

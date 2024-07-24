@@ -12,7 +12,7 @@
               <div id="code-{{ forloop.counter }}" style="height: 100%;" required></div>
           </div>
           <div class="flex w-full min-w-72 grow flex-col items-stretch justify-center gap-1 py-4 @xl:px-4">
-            <p class="text-[#CBCBCB] text-sm font-normal leading-normal">{{ post.created_at }}</p>
+            <p class="text-[#CBCBCB] text-sm font-normal leading-normal" data-created-at="{{ post.created_at }}" id="postDate-{{ forloop.counter }}"></p>
             <p class="text-[#FFFFFF] text-lg font-bold leading-tight tracking-[-0.015em]">{{ post.author }}</p>
             <div class="flex items-end gap-3 justify-between">
               <div class="flex flex-col gap-1">
@@ -27,11 +27,11 @@
                             </svg>
                             <span style="color: #808080;">{{ post.likes|length }} likes</span>
                         </button>
-                        <a href="" class="flex items-center">
+                        <a  class="flex items-center">
                             <svg class="w-6 h-6" fill="#FFFFFF" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M 25 4 C 12.316406 4 2 12.972656 2 24 C 2 30.1875 5.335938 36.066406 10.949219 39.839844 C 10.816406 40.890625 10.285156 43.441406 8.183594 46.425781 L 7.078125 47.992188 L 9.054688 48 C 14.484375 48 18.15625 44.671875 19.363281 43.394531 C 21.195313 43.796875 23.089844 44 25 44 C 37.683594 44 48 35.027344 48 24 C 48 12.972656 37.683594 4 25 4 Z"></path>
                             </svg>
-                            <span style="color: #808080;">{{ post.comments|length }} comments</span>
+                            <span id="comment-count-{{ forloop.counter }}" style="color: #808080;">{{ post.comments|length }} comments</span>
                         </a>
                     </div>
                     <a href="{% url 'singleUserPost' post.id %}" class="mt-4 px-4 py-2 bg-white rounded-full text-black">
@@ -58,6 +58,26 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        luxon.Settings.defaultLocale = "en";
+
+        function updateRelativeTimes() {
+            document.querySelectorAll('[data-created-at]').forEach(function(element) {
+                var postDate = element.getAttribute('data-created-at');
+                var postDateISO = postDate.replace(' ', 'T');
+                
+                var postDateTime = luxon.DateTime.fromISO(postDateISO, { zone: 'UTC' }).setZone(luxon.DateTime.local().zoneName);
+
+
+
+                var relativeTime = postDateTime.toRelative();
+
+                element.innerText = `Posted ${relativeTime}`;
+            });
+        }
+
+        
+    
     function initializeEditors() {
         {% for post in posts %}
             if (`{{ post.code|escapejs }}`.trim() !== "") {
@@ -72,16 +92,33 @@
                 document.getElementById('code-{{ forloop.counter }}').parentElement.remove();
                 
             }
+
         {% endfor %}
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeEditors();
-    });
+    function updateCommentCounts() {
+        {% for post in posts %}
+            (function(postId) {
+                var url = 'http://localhost:80/api/post/' + postId + '/get-comment/';
+                $.get(url, function(data) {
+                    var commentCount = data.length;
+                    document.getElementById('comment-count-{{ forloop.counter }}').innerText = commentCount + ' comments';
+                });
+            })({{ post.id }});
+        {% endfor %}
+    }
 
-    function likePost(postId, userId) {
+    updateRelativeTimes();
+    initializeEditors();
+    updateCommentCounts();
+
+
+
+    setInterval(updateRelativeTimes, 60000);
+
+    window.likePost = function(postId, userId) {
         var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/add-like/';
-        //var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+
 
         $.ajax({
             url: url,
@@ -95,6 +132,8 @@
             success: function(response) {
                 $('#post-container').load(location.href + ' #post-container > *', function() {
                     initializeEditors();
+                    updateRelativeTimes(); 
+                    updateCommentCounts();
                 });
             },
             error: function(xhr, status, error) {
@@ -102,5 +141,7 @@
             }
         });
     }
+
+});
 </script>
 {% endblock %}
