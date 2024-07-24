@@ -63,7 +63,7 @@ jobs:
             docker rmi bytebelt-web
           fi
           docker build -t bytebelt-web .
-          docker run --name bytebelt -p 80:80 bytebelt-web
+          docker run --name bytebelt -p 80:80 -d bytebelt-web
           echo "Deployment script finished"
         EOF
 
