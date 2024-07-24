@@ -70,7 +70,7 @@
                         </ul>
                     </div>
                   </div>
-                <form id="commentForm" method="POST" action="http://localhost:80/api/post/{{ post.id }}/add-comment/">
+                <form id="commentForm" method="POST" action="{{LOCALHOST}}/api/post/{{ post.id }}/add-comment/">
                     {% csrf_token %}
                     <div class="mb-4">
                         <label for="comment" class="text-white text-sm font-normal">Add a new comment:</label>

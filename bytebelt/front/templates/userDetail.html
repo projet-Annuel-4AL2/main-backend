@@ -280,7 +280,7 @@
     });
 
     function likePost(postId, userId) {
-        var url = 'http://localhost:80/api/post/' + postId + '/add-like/';
+        var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/add-like/';
 
         $.ajax({
             url: url,

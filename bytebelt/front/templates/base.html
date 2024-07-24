@@ -95,19 +95,24 @@
                    
                     {% endif %}
                   </label>
+                   
                   {% if request.session.token %}
                   {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
                   {% else %}
                   <a href="{% url 'profile' %}">
                     <div
                       class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                     
+
+                      {% if  request.path == '/runCode/' or request.path == '/runPipeline/' %}
+                      {% else %}
+
                           {% if user.profile_pic %}
                             style='background-image: url("{{ user.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                           {% else %}
                             style='background-image: url("{{ user_info.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
                           {% endif %}   
-                                          
+
+                      {% endif %}                
                     ></div>
                 </a>
                 {% endif %}         
@@ -123,12 +128,14 @@
             {% endblock %}
             {% block content %}
                     <!-- Votre contenu va ici -->
-                    {% endblock %}
+                          
+            {% endblock %}
         </div>
     </div>
 </body>
 </html>
 {% block extra_js %}
+
 
 
 
