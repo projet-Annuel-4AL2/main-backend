@@ -44,7 +44,7 @@ jobs:
 
     - name: SSH into GCE and deploy
       run: |
-          ssh -T -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_IP }} << 'EOF'
+          ssh -T -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }} << 'EOF'
           echo "Starting deployment script"
           if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt-web\$"; then
             docker stop bytebelt-web
