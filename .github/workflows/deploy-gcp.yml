@@ -25,17 +25,17 @@ jobs:
 
     - name: Create secrets file
       run: |
-        echo "GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON }}" >> bytebelt/.env
-        echo "DB_NAME=${{ secrets.DB_NAME }}" >> bytebelt/.env
-        echo "DB_USER=${{ secrets.DB_USER }}" >> bytebelt/.env
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> bytebelt/.env
-        echo "DB_HOST=${{ secrets.DB_HOST }}" >> bytebelt/.env
-        echo "DB_PORT=${{ secrets.DB_PORT }}" >> bytebelt/.env
+        echo "GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON=${{ secrets.GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_USER=${{ secrets.DB_USER }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_HOST=${{ secrets.DB_HOST }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
+        echo "DB_PORT=${{ secrets.DB_PORT }}" >> ${GITHUB_WORKSPACE}/bytebelt/.env
 
-    - name: Copy files to GCE instance
+    - name: Copy .env to GCE instance
       run: |
         echo "Copying files to GCE instance"
-        gcloud compute scp --recurse --zone europe-west9-c ${GITHUB_WORKSPACE} ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }}:/home/marcmalha/bytebelt
+        gcloud compute scp --zone europe-west9-c ${GITHUB_WORKSPACE}/bytebelt/.env ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }}:/home/marcmalha/main-backend/bytebelt/.env
       shell: bash
 
 
@@ -47,7 +47,8 @@ jobs:
         
         ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP << EOF
           set -x # Enable debugging in remote shell
-          cd /home/marcmalha/bytebelt
+          cd /home/marcmalha/main-backend
+          git pull
         
           # Ensure virtual environment is set up
           if [ ! -d "venv" ]; then
