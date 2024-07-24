@@ -41,7 +41,9 @@ jobs:
     - name: Start SSH Agent and Add Key
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.GCE_SSH_KEY }}
+        ssh-private-key: |
+          ${{ secrets.GCE_SSH_KEY }}
+          ${{ secrets.REPO_SSH_KEY }}
 
     - name: SSH into GCE and deploy
       run: |
@@ -51,18 +53,17 @@ jobs:
         
         ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP << EOF
           set -x # Enable debugging in remote shell
-          cd /home/marcmalha/main-backend
+          cd /home/marcmalha/main-backend/bytebelt
           git pull
-        
-          # Ensure virtual environment is set up
-          if [ ! -d "venv" ]; then
-            python3 -m venv venv
+          if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt\$"; then
+            docker stop bytebelt
+            docker rm bytebelt
           fi
-          source venv/bin/activate
-          pip install -r requirements.txt
-          python3 manage.py migrate
-          # Run Django server
-          nohup python3 manage.py runserver 0.0.0.0:80 &
+          if docker images | grep -q bytebelt-web; then
+            docker rmi bytebelt-web
+          fi
+          docker build -t bytebelt-web .
+          docker run --name bytebelt -p 80:80 bytebelt-web
           echo "Deployment script finished"
         EOF
 
