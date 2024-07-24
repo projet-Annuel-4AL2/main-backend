@@ -3,7 +3,7 @@ name: Deploy Django to GCE
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-and-deploy:
