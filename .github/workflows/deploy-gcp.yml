@@ -55,7 +55,7 @@ jobs:
           docker run -d --name bytebelt-web -p 8000:8000 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
           docker ps -a # List all containers to check if the new container is running
           echo "Deployment script finished"
-        EOF
+          EOF
 #      uses: appleboy/ssh-action@v0.1.3
 #      with:
 #        host: ${{ secrets.GCE_INSTANCE_NAME }}
