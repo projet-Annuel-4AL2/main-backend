@@ -6,6 +6,10 @@
             <div class="flex p-4 @container">
               <div class="flex w-full flex-col gap-4 items-start">
                 <div id="user_" class="flex gap-4 flex-col items-start">
+                  <div>  
+                    <p class="text-[#CBCBCB] text-sm font-normal leading-normal" data-created-at="{{ user_.updated_at }}" id="ConnexionDate"></p>
+                    </div>
+
                   <div
                     class="bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-32 w-32"
                     style='background-image: url("{{ user_.profile_pic|default:'https://cdn.usegalileo.ai/sdxl10/67309561-9bfc-4860-a4c1-b13311b8356b.png' }}");'
@@ -182,48 +186,75 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const following = {{ followings|safe }};
-      const user = "{{ user_info.id }}";
-      const userId = "{{ user_.id }}";
-      const followButton = document.getElementById("follow-button");
-  
-      // Vérifie si l'utilisateur suivi est dans la liste des abonnements
-      if (following.includes(userId)) {
-        followButton.querySelector("span").innerText = "Unfollow";
-      } else {
-        followButton.querySelector("span").innerText = "Follow";
-      }
-  
-      followButton.addEventListener("click", async () => {
-        const response = await fetch(`/api/users/${userId}/add-follower/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}",
-          },
-          body: JSON.stringify({
-            "follower_id": user,
-          }),
-        });
-        if (response.ok) {
-            $("#user_").load(location.href + " #user_");
-          if (followButton.querySelector("span").innerText === "Follow") {
-            followButton.querySelector("span").innerText = "Unfollow";
-            following.push(userId);
-          } else {
-            followButton.querySelector("span").innerText = "Follow";
-            const index = following.indexOf(userId);
-            if (index > -1) {
-              following.splice(index, 1);
-            }
-          }
-        }
-      });
-    });
-  </script>
-  
+  document.addEventListener("DOMContentLoaded", function() {
 
+      luxon.Settings.defaultLocale = "en";
+
+      function updateRelativeTimes() {
+          var element = document.getElementById('ConnexionDate');
+
+          if (element) {
+              var postDate = element.getAttribute('data-created-at');
+              var postDateISO = postDate.replace(' ', 'T');
+
+              var postDateTime = luxon.DateTime.fromISO(postDateISO, { zone: 'UTC' }).setZone(luxon.DateTime.local().zoneName);
+
+              var relativeTime = postDateTime.toRelative();
+
+              element.innerText = `Online ${relativeTime}`;
+          }
+      }
+
+      function initializeFollowButton() {
+          const following = {{ followings|safe }};
+          const user = "{{ user_info.id }}";
+          const userId = "{{ user_.id }}";
+          const followButton = document.getElementById("follow-button");
+
+          // Vérifie si l'utilisateur suivi est dans la liste des abonnements
+          if (following.includes(userId)) {
+              followButton.querySelector("span").innerText = "Unfollow";
+          } else {
+              followButton.querySelector("span").innerText = "Follow";
+          }
+
+          followButton.addEventListener("click", async () => {
+              const response = await fetch(`/api/users/${userId}/add-follower/`, {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      "X-CSRFToken": "{{ csrf_token }}",
+                  },
+                  body: JSON.stringify({
+                      "follower_id": user,
+                  }),
+              });
+
+              if (response.ok) {
+                  $("#user_").load(location.href + " #user_", function() {
+                      updateRelativeTimes();
+                      initializeFollowButton();
+                  });
+
+                  if (followButton.querySelector("span").innerText === "Follow") {
+                      followButton.querySelector("span").innerText = "Unfollow";
+                      following.push(userId);
+                  } else {
+                      followButton.querySelector("span").innerText = "Follow";
+                      const index = following.indexOf(userId);
+                      if (index > -1) {
+                          following.splice(index, 1);
+                      }
+                  }
+              }
+          });
+      }
+
+      updateRelativeTimes();
+      setInterval(updateRelativeTimes, 60000);
+      initializeFollowButton();
+  });
+</script>
 <script>
     var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } };
 </script>

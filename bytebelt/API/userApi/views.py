@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from django.shortcuts import render
+from django.utils import timezone
 from .models import CustomUser , UserPost , Device , Comment
 from rest_framework import generics
 from .serializers import UserSerializer , UserPostSerializer ,UserCommentPostSerializer
@@ -175,6 +176,8 @@ class UserAuthToken(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        user.updated_at = timezone.now()
+        user.save()
         if request.data.get('device') is not None:
             token_device , created = Device.objects.get_or_create(user=user)
             token_device.token_device = secrets.token_hex(16)
@@ -207,6 +210,8 @@ class RegisterUser(APIView):
             if CustomUser.objects.filter(email=email).exists():
                 return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
             user = serializer.save()
+            user.updated_at = timezone.now()
+            user.save()
             if request.data.get('device') is not None:
                 token_device , created = Device.objects.get_or_create(user=user)
                 token_device.token_device = secrets.token_hex(16)
