@@ -18,7 +18,7 @@ class CreateGroupeView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class EditPostForGroupeView(APIView):
+class EditGroupeView(APIView):
     permission_classes = [AllowAny]
     def put(self, request, *args, **kwargs):
         groupe_id = kwargs.get('groupe_id')
