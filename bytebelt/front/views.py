@@ -225,7 +225,8 @@ def subscribe(request):
                         if post['author'] == user['id']:
                             post['author'] = user['username']
                             break
-                    post =  post_without_following[0]
+                    if len(post_without_following) > 0:
+                        post = post_without_following[0]
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
