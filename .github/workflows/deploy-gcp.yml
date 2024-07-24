@@ -58,15 +58,14 @@ jobs:
 
     - name: SSH into GCE and deploy
       run: |
+          IMAGE_NAME="gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
           ssh -T -o StrictHostKeyChecking=no ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }} << 'EOF'
           echo "Starting deployment script"
           if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt-web\$"; then
             docker stop bytebelt-web
             docker rm bytebelt-web
           fi
-          IMAGE_NAME="gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
-          echo $IMAGE_NAME
-          docker pull gcr.io/${{ vars.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
+          docker pull $IMAGE_NAME
           docker images # List images to ensure the pull was successful
           docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
           docker ps -a # List all containers to check if the new container is running
