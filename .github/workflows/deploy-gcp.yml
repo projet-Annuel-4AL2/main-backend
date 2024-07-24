@@ -38,6 +38,10 @@ jobs:
         gcloud compute scp --zone europe-west9-c ${GITHUB_WORKSPACE}/bytebelt/.env ${{ secrets.GCE_SSH_USER }}@${{ secrets.GCE_INSTANCE_NAME }}:/home/marcmalha/main-backend/bytebelt/.env
       shell: bash
 
+    - name: Start SSH Agent and Add Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.GCE_SSH_KEY }}
 
     - name: SSH into GCE and deploy
       run: |
