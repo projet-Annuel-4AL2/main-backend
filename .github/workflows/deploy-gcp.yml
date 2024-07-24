@@ -50,9 +50,10 @@ jobs:
             docker stop bytebelt-web
             docker rm bytebelt-web
           fi
-          docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
+          echo "gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
+          docker pull "gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA"
           docker images # List images to ensure the pull was successful
-          docker run -d --name bytebelt-web -p 8000:8000 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
+          docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
           docker ps -a # List all containers to check if the new container is running
           echo "Deployment script finished"
           EOF
@@ -67,3 +68,10 @@ jobs:
 #          docker rm bytebelt-web || true
 #          docker run -d --name bytebelt-web -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/bytebelt-web:$GITHUB_SHA
 #          docker exec -it bytebelt-web python3 manage.py migrate
+if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt-web\$"; then
+docker stop bytebelt-web
+docker rm bytebelt-web
+fi
+docker pull gcr.io/pa-final-project/bytebelt-web:b119272ab6d7f40dd0c46dfbd97a337ce4cbd301
+docker images # List images to ensure the pull was successful
+docker run -d --name bytebelt-web -p 8000:8000 gcr.io//bytebelt-web:b119272ab6d7f40dd0c46dfbd97a337ce4cbd301
