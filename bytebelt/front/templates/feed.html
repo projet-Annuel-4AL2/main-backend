@@ -103,7 +103,7 @@
     function updateCommentCounts() {
         {% for post in posts %}
             (function(postId) {
-                var url = 'http://localhost:80/api/post/' + postId + '/get-comment/';
+                var url = "{{ LOCALHOST }}" + '/api/post/' + postId + '/get-comment/';
                 $.get(url, function(data) {
                     var commentCount = data.length;
                     document.getElementById('comment-count-{{ forloop.counter }}').innerText = commentCount + ' comments';

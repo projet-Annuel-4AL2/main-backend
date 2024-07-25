@@ -2,7 +2,6 @@ from django.urls import path , include
 from . import views
 
 
-
 urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login, name='login'),
@@ -48,5 +47,7 @@ urlpatterns = [
     path('post/', views.userPostAdd, name='userPostAdd'),
     path('feed/', views.usersPost, name='feed'),
     path('explorer/', views.usersPostExplorer, name='explorer'),
+    
+  
 
 ]

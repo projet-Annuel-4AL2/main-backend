@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-pwy9d8i(ai1s_dxpb413d%0s&j+$wz!f+kk0#jth-z2j1v5haf
 if 'DYNO' in os.environ:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
-    DEBUG = False
+    DEBUG = True
 else:
     DEBUG = True
 
@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'API.groupe',
     'API.userApi',
-    'dashboard',
     'rest_framework',
     'rest_framework.authtoken',
     'channels',
@@ -61,14 +60,23 @@ INSTALLED_APPS = [
 
 ASGI_APPLICATION = 'bytebelt.routing.application'
 
-CHANNEL_LAYERS = {
+''' CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
+} '''
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
 }
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django_dump_die.middleware.DumpAndDieMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,7 +84,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -96,7 +103,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'bytebelt/templates'),
                  os.path.join(BASE_DIR, 'API/userApi/templates'),
-                 os.path.join(BASE_DIR, 'dashboard/templates'),
+                 #os.path.join(BASE_DIR, 'dashboard/templates'),
                  os.path.join(BASE_DIR, 'front/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -203,7 +210,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # param for login
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login' 
 
 
 #

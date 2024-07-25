@@ -327,6 +327,7 @@ def deleteUserPost(request, id):
         'post': post.json()
     })   
 
+@token_required
 def updateUserPost(request , id):
     user_data = get_user_data(request)
     user_id = user_data.get('user').get('id')
@@ -871,6 +872,7 @@ def usersPost(request):
     else:
         return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
 
+@token_required
 def usersPostExplorer(request):
     posts = requests.get(API_BASE_URL + 'post/').json()
     user_data = get_user_data(request)

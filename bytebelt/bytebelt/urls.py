@@ -26,5 +26,5 @@ urlpatterns = [
     path('run/', include('app.urls')),
     path('api/groupe/', include('API.groupe.urls')),
     path('api/', include('API.userApi.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    #path('dashboard/', include('dashboard.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
