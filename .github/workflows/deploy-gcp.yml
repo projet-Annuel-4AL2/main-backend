@@ -50,7 +50,8 @@ jobs:
         ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP << EOF
           set -x # Enable debugging in remote shell
           cd /home/marcmalha/main-backend/bytebelt
-          git pull
+          git fetch --all
+          git reset --hard origin/master
           if docker ps -a --format '{{.Names}}' | grep -Eq "^bytebelt\$"; then
             docker stop bytebelt
             docker rm bytebelt
