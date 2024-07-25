@@ -83,6 +83,16 @@ class DockerImplementation(Implementation):
                     image='python',
                     **common_config,
                 )
+            case Language.JAVASCRIPT:
+                container = self.client.containers.run(
+                    image='node',
+                    **common_config,
+                )
+            case Language.CPP:
+                container = self.client.containers.run(
+                    image='gcc',
+                    **common_config,
+                )
             case _:
                 raise NotImplementedError(f'Runner for {language.value} is not implemented yet')
 
@@ -111,14 +121,22 @@ class DockerImplementation(Implementation):
             execution_result = container.exec_run(['python', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
         elif container_name.startswith(Language.PHP.value):
             execution_result = container.exec_run(['php', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
+        elif container_name.startswith(Language.JAVASCRIPT.value):
+            execution_result = container.exec_run(['node', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
+        elif container_name.startswith(Language.CPP.value):
+            result = container.exec_run(['g++', '-o', 'a.out', filepath], workdir=cls.TEMP_SRC_DIR_ABS_PATH)
+            if result.exit_code != 0:
+                return result
+            execution_result = container.exec_run('./a.out', workdir=cls.TEMP_SRC_DIR_ABS_PATH)
 
         return execution_result
 
     @classmethod
     def _get_source_code_filename(cls, container) -> str:
         binary_output = container.exec_run(['ls', cls.TEMP_SRC_DIR_ABS_PATH]).output
+        predicate = lambda fname: fname.endswith('.py') or fname.endswith('.js') or fname.endswith('.php') or fname.endswith('.cpp')
 
-        return list(filter(lambda fname: fname.endswith('.py'), binary_output.decode().strip().split('\n')))[0]
+        return list(filter(predicate, binary_output.decode().strip().split('\n')))[0]
 
     def exec(self, container_name: str):
         container = self._find_container(container_name)
