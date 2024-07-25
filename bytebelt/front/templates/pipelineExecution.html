@@ -33,12 +33,21 @@
             <h1 class="text-center text-2xl font-bold text-white mb-4 pr-7" id="stepNameHeading">Step 1 Code Editor</h1>
             <div class="container">
                 <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-3 p-1" style="width:50%">
-                          <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Or Upload Source Code</label>
+                    <div class="col-md-4">
+                        <div class="mb-3 p-1" style="width:80%">
+                          <label for="sourceCodeFile" class="text-2xl font-bold text-white mb-2">Upload Source Code</label>
                           <input class="rounded btn btn-light form-control text-white" type="file" id="sourceCodeFile" style="input-border-color:white; input-btn-focus-width:20em">
                         </div>
                     </div>
+                  <div class="mb-3 p-1 col-md-4" style="width:30%">
+                    <label for="savedSourceCodeFile" class="text-2xl font-bold text-white mb-2">Or choose from your posts</label>
+                    <select class="rounded btn btn-light form-control text-black pd-2" id="savedSourceCodeFile" style="input-border-color:white;  input-btn-focus-width:20em;">
+                      <option value="-1" disabled selected>Select an post</option>
+                      {% for post in post_data %}
+                        <option value="{{ forloop.counter0 }}">{{ post.name }}</option>
+                      {% endfor %}
+                    </select>
+                </div>
                     <div class="col-md-4 mt-4 d-flex justify-content-center">
                         <select id="languageSelector" class="btn btn-light mb-4 text-left">
                             <option value="python">Python</option>
@@ -177,6 +186,7 @@
 
         const heading = document.getElementById('stepNameHeading');
         heading.innerHTML = heading.innerHTML.replace(/Step \d+/gi, `Step ${currentStepIndex + 1}`);
+        document.getElementById('savedSourceCodeFile').value = -1;
     }
 
     function createPipelineStep(event) {
@@ -334,6 +344,13 @@
                     })
                     .catch(err => console.err(err));
            });
+
+           document.getElementById('savedSourceCodeFile').addEventListener('change', function() {
+                const postData = {{ post_data|safe }}
+                const i = this.value;
+                console.log(i);
+                editor.getModel().setValue(postData[i]['code']);
+              })
 
            document.getElementById('outputFileName').addEventListener('change', function (event) {
               steps[currentStepIndex].outputFileName = this.value;
