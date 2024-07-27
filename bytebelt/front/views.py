@@ -542,9 +542,10 @@ def groupInfo(request, name):
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info' ,'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
 
 def updateGroupInfo(request, name):
-    response = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
-    groupe_id = response.json().get('id')
+    responses = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
+
     user_get_data = get_user_data(request)
+    user_id = user_get_data.get('user').get('id')
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -554,7 +555,9 @@ def updateGroupInfo(request, name):
             token = request.session.get('token')
             user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
             if user_response.status_code == 200:
-                user_id = user_response.json().get('id')
+                response = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
+                groupe_id = response.json().get('id')
+                
                 if user_id:
                     data = {
                         'groupe_id': groupe_id,
@@ -563,9 +566,8 @@ def updateGroupInfo(request, name):
                         'author': str(user_id),
                     }
                     files = {'group_pic': image} if image else None
+
                     response = requests.put(API_BASE_URL + 'groupe/update/' + str(groupe_id) + '/', data=data, files=files)
-                   
-                    
                     if response.status_code == 200:
                         return redirect('group', name=name)
                     else:
@@ -581,7 +583,8 @@ def updateGroupInfo(request, name):
             messages.error(request, 'Name and description are required')
             return redirect('group', name=name)
         
-    return render(request, 'updateGroupInfo.html', {'groupe': response.json() ,'user': user_get_data.get('user')})
+    return render(request, 'updateGroupInfo.html', {'groupe': responses.json() ,'user': user_get_data.get('user')})
+
 
 
 def groupPost(request, name):
