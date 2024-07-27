@@ -14,7 +14,6 @@
                 </div>
             {% endif %}
             <h1 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">Create Groupe 
-            
             </h1>
             <form method="POST" action="{% url 'updateGroupInfo' groupe.id %}"  enctype="multipart/form-data">
                 {% csrf_token %}
