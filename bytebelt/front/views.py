@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 
 
 API_BASE_URL = config('API_BASE_URL')
-
+LOCALHOST = config('LOCALHOST')
 
 def token_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -66,7 +66,8 @@ def home(request):
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
             'groupes': user_data.get('groupes'),
-            'post': post
+            'post': post,
+            'LOCALHOST': LOCALHOST
         })
     else:
         return render(request, 'home.html', {'error': 'Unable to fetch user data'})
@@ -225,7 +226,10 @@ def subscribe(request):
                         if post['author'] == user['id']:
                             post['author'] = user['username']
                             break
-                    post =  post_without_following[0]
+                    if post_without_following:
+                        post = post_without_following[0]
+                    else:
+                        post = []
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
@@ -323,6 +327,7 @@ def deleteUserPost(request, id):
         'post': post.json()
     })   
 
+@token_required
 def updateUserPost(request , id):
     user_data = get_user_data(request)
     user_id = user_data.get('user').get('id')
@@ -371,6 +376,7 @@ def updateUserPost(request , id):
     })
 
 def singleUserPost(request , id):
+    
     user_data = get_user_data(request)
     users = user_data.get('users')
     user_id = user_data.get('user').get('id')
@@ -390,7 +396,8 @@ def singleUserPost(request , id):
         'followers': user_data.get('followers'),
         'followings': user_data.get('followings'),
         'post': post.json(),
-        'comments': comments
+        'comments': comments,
+        'LOCALHOST': LOCALHOST
     })
     
 def updateUserBio(request):
@@ -535,9 +542,10 @@ def groupInfo(request, name):
         return render(request, 'groupInfo.html', {'error': 'Unable to fetch group info' ,'groupe': groupe, 'posts': posts, 'user_id': user_id , 'groupe_author_id': groupe_author_id , 'user': user})
 
 def updateGroupInfo(request, name):
-    response = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
-    groupe_id = response.json().get('id')
+    responses = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
+
     user_get_data = get_user_data(request)
+    user_id = user_get_data.get('user').get('id')
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -547,7 +555,9 @@ def updateGroupInfo(request, name):
             token = request.session.get('token')
             user_response = requests.post(API_BASE_URL + 'user/', data={'token': token})
             if user_response.status_code == 200:
-                user_id = user_response.json().get('id')
+                response = requests.get(API_BASE_URL + 'groupe/info/' + str(name) + '/')
+                groupe_id = response.json().get('id')
+                
                 if user_id:
                     data = {
                         'groupe_id': groupe_id,
@@ -556,9 +566,8 @@ def updateGroupInfo(request, name):
                         'author': str(user_id),
                     }
                     files = {'group_pic': image} if image else None
+
                     response = requests.put(API_BASE_URL + 'groupe/update/' + str(groupe_id) + '/', data=data, files=files)
-                   
-                    
                     if response.status_code == 200:
                         return redirect('group', name=name)
                     else:
@@ -574,7 +583,8 @@ def updateGroupInfo(request, name):
             messages.error(request, 'Name and description are required')
             return redirect('group', name=name)
         
-    return render(request, 'updateGroupInfo.html', {'groupe': response.json() ,'user': user_get_data.get('user')})
+    return render(request, 'updateGroupInfo.html', {'groupe': responses.json() ,'user': user_get_data.get('user')})
+
 
 
 def groupPost(request, name):
@@ -859,11 +869,13 @@ def usersPost(request):
             'users': user_data.get('users'),
             'followers': user_data.get('followers'),
             'followings': user_data.get('followings'),
-            
+            'LOCALHOST': LOCALHOST 
+          
         })
     else:
         return render(request, 'feed.html', {'error': 'Unable to fetch posts'})
 
+@token_required
 def usersPostExplorer(request):
     posts = requests.get(API_BASE_URL + 'post/').json()
     user_data = get_user_data(request)
@@ -874,6 +886,6 @@ def usersPostExplorer(request):
             if post['author'] in user_id_to_username:
                 post['author'] = user_id_to_username[post['author']]
         
-        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings')})
+        return render(request, 'explorer.html', {'posts': posts, 'user': user_data.get('user') , 'users': user_data.get('users') , 'followers': user_data.get('followers') , 'followings': user_data.get('followings') , 'LOCALHOST': LOCALHOST})
     else:
         return render(request, 'explorer.html', {'error': 'Unable to fetch posts'})

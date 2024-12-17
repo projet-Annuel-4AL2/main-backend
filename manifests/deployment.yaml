@@ -16,6 +16,8 @@ spec:
         app: bytebelt
     spec:
       containers:
+      #docker run -d -p 6000:6000 --restart=always --name registry registry:2
+
       - name: bytebelt
         image: aperano/bytebelt:latest
         ports:
