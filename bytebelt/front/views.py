@@ -225,7 +225,8 @@ def subscribe(request):
                         if post['author'] == user['id']:
                             post['author'] = user['username']
                             break
-                    post =  post_without_following[0]
+                    if len(post_without_following) > 0:
+                        post = post_without_following[0]
                 for user in users:
                     if user['id'] == user_data.get('user').get('id'):
                         users.remove(user)
@@ -779,9 +780,22 @@ def codeSession(request, post_id):
 
 
 def runCode(request):
-    return render(request, 'codeExecution.html')
+    if not request.session.get('token'):
+        return redirect('login')
+
+    user_data = get_user_data(request)['user']
+    post_data = requests.get(API_BASE_URL + f'post/user/{user_data["username"]}/').json()
+    post_data = list(map(lambda post: {'code': post['code'], 'name': post['content']}, post_data))
+    return render(request, 'codeExecution.html', {'post_data': post_data})
+
 def runPipeline(request):
-    return render(request, 'pipelineExecution.html')
+    if not request.session.get('token'):
+        return redirect('login')
+
+    user_data = get_user_data(request)['user']
+    post_data = requests.get(API_BASE_URL + f'post/user/{user_data["username"]}/').json()
+    post_data = list(map(lambda post: {'code': post['code'], 'name': post['content']}, post_data))
+    return render(request, 'pipelineExecution.html', {'post_data': post_data})
 
 ###for user post now
 def userPostAdd(request):

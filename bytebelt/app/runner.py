@@ -77,8 +77,12 @@ class Runner(object):
         return self._execute_code(container_name)
 
     def _execute_code(self, container_name: str):
-        exit_code, result = self._execute(container_name)
-        self._delete_container(container_name)
+        try:
+            exit_code, result = self._execute(container_name)
+        except Exception:
+            raise Exception
+        finally:
+            self._delete_container(container_name)
 
         return exit_code, result
 

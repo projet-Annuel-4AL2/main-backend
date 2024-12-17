@@ -10,6 +10,22 @@ from .runner import Runner, Language
 from .docker_implementation import DockerImplementation
 
 
+def has_input_file(json_file_data):
+    return json_file_data is not None \
+           and json_file_data['name'] is not None \
+           and json_file_data['content'] is not None
+
+
+def get_suffix(language: str) -> str:
+    suffixes = {
+        'python': '.py',
+        'php': '.php',
+        'javascript': '.js',
+        'cpp': '.cpp',
+    }
+    return suffixes[language]
+
+
 @csrf_exempt
 def execute_code(request):
     if request.method == 'POST':
@@ -34,10 +50,10 @@ def execute_code(request):
             )
 
         runner = Runner(DockerImplementation())
-        with tempfile.NamedTemporaryFile('wt', suffix='.py', encoding='utf8') as file:
+        with tempfile.NamedTemporaryFile('wt', suffix=get_suffix(language), encoding='utf8') as file:
             file.write(code)
             file.flush()
-            if file_data is not None:
+            if has_input_file(file_data):
                 with tempfile.NamedTemporaryFile('wt') as inputFile:
                     inputFile.write(file_data['content'])
                     temp_dir_name = os.path.dirname(inputFile.name)

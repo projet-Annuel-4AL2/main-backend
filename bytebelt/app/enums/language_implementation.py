@@ -4,6 +4,8 @@ from enum import StrEnum
 class Language(StrEnum):
     PYTHON = 'python'
     PHP = 'php'
+    JAVASCRIPT = 'javascript'
+    CPP = 'cpp'
 
     @staticmethod
     def from_str(language: str):

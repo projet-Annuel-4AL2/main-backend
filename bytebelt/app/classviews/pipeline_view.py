@@ -16,6 +16,16 @@ from ..enums.language_implementation import Language
 from ..runner import Runner
 
 
+def get_suffix(language: str) -> str:
+    suffixes = {
+        'python': '.py',
+        'php': '.php',
+        'javascript': '.js',
+        'cpp': '.cpp',
+    }
+    return suffixes[language]
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class PipelineView(View):
     @classmethod
@@ -37,7 +47,7 @@ class PipelineView(View):
                 return JsonResponse({'error': 'Either language name incorrect or language not yet implemented'},
                                     status=400)
 
-            with tempfile.NamedTemporaryFile('wt', suffix='.py', encoding='utf8') as src_file:
+            with tempfile.NamedTemporaryFile('wt', suffix=get_suffix(language), encoding='utf8') as src_file:
                 src_file.write(code)
                 src_file.flush()
 
